@@ -39,11 +39,17 @@ void swap(int* var_one, int* var_two){
 
 
 
+
 int main()
 {
 
+   double d = 5;
+   float f = 8/6;   
+   int i = 12;
+   unsigned ui = 2;
+   i =  d / f +i * (ui - i);
 
-
+   printf("%f", d);
    return 0;
 }
 
