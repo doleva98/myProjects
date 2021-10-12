@@ -3,6 +3,28 @@
 #include <string.h>
 #include <assert.h>
 
+void swap(int* a, int* b);
+void copyArray(int a [], int b [], int len);
+int StrLen(const char *str);
+int StrCmp(const char* str1, const char* str2);
+void swapTwoSizeT(size_t* a, size_t* b);
+void swapTwoSizeTPointers(size_t** a, size_t** b);
+void useSwap(size_t** a, size_t** b);
+
+int main() {
+    	double d = 5;
+    	int i = 12;
+    	float f = 8/6;
+    	unsigned int ui = 2;
+    	/*+ i*(ui - i)+((float *)&d - &f )*/
+    	i =  ((float *)&d - &f );
+    	printf("\n%d\n", i);
+    	printf("%lf\n",*(double *)(&f+3));
+	
+   return 0;
+}
+
+
 void swap(int* a, int* b){
 
 int temp = *a;
@@ -61,15 +83,4 @@ void useSwap(size_t** a, size_t** b){
 	swapTwoSizeT(*a, *b);
 }
 
-int main() {
-    	double d = 5;
-    	int i = 12;
-    	float f = 8/6;
-    	unsigned int ui = 2;
-    	/*+ i*(ui - i)+((float *)&d - &f )*/
-    	i =  ((float *)&d - &f );
-    	printf("\n%d\n", i);
-    	printf("%lf\n",*(double *)(&f+3));
-	
-   return 0;
-}
+
