@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
+#include "mystring.h"
 
+/*ex 1*/
 void swap(int* a, int* b);
 void copyArray(int a [], int b [], int len);
 int StrLen(const char *str);
@@ -11,21 +14,48 @@ void swapTwoSizeT(size_t* a, size_t* b);
 void swapTwoSizeTPointers(size_t** a, size_t** b);
 void useSwap(size_t** a, size_t** b);
 
-int main() {
-    	double d = 5;
-    	int i = 12;
-    	float f = 8/6;
-    	unsigned int ui = 2;
-    	/*+ i*(ui - i)+((float *)&d - &f )*/
-    	i =  ((float *)&d - &f );
-    	printf("\n%d\n", i);
-    	printf("%lf\n",*(double *)(&f+3));
+
+
+int main() 
+{
+
+    	
+    	testStrnCpy();
+    	
+    	return 0;    	
+}
+
+/*test for ex2*/
+
+void testStrCpy()
+{
+
+	char *a = "hello world";
+	char b [StrLen(a)];
+	char *c;
+	c = StrCpy(b, a);
+	printf("%s\n", a);
+	printf("%s\n", b);
+	printf("%s\n", c);
+}
+
+void testStrnCpy()
+{
 	
-   return 0;
+	char *a = "hello world";
+	char b [StrLen(a)];
+	char *c;
+	c = StrnCpy(b, a, 8);
+	printf("%s\n", a);
+	printf("%s\n", b);
+	printf("%s\n", c);
+	
 }
 
 
-void swap(int* a, int* b){
+/*ex1*/
+void swap(int* a, int* b)
+{
 
 int temp = *a;
 *a = *b;
@@ -33,31 +63,35 @@ int temp = *a;
 
 }
 
-void copyArray(int a [], int b [], int len){
+void copyArray(int a [], int b [], int len)
+{
   int i = 0;
 
-   for(;i < len; i++){
+   for(;i < len; i++)
+   {
       b[i] = a[i];
    }
 }
 
-int StrLen(const char *str){ 
+int StrLen(const char *str)
+{ 
    int result = 0;  
    assert(str);   
-   for(;;++result){ /*for is almost empty. why not use while? */
-      if(!str[result]){
-         return result; /*you have twice return*/
-      }
+   while(str[result]){
+   	result++;
+   	
    }
    return result;
 }
 
-int StrCmp(const char* str1, const char* str2){ 
+int StrCmp(const char* str1, const char* str2)
+{ 
    assert(str1);
    assert(str2);
   
    while(*str1){  /*why dont you check (*str1 && *str2)?*/
-      if(*str1 != *str2){
+      if(*str1 != *str2)
+      {
          break;
       }
       str1++;
@@ -67,20 +101,107 @@ int StrCmp(const char* str1, const char* str2){
 }
 
 
-void swapTwoSizeT(size_t* a, size_t* b){
+void swapTwoSizeT(size_t* a, size_t* b)
+{
+
    size_t temp = *a;
    *a = *b;
    *b = temp;
 }
 
-void swapTwoSizeTPointers(size_t** a, size_t** b){
+void swapTwoSizeTPointers(size_t** a, size_t** b)
+{
    size_t* temp = *a;
    *a = *b;
    *b = temp;
 }
 
-void useSwap(size_t** a, size_t** b){
+void useSwap(size_t** a, size_t** b)
+{
 	swapTwoSizeT(*a, *b);
 }
+
+/*ex2*/
+
+char* StrCpy(char* destination, const char* source)
+{
+	int i = 0;
+	char *result = destination;
+	assert(destination != NULL && source != NULL);
+	
+	while(1)
+	{
+		*destination = *source;
+		
+		if( *source == '\0'){
+			break;
+		}
+		
+		source++;
+		destination++;
+	}
+	
+	return result;
+}
+
+char *StrnCpy(char *destination, const char *source, size_t n)
+{
+	size_t i = 0;
+	char *result = destination;
+	assert(destination != NULL && source != NULL);
+	
+	while( i < n )
+	{
+	
+		
+	
+	}
+		
+	return result;
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
