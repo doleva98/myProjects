@@ -19,7 +19,7 @@ void useSwap(size_t** a, size_t** b);
 int main() 
 {
     	    	
-    	testStrCat();
+    	testPalindrome();
     	
     	return 0;    	
 }
@@ -114,6 +114,47 @@ void testStrCat(){
 	printf("%s\n", a);
 	printf("%s\n", c);
 }
+
+void testStrnCat(){
+
+	char a [1000]= "ZZZZZwow wwww!!! fdsdf";
+	char *b = "ZZZZZwow wwwZZZZZwow wwww!!! w!!! ";
+	char c [1000]= "ZZZZZwow wwww!!! fdsdf";
+	StrnCat(a,b, 1);
+	strncat(c,b, 1);
+	printf("%s\n", a);
+	printf("%s\n", c);
+
+
+}
+
+void testStrStr(){
+	
+	char* a = "ZZZZZwow wwwZZZZZwow wwww!!! w!!! ";	
+	char* b ="!!";
+	printf("%s\n", StrStr(a,b));
+	printf("%s\n", strstr(a,b));	
+}
+
+void testStrSpn(){
+
+	char* a = "!Z!T!!! ZZZZZwow wwwZZZZZwow wwww!!! w!!! ";	
+	char* b ="!!Z";
+	printf("%lu\n", StrSpn(a,b));
+	printf("%lu\n", strspn(a,b));
+	
+
+}
+
+void testPalindrome(){
+
+	char* s = "ssss1s";
+	printf("%d\n", Palindrome(s));
+
+}
+
+
+
 
 /*********************************************************************************************/
 /*ex1*/
@@ -263,6 +304,7 @@ char *StrChr(const char* str, int c){
 char *StrDup(const char *str){
 
 	char* result = (char*)malloc(StrLen(str) + 1);
+	assert(str != NULL);
 	if(result == NULL){
 		return NULL;
 	}
@@ -275,7 +317,7 @@ char *StrCat(char *destination, const char *source){
 	
 	int i = 0;
 	int dest_len = StrLen(destination);
-	
+	assert(destination != NULL && source != NULL);
 	for(; source[i] != '\0'; ++i){
 		destination[dest_len + i] = source[i];
 	}
@@ -285,11 +327,71 @@ char *StrCat(char *destination, const char *source){
 	
 }
 
+char* StrnCat (char* destination, const char* source, size_t num ){
 
+	size_t i = 0;
+	int dest_len = StrLen(destination);
+	assert(destination != NULL && source != NULL);
+	for(; source[i] != '\0' && i < num; ++i){
+		destination[dest_len + i] = source[i];
+	}
+	destination[dest_len + i] = '\0';
+	
+	return destination;
+	
+}
 
+char *StrStr(const char *haystack, const char *needle){
+	int i = 0;
+	int j = 0;
+	assert(haystack != NULL && needle != NULL);
+	for(; i < StrLen(haystack) - StrLen(needle); ++i){
+	
+		if(haystack[i] == needle[0]){
+		
+			for(; j < StrLen(needle); ++j){
+				if(haystack[i+j] != needle[j]){
+					break;
+				}
+			}
+			return (char *)haystack + i;
+			
+		}
+	
+	}
+	return NULL;
+}
 
+size_t StrSpn(const char *str1, const char *str2){
 
+	int i = 0;
+	int j = 0;
+	int count = 0;
+	assert(str1 != NULL && str2 != NULL);
+	
+	for(; i < StrLen(str1); ++i){
+		
+		for(;	j < StrLen(str2); ++j){
+			if(str1[i] == str2[j]){
+				count++;
+			}
+			
+			
+		}
+	}
+	return count;
+}
 
+int Palindrome (char* str)
+{
+	int i = 0;
+	for(; i < StrLen(str)/2; i++){
+		if(str[i] != str[StrLen(str) - i - 1]){
+			return 0;
+		}
+	}
+return 1;
+}
 
 
 
