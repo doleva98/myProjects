@@ -9,19 +9,34 @@
 void swap(int* a, int* b);
 void copyArray(int a [], int b [], int len);
 int StrLen(const char *str);
+void testStrLen();
 int StrCmp(const char* str1, const char* str2);
 void swapTwoSizeT(size_t* a, size_t* b);
 void swapTwoSizeTPointers(size_t** a, size_t** b);
 void useSwap(size_t** a, size_t** b);
+void testDeBug();
 
 
 
 int main() 
 {
-    	    	
-    	testPalindrome();
-    	
+
+	testDeBug();
     	return 0;    	
+}
+
+void testDeBug(){
+	char* a = "dsjsdjs";
+	int i;
+	printf("%s\n", a);	
+
+	scanf("%d", &i);
+}
+
+void testStrLen(){
+	char* a = "dsjsdjs";
+	printf("%d\n", StrLen(a));
+	printf("%lu\n", strlen(a));
 }
 
 /*test for ex2*/
@@ -138,8 +153,8 @@ void testStrStr(){
 
 void testStrSpn(){
 
-	char* a = "!Z!T!!! ZZZZZwow wwwZZZZZwow wwww!!! w!!! ";	
-	char* b ="!!Z";
+	char* a = "!ZwwT ZZZZZwow wwwZZZZZwow wwww!!! w!!! ";	
+	char* b ="w!!ZT";
 	printf("%lu\n", StrSpn(a,b));
 	printf("%lu\n", strspn(a,b));
 	
@@ -153,6 +168,9 @@ void testPalindrome(){
 
 }
 
+void testSevenBoom(){
+	SevenBoom(1,41);
+}
 
 
 
@@ -364,20 +382,26 @@ char *StrStr(const char *haystack, const char *needle){
 
 size_t StrSpn(const char *str1, const char *str2){
 
-	int i = 0;
-	int j = 0;
+	char* start = (char*)str2;
 	int count = 0;
 	assert(str1 != NULL && str2 != NULL);
 	
-	for(; i < StrLen(str1); ++i){
-		
-		for(;	j < StrLen(str2); ++j){
-			if(str1[i] == str2[j]){
+	while(*str1){
+		str2 = start;
+		while(*str2){
+			
+			if(*str1 == *str2){
+				
 				count++;
+				break;	
 			}
-			
-			
+			str2++;
 		}
+			
+		if(!*str2){
+			return count;
+		}
+		str1++;
 	}
 	return count;
 }
@@ -385,15 +409,64 @@ size_t StrSpn(const char *str1, const char *str2){
 int Palindrome (char* str)
 {
 	int i = 0;
+	assert(str);
 	for(; i < StrLen(str)/2; i++){
 		if(str[i] != str[StrLen(str) - i - 1]){
 			return 0;
 		}
 	}
-return 1;
+	
+	return 1;
 }
 
 
+int isSeven(int current){
+	int temp = current;
+	if(current%7 == 0){
+		return 1;
+	}
+	
+	while(temp != 0){
+		if(temp%10 == 7){
+			return 1;
+		}
+		else{
+			temp = temp/10;
+		}
+	}
+	return 0;
+	
+}
+
+void SevenBoom(int start, int finish){
+	int i = start;
+	
+	if(start < finish){
+		
+		for(; i < finish; ++i){
+			if(isSeven(i)){
+				printf("BOOM\n");
+			}
+			else{
+				printf("%d\n", i);
+			}
+		} 	
+		
+	}
+	else{
+		for(; i > finish; --i){
+			if(isSeven(i)){
+				printf("BOOM\n");
+			}
+			else{
+				printf("%d\n", i);
+			}
+		}
+	}
+	
+	
+	
+}
 
 
 
