@@ -26,11 +26,14 @@ int main()
 }
 
 void testDeBug(){
-	char* a = "dsjsdjs";
-	int i;
-	printf("%s\n", a);	
-
-	scanf("%d", &i);
+	char* w = (char*)malloc(40);
+	w = "dssds";
+	printf("%s\n",w);
+	free(w);
+	printf("%s\n",w);
+	while(1){
+	
+	}
 }
 
 void testStrLen(){
@@ -320,7 +323,7 @@ char *StrChr(const char* str, int c){
 }
 
 char *StrDup(const char *str){
-
+	
 	char* result = (char*)malloc(StrLen(str) + 1);
 	assert(str != NULL);
 	if(result == NULL){
