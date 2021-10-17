@@ -11,10 +11,23 @@ int main(int argv, char** argc, char** envp) {
 	testsumMatrix();
 	testJoesphos();
 	printToStdOut();
-	
-	
 	foo(arr, 2);
+	char** e = {{"ds","dsd"},
+		    {"ds","te"}};
+	CopyEnvp(e);
    	return 0;
+}
+
+void CopyEnvp(char** envp){
+	int i = 0;
+	int j = 0;
+	char buffer[**envp][*envp];
+	for(; i < sizeof(envp); ++i){
+		for(; j < sizeof(*envp); ++j){
+			buffer[i][j] = envp[i][j];
+			printf("%s", buffer[i][j]);
+		}
+	}
 }
 
 void foo(int (*a)[4], int r){
@@ -42,54 +55,43 @@ void testJoesphos(){
 	ASSERT(5 == Joesphos(10));
 }
 
-int Joesphos(int num){
-	int num_group = num;
-	int i = 0;
-	int j = 0;
+int Joesphos(int num){ /* many num in code. should be more indicative */
+	int num_group = num; /* hard to understand what this int means */
 	int res = -1;
 	int* arr = NULL;
 	int kill = 0;
 	
-	arr = (int*)malloc(num*sizeof(int));
+	arr = (int*)calloc(num,sizeof(int)); /* why not using calloc? */
 	if(!arr){
 		return -1;
 	}
-	
-	for(; i < num; ++i){
-		arr[i] = i+1;
-	}
-	
+		
 	while(num_group != 1){
-		killThem(arr, &num_group, num, &kill);
+		res = killThem(arr, &num_group, num, &kill);
 	}	
 	
-	for(; j < num; ++j){
-		if(arr[j] != -1){
-			res = arr[j];
-		}
-	}
 	FREE(arr);
 	return res;
 }
 
-void killThem(int* arr, int* num_group,int num, int* kill){
+int killThem(int* arr, int* num_group,int num, int* kill){
 	int i = 0;
 	int count = 0;
+	int ret = 0;
 	for(; i < num ;++i){
-		if(arr[i] != -1){
+		if(arr[i] != -1){ 
 			if(*kill == 0){
-			
-				++count;
+				ret = i + 1;
+				++count; 
 				*kill = 1;
 			}else{
 				arr[i] = -1;
 				*kill = 0;
 			}
-		}else{
-			continue;
 		}
 	}
 	*num_group = count;
+	return ret;
 }
 
 

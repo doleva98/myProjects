@@ -1,6 +1,11 @@
 #ifndef MYSTRING_H
 #define MYSTRING_H
 
+int StrCmp(const char* str1, const char* str2);
+void testStrCmp();
+
+size_t StrLen(const char *str);
+void testStrLen();
 
 char* StrCpy(char* destination, const char* source);
 void testStrCpy();
@@ -36,5 +41,12 @@ void testPalindrome();
 
 void SevenBoom(int start, int finish);
 void testSevenBoom();
+
+void swap(int* a, int* b);
+void copyArray(int a [], int b [], int len);
+void swapTwoSizeT(size_t* a, size_t* b);
+void swapTwoSizeTPointers(size_t** a, size_t** b);
+void useSwap(size_t** a, size_t** b);
+void testDeBug();
 
 #endif

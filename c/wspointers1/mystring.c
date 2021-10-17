@@ -3,124 +3,153 @@
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
+
+#include "/home/dolev/git/dolev-arev/include/utils.h"
 #include "mystring.h"
-
-/*ex 1*/
-void swap(int* a, int* b);
-void copyArray(int a [], int b [], int len);
-int StrLen(const char *str);
-void testStrLen();
-int StrCmp(const char* str1, const char* str2);
-void swapTwoSizeT(size_t* a, size_t* b);
-void swapTwoSizeTPointers(size_t** a, size_t** b);
-void useSwap(size_t** a, size_t** b);
-void testDeBug();
-
-
 
 int main() 
 {
 
-	testDeBug();
+	testStrCmp();
+	testStrLen();
+	testStrCpy();
+	testStrnCpy();
+	testStrCaseCmp();
+	testStrChr();
+	testStrDup();
+	testStrCat();
+	testStrnCat();
+	testStrStr();
+	testPalindrome();
+	testSevenBoom(); 
+	
+	printf("tests are " ANSI_COLOR_GREEN "OK\n" ANSI_COLOR_RESET);
     	return 0;    	
 }
 
-void testDeBug(){
-	char* w = (char*)malloc(40);
-	w = "dssds";
-	printf("%s\n",w);
-	free(w);
-	printf("%s\n",w);
-	while(1){
+/****************************TESTS******************************/
+
+void testStrCmp(){
+	char* a = "ZZdfdfdf";
+	char* b = "aZdfdfdf";
+	char* c = "aZdfdfdf";
+	char* d = "ekwjfw;fl";
+	ASSERT(StrCmp(a, b) < 0);
+	ASSERT(StrCmp(b,c) == 0);
 	
+	if(strcmp(a,d) < 0){
+		ASSERT(StrCmp(a, d) < 0);
+	}else{
+		if (strcmp(a,d) > 0){
+			ASSERT(StrCmp(a, d) > 0);
+		} else {
+			ASSERT(StrCmp(a, d) == 0);
+		}
 	}
 }
 
+
 void testStrLen(){
 	char* a = "dsjsdjs";
-	printf("%d\n", StrLen(a));
-	printf("%lu\n", strlen(a));
+	char* b = "";
+	ASSERT(StrLen(a) == strlen(a));
+	ASSERT(StrLen(a) == 7);
+	ASSERT(StrLen(b) == 0);
 }
-
-/*test for ex2*/
 
 void testStrCpy()
 {
 
 	char *a = "Hello world!";
-	char *c;
-	char *b = (char*)malloc(strlen(a)+1);
+	char *c = NULL;
+	char *d = NULL;
+	char *e = NULL;
+	char *b = NULL;
 	
+	b = (char*)malloc(strlen(a)+1);
 	if(b == NULL){
 		return;
 	}
+	
+	d = (char*)malloc(strlen(a)+1);
+	if(d == NULL){
+		return;
+	}
 
-	printf("%lu\n", strlen(a)+1);
 	c = StrCpy(b, a);
-	printf("%s\n", a);
-	printf("%s\n", b);
-	printf("%s\n", c);
-	free(b);
+	e = strcpy(d, a);
+	ASSERT(StrCmp(c,e) == 0);
+	ASSERT(StrCmp(b,d) == 0);
+	FREE(b);
+	FREE(d);
 }
 
 void testStrnCpy()
 {
 	char *a = "Hello World!";
-	char *d;
-	char *b;
-	char *c;
-	char *e;
+	char *d = NULL;
+	char *b = NULL;
+	char *c = NULL;
+	char *e = NULL;
 	
-	b = (char*)malloc(10);
+	b = (char*)calloc(10,1);
 	if(b == NULL){
 		return;
 	}
 	
 	c = StrnCpy(b, a, 9);
 	
-	
-	d = (char*)malloc(10);
+	d = (char*)calloc(10,1);
 	if(d == NULL){
 		return;
 	}
 	
 	e = strncpy(d, a, 9);
 	
-	printf("%s\n", a);
-	printf("%s\n", b);
-	printf("%s\n", c);
-	free(b);
+	ASSERT(StrCmp(c,e) == 0);
 	
-	printf("%s\n", d);
-	printf("%s\n", e);
+	ASSERT(StrCmp(c,"Hello Wor") == 0);
 	
-	free(d);
+	ASSERT(StrCmp(b,d) == 0);
+		
+	FREE(b);
+	FREE(d);
 }
 
 void testStrCaseCmp(){
 
 	char *a = "ZZZZZwow wwww!!! ";
 	char *b = "ZZZZZwow wwwZZZZZwow wwww!!! w!!! ";
-	printf("%d\n", StrCaseCmp(a,b));
-	printf("%d\n", strcasecmp(a,b));	
-	
+	if(strcasecmp(a,b) < 0){
+		ASSERT(StrCaseCmp(a,b) < 0);
+	}else {
+		
+		if (strcasecmp(a,b) == 0){
+		ASSERT(StrCaseCmp(a,b) == 0);	
+		}else{
+		ASSERT(StrCaseCmp(a,b) > 0);
+		}
+	}
+	ASSERT(StrCaseCmp(a,"zzzzzwow wwww!!! ") == 0);
 }
 
 void testStrChr(){
 	char* a = "ZZZZZwow wwww!!! ";
 	char* b = StrChr(a, 'w');
 	char* c = strchr(a, 'w');
-	
-	printf("%s\n", b);
-
-	printf("%s\n", c);
+	char* z = "wow wwww!!! ";
+	ASSERT(b == c);
+	ASSERT(StrCmp(b,z) == 0);
 }
 
 void testStrDup(){
 	char* a = "ZZZZZwow wwww!!! ";
 	char* b = StrDup(a);
-	printf("%s\n", b);
-	free(b);
+	char* c = NULL;
+	c = (char*)strdup(a);
+	ASSERT(StrCmp(b,c) == 0);
+	FREE(b);
+	FREE(c);
 }
 
 void testStrCat(){
@@ -129,8 +158,7 @@ void testStrCat(){
 	char c [1000]= "ZZZZZwow wwww!!! fdsdf";
 	StrCat(a,b);
 	strcat(c,b);
-	printf("%s\n", a);
-	printf("%s\n", c);
+	ASSERT(StrCmp(StrCat(a,b), strcat(c,b))  == 0 );
 }
 
 void testStrnCat(){
@@ -140,9 +168,7 @@ void testStrnCat(){
 	char c [1000]= "ZZZZZwow wwww!!! fdsdf";
 	StrnCat(a,b, 1);
 	strncat(c,b, 1);
-	printf("%s\n", a);
-	printf("%s\n", c);
-
+	ASSERT(StrCmp(StrnCat(a,b, 7), strncat(c,b, 7)) == 0 );
 
 }
 
@@ -150,8 +176,7 @@ void testStrStr(){
 	
 	char* a = "ZZZZZwow wwwZZZZZwow wwww!!! w!!! ";	
 	char* b ="!!";
-	printf("%s\n", StrStr(a,b));
-	printf("%s\n", strstr(a,b));	
+	ASSERT(StrCmp(StrStr(a,b), strstr(a,b)) == 0);
 }
 
 void testStrSpn(){
@@ -167,7 +192,10 @@ void testStrSpn(){
 void testPalindrome(){
 
 	char* s = "ssss1s";
-	printf("%d\n", Palindrome(s));
+	char* a = "ss1ss1ss";
+	ASSERT(Palindrome(s) == 0);
+
+	ASSERT(Palindrome(a) == 1);
 
 }
 
@@ -176,9 +204,14 @@ void testSevenBoom(){
 }
 
 
+void testDeBug(){
+	while(1){
+	
+	}
+}
 
-/*********************************************************************************************/
-/*ex1*/
+/*****************************END OF TESTS*******************************************/
+
 void swap(int* a, int* b)
 {
 
@@ -198,7 +231,7 @@ void copyArray(int a [], int b [], int len)
    }
 }
 
-int StrLen(const char *str)
+size_t StrLen(const char *str)
 { 
    int result = 0;  
    assert(str);   
@@ -222,7 +255,7 @@ int StrCmp(const char* str1, const char* str2)
       str1++;
       str2++;
    }
-   return *(const unsigned char*) str1 - *(const unsigned char*) str2; /*why do you have to change to unsinged char? you lose information if str1 is less than str2 (in original function it returns a negative value)*/
+   return *str1 - *str2; /*why do you have to change to unsinged char? you lose information if str1 is less than str2 (in original function it returns a negative value)*/
 }
 
 
@@ -363,8 +396,8 @@ char* StrnCat (char* destination, const char* source, size_t num ){
 }
 
 char *StrStr(const char *haystack, const char *needle){
-	int i = 0;
-	int j = 0;
+	size_t i = 0;
+	size_t j = 0;
 	assert(haystack != NULL && needle != NULL);
 	for(; i < StrLen(haystack) - StrLen(needle); ++i){
 	
@@ -411,7 +444,7 @@ size_t StrSpn(const char *str1, const char *str2){
 
 int Palindrome (char* str)
 {
-	int i = 0;
+	size_t i = 0;
 	assert(str);
 	for(; i < StrLen(str)/2; i++){
 		if(str[i] != str[StrLen(str) - i - 1]){
