@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include "ws.h"
 #include <string.h>
+#include <ctype.h>
 #include "/home/dolev/git/dolev-arev/include/utils.h"
-
+#include <assert.h>
 
 int main(int argv, char** argc, char** envp) {
 	int arr [2][4] = {{1,23,4,5},
@@ -12,22 +13,86 @@ int main(int argv, char** argc, char** envp) {
 	testJoesphos();
 	printToStdOut();
 	foo(arr, 2);
-	char** e = {{"ds","dsd"},
-		    {"ds","te"}};
-	CopyEnvp(e);
+	CopyEnvp(envp);
+	
+	
    	return 0;
 }
 
 void CopyEnvp(char** envp){
-	int i = 0;
-	int j = 0;
-	char buffer[**envp][*envp];
-	for(; i < sizeof(envp); ++i){
-		for(; j < sizeof(*envp); ++j){
-			buffer[i][j] = envp[i][j];
-			printf("%s", buffer[i][j]);
-		}
+	char** buffer = NULL;
+	char** start_buffer = NULL;
+	assert(envp);
+	
+	buffer = (char**)calloc(sizeOfArray(envp)+1, sizeof(char*));
+	if(!buffer){
+		return;
 	}
+	
+	start_buffer = buffer;
+	while(*envp){
+		*buffer = StrDupEnvp(*envp);
+		++buffer;
+		++envp;
+	}
+	freeAll(start_buffer);
+}	
+
+void freeAll(char** buffer){
+	char** start = NULL;
+	assert(buffer);
+	
+	start = buffer;
+	while(*buffer){
+		FREE(*buffer);
+		buffer++;
+	}
+	FREE(start);
+}
+
+char* StrCpyEnvp(char* destination, const char* source)
+{
+	char *result = destination;
+	assert(destination != NULL && source != NULL);
+	
+	while(*source)
+	{
+		*destination = tolower(*source);
+		source++;
+		destination++;
+	}
+	
+	*destination = '\0';
+	
+	return result;
+}
+
+
+char *StrDupEnvp(const char *str){
+	
+	char* result = NULL; 
+	assert(str != NULL);
+	
+	result = (char*)malloc(strlen(str) + 1);
+	if(result == NULL){
+		return NULL;
+	}
+	
+	StrCpyEnvp(result, str);
+	printf("%s\n", result);
+	return result;
+	
+}
+
+int sizeOfArray(char** arr){
+	int size = 0;
+	assert(arr);
+	
+	while(*arr){
+		++size;
+		++arr;
+	}
+	return size;
 }
 
 void foo(int (*a)[4], int r){
@@ -56,10 +121,15 @@ void testJoesphos(){
 }
 
 int Joesphos(int num){ /* many num in code. should be more indicative */
-	int num_group = num; /* hard to understand what this int means */
 	int res = -1;
 	int* arr = NULL;
 	int kill = 0;
+	int num_group = 0;
+	if(num <= 0){
+		return -1;
+	}
+	num_group = num; /* hard to understand what this int means */
+	
 	
 	arr = (int*)calloc(num,sizeof(int)); /* why not using calloc? */
 	if(!arr){
