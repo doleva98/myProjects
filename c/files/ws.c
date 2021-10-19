@@ -5,7 +5,7 @@ int main()
 {
 
    ex1(); 
-   Logger("hello.txt");
+   Logger("h.txt");
 
    return 0;
 }
@@ -52,19 +52,15 @@ void Logger(char *nameFile)
 	FILE *stream = NULL;
 	printf("write here\n");
 	CALLOC(str, 256);
-	scanf("%s", str);
+
 	while(*str != 's')
 	{
-
-		stream = fopen(nameFile, "a");
-		if(!stream)
-		{
-			return;
-		}
+		fgets(str, 256, stdin);
+		/*stream = fopen(nameFile, "a");*/
+		OPENFILE(stream, nameFile, "a");
 		
-		fputs(str, stream);
-		fputs("\n", stream);
-		scanf("%s", str);
+		fprintf(stream,"%s", str);
+
 		fclose(stream);	
 	
 	}
