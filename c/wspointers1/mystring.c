@@ -29,7 +29,8 @@ int main()
 
 /****************************TESTS******************************/
 
-void testStrCmp(){
+void testStrCmp()
+{
 	char* a = "ZZdfdfdf";
 	char* b = "aZdfdfdf";
 	char* c = "aZdfdfdf";
@@ -37,19 +38,23 @@ void testStrCmp(){
 	ASSERT(StrCmp(a, b) < 0);
 	ASSERT(StrCmp(b,c) == 0);
 	
-	if(strcmp(a,d) < 0){
+	if(strcmp(a,d) < 0)
+	{
 		ASSERT(StrCmp(a, d) < 0);
-	}else{
-		if (strcmp(a,d) > 0){
+	}else
+	{
+		if (strcmp(a,d) > 0)
+		{
 			ASSERT(StrCmp(a, d) > 0);
 		} else {
-			ASSERT(StrCmp(a, d) == 0);
+			ASSERT(0 == StrCmp(a, d) );
 		}
 	}
 }
 
 
-void testStrLen(){
+void testStrLen()
+{
 	char* a = "dsjsdjs";
 	char* b = "";
 	ASSERT(StrLen(a) == strlen(a));
@@ -67,12 +72,12 @@ void testStrCpy()
 	char *b = NULL;
 	
 	b = (char*)malloc(strlen(a)+1);
-	if(b == NULL){
+	if(NULL == b){
 		return;
 	}
 	
 	d = (char*)malloc(strlen(a)+1);
-	if(d == NULL){
+	if(NULL == d){
 		return;
 	}
 
@@ -93,14 +98,14 @@ void testStrnCpy()
 	char *e = NULL;
 	
 	b = (char*)calloc(10,1);
-	if(b == NULL){
+	if(NULL == b){
 		return;
 	}
 	
 	c = StrnCpy(b, a, 9);
 	
 	d = (char*)calloc(10,1);
-	if(d == NULL){
+	if(NULL == d){
 		return;
 	}
 	
@@ -247,7 +252,7 @@ int StrCmp(const char* str1, const char* str2)
    assert(str1);
    assert(str2);
   
-   while(*str1){  /*why dont you check (*str1 && *str2)?*/
+   while(*str1){ 
       if(*str1 != *str2)
       {
          break;
@@ -255,7 +260,7 @@ int StrCmp(const char* str1, const char* str2)
       str1++;
       str2++;
    }
-   return *str1 - *str2; /*why do you have to change to unsinged char? you lose information if str1 is less than str2 (in original function it returns a negative value)*/
+   return *str1 - *str2;
 }
 
 
@@ -325,7 +330,8 @@ char *StrnCpy(char *destination, const char *source, size_t n)
 	
 }
 
-int StrCaseCmp(const char *str1, const char *str2){
+int StrCaseCmp(const char *str1, const char *str2)
+{
 	assert(str1 != NULL && str2 != NULL);
   
    	while(*str1){  /*why dont you check (*str1 && *str2)?*/
@@ -340,13 +346,16 @@ int StrCaseCmp(const char *str1, const char *str2){
 
 }
 
-char *StrChr(const char* str, int c){
+char *StrChr(const char* str, int c)
+{
 	char* current= (char *)str;
 	
 	assert(str != NULL);
 
-	while(*current != '\0'){
-		if(*current == c){
+	while(*current != '\0')
+	{
+		if(*current == c)
+		{
 			return current;
 		}
 		current++;
@@ -386,7 +395,7 @@ char* StrnCat (char* destination, const char* source, size_t num ){
 	size_t i = 0;
 	int dest_len = StrLen(destination);
 	assert(destination != NULL && source != NULL);
-	for(; source[i] != '\0' && i < num; ++i){
+	for(; '\0' != source[i] && i < num; ++i){
 		destination[dest_len + i] = source[i];
 	}
 	destination[dest_len + i] = '\0';
@@ -401,7 +410,7 @@ char *StrStr(const char *haystack, const char *needle){
 	assert(haystack != NULL && needle != NULL);
 	for(; i < StrLen(haystack) - StrLen(needle); ++i){
 	
-		if(haystack[i] == needle[0]){
+		if(needle[0] == haystack[i]){
 		
 			for(; j < StrLen(needle); ++j){
 				if(haystack[i+j] != needle[j]){
