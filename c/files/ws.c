@@ -52,28 +52,21 @@ void Logger(char *nameFile)
 	char *input = NULL;
 	FILE *fp = NULL;
 	int i;
-	const int NUM_OF_FUNCS = 5;
-	
-	typedef struct 
-	{	
-		char *str;
-		int (*CmpFunc)(char*, char*);
-		void (*OperationFunc)(FILE*)(char*)(char*);	
-	}funcLogger_t;	
-	
-	funcLogger_t FuncArray [NUM_OF_FUNCS]
+	STATUS_FUNC ReturnValue = 0;	
+	funcLogger_t *FuncArray = NULL;
+	CALLOC(FuncArray, 5);
 	
 	CALLOC(input, 256);
 	
-	FuncArray[0].str = "-remove";
+	FuncArray[0].str = "-remove\n";
 	FuncArray[0].CmpFunc = StrCmp;
 	FuncArray[0].OperationFunc = RemoveFile;	
 	
-	FuncArray[1].str = "-count";
+	FuncArray[1].str = "-count\n";
 	FuncArray[1].CmpFunc = StrCmp;
 	FuncArray[1].OperationFunc = CountLines;	
 
-	FuncArray[2].str = "-exit";
+	FuncArray[2].str = "-exit\n";
 	FuncArray[2].CmpFunc = StrCmp;
 	FuncArray[2].OperationFunc = ExitProgram;	
 	
@@ -86,34 +79,36 @@ void Logger(char *nameFile)
 	FuncArray[4].OperationFunc = WriteToFile;	
 	
 	printf("write here\n");
-	fgets(input, 256, stdin);
-	
-	while(*input != 's')
-	{
 	
 
-		OPENFILE(fp, nameFile, "a");
+	
+	while(TERMINATE_t != ReturnValue)
+	{
+		fgets(input, 256, stdin);
 		
-		for(i = 0; i < NUM_OF_FUNCS, ++i)
+		for(i = 0; i < 5; ++i)
 		{
-			if( 0 == FuncArray[i].CmpFunc(FuncArray[i].str, input)
+			if( 0 == FuncArray[i].CmpFunc(FuncArray[i].str, input))
 			{
-				FuncArray[i].OperationFunc(fp, nameFile, input);
+
+				ReturnValue = FuncArray[i].OperationFunc(fp, nameFile, input);
 				break;
 			}	
 		}
-		fgets(input, 256, stdin);
+
 	}
 	
-
+	FREE(FuncArray);
 	FREE(input);
 }
 
 int StrCmp(const char* str1, const char* str2)
 { 
+
+int diff = 0;
    assert(str1);
    assert(str2);
-  
+   
    while(*str1){ 
       if(*str1 != *str2)
       {
@@ -122,77 +117,94 @@ int StrCmp(const char* str1, const char* str2)
       str1++;
       str2++;
    }
-   return *str1 - *str2;
+   diff = *str1 - *str2;
+
+   return diff;
 }
 
-int isToFirst(const char* str1, const char* str2)
+
+int isToFirst(const char* str1,const char* str2)
 {
-	return !(*str1 == '<');
+	UNUSED(str1);
+	return !(*str2 == '<');
 }
 
-int AlwaysTrue(const char* str1, const char* str2)
+int AlwaysTrue(const char* str1,const char* str2)
 {
+	UNUSED(str1);
+	UNUSED(str2);
 	return 0;
 }
 
+/**************************************************/
+
 STATUS_FUNC RemoveFile(FILE* fp, char *FileName, char *input)
 {	
-	fclose(fp);	
+	UNUSED(fp);
+	UNUSED(input);
 	remove(FileName);
 	return SUCCESS_t;
 }
 
 STATUS_FUNC CountLines(FILE* fp, char *FileName, char *input)
 {
-    printf("%d", HowManyLines(fp));
-    fclose(fp);	
-    return SUCCESS_t;
-}
-
-STATUS_FUNC ExitProgram(FILE* fp, char *FileName, char *input)
-{
-	fclose(fp);
-	FREE(input);	
-	exit(1);
-    return SUCCESS_t;
-}
-
-STATUS_FUNC AddFirstToFile(FILE* fp, char *FileName, char *input)
-{
-	
-	fseek(fp, 0, SEEK_SET);
-	fprintf(fp,"%s", ++input);
-	fseek(fp, 0, SEEK_END);
-	
-	
-	fclose(fp);
-	return SUCCESS_t;	
-}
-
-STATUS_FUNC WriteToFile(FILE* fp, char *FileName, char *input)
-{
-	fprintf(fp,"%s", input);
-	fclose(fp);
-	return SUCCESS_t;	
-}
-
-int HowManyLines(FILE* fp)
-{
-	char ch = '\0';
+	char ch = '0';
 	int lines = 0;
-	while(!feof(fp))
+	OPENFILE(fp, FileName, "r");
+	UNUSED(FileName);
+	UNUSED(input);
+	
+	ch = fgetc(fp);
+	while((ch = fgetc(fp)) != EOF)
 	{
-	  ch = fgetc(fp);
 	  if(ch == '\n')
 	  {
 	    lines++;
 	  }
 	}
-	return lines;
+	printf("%d\n", lines);
+	fclose(fp);
+	    return SUCCESS_t;
 }
 
+STATUS_FUNC ExitProgram(FILE* fp, char *FileName, char *input)
+{
+	UNUSED(input);
+	UNUSED(FileName);
+	UNUSED(fp);
+    	return TERMINATE_t;
+}
 
+STATUS_FUNC AddFirstToFile(FILE* fp, char *FileName, char *input)
+{
+    FILE *temp_ptr = NULL;
+    char ch = '0';
+    
+    OPENFILE(fp, FileName, "r");
+    OPENFILE(temp_ptr, "temporary_file.txt", "a");
+    
+    fputs(++input, temp_ptr);
+    
+    while ((ch = fgetc(fp)) != EOF)
+    {
+        fputc(ch, temp_ptr);
+    }
+    
+    fclose(temp_ptr);
+    fclose(fp);
+    rename("temporary_file.txt", FileName);
 
+    return SUCCESS_t;	
+}
+
+STATUS_FUNC WriteToFile(FILE* fp, char *FileName, char *input)
+{
+	UNUSED(FileName);
+	OPENFILE(fp, FileName, "a");
+	fprintf(fp,"%s", input);
+	fclose(fp);
+	return SUCCESS_t;	
+}
 
 
 
