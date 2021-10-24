@@ -54,6 +54,7 @@ void Logger(char *nameFile)
 	int i;
 	STATUS_FUNC ReturnValue = 0;	
 	funcLogger_t *FuncArray = NULL;
+	
 	CALLOC(FuncArray, 5);
 	
 	CALLOC(input, 256);
