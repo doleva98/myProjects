@@ -44,7 +44,7 @@ static void *Memset(void *str, int c, size_t n)
 	size_t j = 0;
 	unsigned char toAdd = c & 0xFF;
 	void *p = str;
-	unsigned char bunch [sizeof(size_t)];
+	char bunch [8];
 	
 	assert(str);
 	
