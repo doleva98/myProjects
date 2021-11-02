@@ -80,16 +80,10 @@ size_t BitArrayCountOff(bitarray_t array)
 bitarray_t BitArrayRotR(bitarray_t array, size_t steps)
 {
 	size_t i = 0;
-	bitarray_t temp;
-	
-	if(steps % ARRAYSIZE == 0)
-	{
-		return array;
-	}
+	bitarray_t temp = BitArrayResetAll();
 		
 	for(i = 0; i < steps % ARRAYSIZE; ++i)
 	{
-		temp = BitArrayResetAll();
 		temp = array & 0x0000000000000001;
 		temp <<= 63;
 		array >>= 1;
@@ -103,16 +97,10 @@ bitarray_t BitArrayRotL(bitarray_t array, size_t steps)
 {
 
 	size_t i = 0;
-	bitarray_t temp;
-	
-	if(steps % ARRAYSIZE == 0)
-	{
-		return array;
-	}
+	bitarray_t temp = BitArrayResetAll();
 		
 	for(i = 0; i < steps % ARRAYSIZE; ++i)
 	{
-		temp = BitArrayResetAll();
 		temp = array & 0x8000000000000000;
 		temp >>= 63;
 		array <<= 1;
