@@ -38,10 +38,7 @@ extern void StackDestroy(Stack_t *stack)
 extern void StackPush(Stack_t *stack, void* new_element)
 {	
 	stack->a[stack->top] = new_element;
-	if(stack->top != 0)
-	{
-		++stack->top;
-	}
+	++stack->top;
 }
 
 /*Remove the last element */
@@ -53,7 +50,7 @@ extern void StackPop(Stack_t *stack)
 /*Return the value of the last element */
 extern void* StackPeek(Stack_t *stack)
 {
-	return stack->a[stack->top];
+	return stack->a[stack->top - 1];
 }
 
 /*Check if the array is empty, Return 0 or 1*/
@@ -73,3 +70,5 @@ extern size_t StackCapacity(Stack_t *stack)
 {
 	return stack->capacity;
 }
+
+
