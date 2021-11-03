@@ -3,8 +3,8 @@
 
 struct Stack
 {
-	int capacity;
-	int top;
+	size_t capacity;
+	size_t top;
 	void **a;
 };
 
@@ -36,9 +36,12 @@ extern void StackDestroy(Stack_t *stack)
 
 /*Add a new element to the top of the stack */
 extern void StackPush(Stack_t *stack, void* new_element)
-{
-	++stack->top;
+{	
 	stack->a[stack->top] = new_element;
+	if(stack->top != 0)
+	{
+		++stack->top;
+	}
 }
 
 /*Remove the last element */
