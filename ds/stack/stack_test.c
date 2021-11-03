@@ -16,27 +16,27 @@ int main() {
     	fprintf(stderr, "out of memory");
     	exit(1);
     }
-    
+
     strcpy(s, "Hello world");
     b = 5;
     f = 3;
     
     stack = StackCreate(5);
-    
+
     if(!(1 == StackIsEmpty(stack)))
     {
     	printf("fail in %d\n", __LINE__);
     }
-    
+
     StackPush(stack, s);
-    
+
     if(!(strcmp("Hello world", (char*)StackPeek(stack)) == 0))
     {
     	printf("fail in %d\n", __LINE__);
     }
     
     StackPush(stack, &b);
-    
+
     if(!(5 == *(int*)StackPeek(stack)))
     {
     	printf("fail in %d\n", __LINE__);
