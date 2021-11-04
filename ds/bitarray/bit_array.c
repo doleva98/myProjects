@@ -137,6 +137,50 @@ bitarray_t BitArrayToggleBit(bitarray_t array, size_t idx)
 	return array;
 }
 
+bitarray_t BitArrayLutMirror(bitarray_t array)
+{	
+
+	bitarray_t a [12];
+	a[0] = 0xFFFFFFFF00000000;
+	a[1] = 0x00000000FFFFFFFF;
+	a[2] = 0xFFFF0000FFFF0000;
+	a[3] = 0x0000FFFF0000FFFF;
+	a[4] = 0xFF00FF00FF00FF00;
+	a[5] = 0x00FF00FF00FF00FF;
+	a[6] = 0xF0F0F0F0F0F0F0F0;
+	a[7] = 0x0F0F0F0F0F0F0F0F;
+	a[8] = 0xCCCCCCCCCCCCCCCC;
+	a[9] = 0x3333333333333333;
+	a[10] = 0xAAAAAAAAAAAAAAAA;
+	a[11] = 0x5555555555555555;
+	
+	array = (array & a[0]) >> 32 | (array & a[1]) << 32;
+	array = (array & a[2]) >> 16 | (array & a[3]) << 16;
+	array = (array & a[4]) >> 8 | (array & a[5]) << 8;
+	array = (array & a[6]) >> 4 | (array & a[7]) << 4;
+	array = (array & a[8]) >> 2 | (array & a[9]) << 2;
+	array = (array & a[10]) >> 1 | (array & a[11]) << 1;
+	
+	return array;
+}
+
+extern size_t BitArrayCountOnLUT(bitarray_t array)
+{
+
+	unsigned char lookuptable[256] = { B6(0), B6(1), B6(1), B6(2) };
+	size_t count = 0;
+	assert(array);
+	count = lookuptable[array & 0xff] +
+	lookuptable[(array >> 8) & 0xff] +
+	lookuptable[(array >> 16) & 0xff] +
+	lookuptable[(array >> 24) & 0xff] +
+	lookuptable[(array >> 32) & 0xff] +
+	lookuptable[(array >> 40) & 0xff] +
+	lookuptable[(array >> 48) & 0xff] +
+	lookuptable[(array >> 56) & 0xff];
+	return count;
+
+}
 
 
 

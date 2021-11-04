@@ -69,6 +69,13 @@ extern char *BitArrayToString(bitarray_t array, char *dest);
 /* Toggle bit */
 extern bitarray_t BitArrayToggleBit(bitarray_t array, size_t idx);
 
+extern bitarray_t BitArrayLutMirror(bitarray_t array);
+
+/* Counts how many bits are on */ 
+extern size_t BitArrayCountOnLUT(bitarray_t array);
+
+
+
 
 #endif
 

@@ -30,7 +30,7 @@ extern Stack_t *StackCreate(size_t capacity)
 	}
 	stack->capacity = capacity;
 	stack->top = 0;
-	stack->a = (void**)((size_t)stack + sizeof(Stack_t));
+	stack->a = (void**)(stack + 1);
 	
 	return stack;
 }
@@ -46,11 +46,7 @@ extern void StackDestroy(Stack_t *stack)
 /*Add a new element to the top of the stack */
 extern void StackPush(Stack_t *stack, void* new_element)
 {	
-	assert(stack && new_element);
-	if(stack->top == stack->capacity)
-	{
-		return;
-	}
+	assert(stack && new_element && stack->top != stack->capacity);
 	stack->a[stack->top] = new_element;
 	++stack->top;
 }
@@ -58,11 +54,7 @@ extern void StackPush(Stack_t *stack, void* new_element)
 /*Remove the last element */
 extern void StackPop(Stack_t *stack)
 {	
-	assert(stack);
-	if(StackIsEmpty(stack))
-	{
-		return;
-	}
+	assert(stack && !StackIsEmpty(stack));
 	
 	--stack->top;
 }
@@ -70,11 +62,7 @@ extern void StackPop(Stack_t *stack)
 /*Return the value of the last element */
 extern void* StackPeek(Stack_t *stack)
 {
-	assert(stack);
-	if(StackIsEmpty(stack))
-	{
-		return NULL;
-	}
+	assert(stack && !StackIsEmpty(stack));
 
 	return stack->a[stack->top - 1];
 }

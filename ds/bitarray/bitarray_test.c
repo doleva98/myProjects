@@ -20,7 +20,7 @@ void testRotR();
 void testRotL();
 void testToString();
 void testToggleBit();
-
+void testMirrorLut();
 
 int main() {
 	testSetAll();
@@ -37,6 +37,7 @@ int main() {
 	testRotL();
 	testToString();
 	testToggleBit();
+	testMirrorLut();
    	return 0;
 }
 
@@ -304,6 +305,7 @@ void testToString(){
 }
 
 void testToggleBit(){
+
 	bitarray_t b = BitArrayResetAll();
 	char *c = "0000100000000000000000000000000000000000000000000000000000000000";
 	char *s = NULL;
@@ -317,6 +319,33 @@ void testToggleBit(){
 	b = BitArrayToggleBit(b, 59);
 	s = BitArrayToString(b,s);
 
+	if(!(strncmp(c, s, 64) == 0))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	
+	free(s);
+	s = NULL;
+}
+
+void testMirrorLut()
+{
+	bitarray_t b = BitArrayResetAll();
+	char *c = "1110000000000000000000000000000000000000000000000000000000000000";
+	char *s = NULL;
+	
+	s = (char*)calloc(sizeof(char),ARRAYSIZE + 1);
+	if(!s)
+	{
+		fprintf(stderr, "OUT OF MEMORY");
+		exit(1);
+	}
+	
+	b = BitArraySetOn(b, 0);
+	b = BitArraySetOn(b, 1);
+	b = BitArraySetOn(b, 2);
+	b = BitArrayLutMirror(b);
+	s = BitArrayToString(b,s);
 	if(!(strncmp(c, s, 64) == 0))
 	{
 		printf("fail in %d\n", __LINE__);

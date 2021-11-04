@@ -2,9 +2,6 @@
 #define UTILS_H
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -14,16 +11,24 @@
 #define ANSI_COLOR_BRIGHT_BLUE    "\x1b[36m"
 #define ANSI_COLOR_BLUE    "\x1b[34m"
 
+#define ERROR_LOGIC_MESSAGE "FAILED"
+
 #define ASSERT(expr) \
 do\
 { \
     	if (!(expr)) \
-        aFailed(__FILE__, __LINE__); \
+    		fprintf(stderr, ERROR_LOGIC_MESSAGE); \
 } while(0)
 
-void aFailed(char *file, int line){
-	printf(ANSI_COLOR_RED "\nFAIL in line %d, in file %s\n" ANSI_COLOR_RESET, line, file);
-} 
+
+#define FREE(p) \
+do \
+{ \
+  free(p); \
+  p = NULL; \
+} \
+while(0)
+
 
 
 
@@ -63,13 +68,6 @@ do \
 } \
 while(0)
 
-#define FREE(p) \
-do \
-{ \
-  free(p); \
-  p = NULL; \
-} \
-while(0)
 
 #define OPENFILE(p, f, s) \
 do \
@@ -90,6 +88,5 @@ while(0)
 
 
 
-   
 
 #endif
