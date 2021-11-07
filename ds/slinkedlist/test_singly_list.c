@@ -8,6 +8,7 @@ int main() {
     
 	slist_iter_t iter = SListBegin(list);
 	slist_iter_t iter2 = SListBegin(list);
+	slist_iter_t iter3 = SListBegin(list);
 	int a = 5;
 	char b [15] = "Dumbeldore";
 	int c = 100;
@@ -84,7 +85,24 @@ int main() {
 		printf("fail in %d\n", __LINE__);
 	}
 	
+	if(!(*(int*)SListIterGetData(iter3) == 5))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	SListRemove(iter3);/*b*/
+	
+	if(!(strcmp((char*)SListIterGetData(iter3),"Dumbeldore" ) == 0))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	
+	if(!(SListCount(list) == 1))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	
 	SListDestroy(list);
+	
 	
    return 0;
 }
