@@ -80,13 +80,13 @@ int main() {
 		printf("fail in %d\n", __LINE__);
 	}
 
-	if(!(*(int*)SListIterGetData(iter2) == 100))
+	if(!(strcmp((char*)SListIterGetData(iter2),"Dumbeldore" ) == 0))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
-	SListRemove(iter3);/*a*/
+	SListRemove(iter3);/*b*/
 	
-	if(!(*(int*)SListIterGetData(iter3) == 5))
+	if(!(strcmp((char*)SListIterGetData(iter3),"Dumbeldore" ) == 0))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
@@ -95,7 +95,8 @@ int main() {
 	{
 		printf("fail in %d\n", __LINE__);
 	}
-	
+
+
 	SListDestroy(list);
 	
 	

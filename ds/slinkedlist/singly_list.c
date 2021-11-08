@@ -18,7 +18,8 @@ struct SListNode
  slist_t *SListCreate()
 {
 	
-	slist_t *list = (slist_t*)calloc(1,sizeof(slist_t));
+	slist_t *list = NULL;
+	list = (slist_t*)calloc(1,sizeof(slist_t));
 	
 	if(!list)
 	{
@@ -96,11 +97,17 @@ struct SListNode
  }
  
  void SListRemove(slist_iter_t iter)
- {
- 	snode_t *temp = iter.node->next->next;
+ {	
+ 	snode_t *temp = iter.node->next;
  	assert(iter.node);
- 	free(iter.node->next);
- 	iter.node->next = temp;
+ 	if(NULL == iter.node->next)
+    	{
+        	return;
+    	}
+ 	iter.node->data = iter.node->next->data;
+ 	iter.node->next = iter.node->next->next;
+ 	
+ 	free(temp);
  }
  
  size_t SListCount(slist_t *list)
