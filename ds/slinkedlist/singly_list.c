@@ -25,11 +25,14 @@ struct SListNode
 		return NULL;
 	}	
 	
-	list->head = (snode_t*)calloc(1,sizeof(snode_t));
+	list->head = (snode_t*)calloc(1,sizeof(snode_t));/*dummy*/
 	if(!list->head)
 	{
 		return NULL;
 	}
+	
+	list->head->data = NULL;
+	list->head->next = NULL;
 	
 	list->IterHead = (slist_iter_t*)calloc(1,sizeof(slist_iter_t));
 	if(!list->IterHead)
@@ -58,7 +61,6 @@ struct SListNode
  	free(list->IterHead);
  	list->IterHead = NULL;
  	free(list);
- 	list = NULL;
  }
 
  slist_iter_t SListBegin(slist_t *list)
@@ -77,18 +79,20 @@ struct SListNode
 	return iter;
  }
  
- void SListInsert(slist_iter_t iter, void *item)
+ slist_iter_t SListInsert(slist_iter_t iter, void *item)
  {	
  	snode_t *temp = NULL; 
  	assert(iter.node);
  	temp = (snode_t*)calloc(1,sizeof(snode_t));
 	if(!temp)
 	{
-		return;
+		return iter;
 	}
-	temp->data = item; 
+	temp->data = iter.node->data; 
 	temp->next = iter.node->next;
 	iter.node->next = temp;
+	iter.node->data = item;
+	return iter;
  }
  
  void SListRemove(slist_iter_t iter)
@@ -128,8 +132,8 @@ struct SListNode
  
  void* SListIterGetData(slist_iter_t iter)
  {
- 	assert(iter.node->next);
- 	return iter.node->next->data;
+ 	assert(iter.node);
+ 	return iter.node->data;
  }
  
  

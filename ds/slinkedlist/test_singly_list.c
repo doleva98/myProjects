@@ -39,7 +39,7 @@ int main() {
 	}
 	
 	iter = SListIterNext(iter);
-	SListInsert(iter, b); /*a, b*/
+	SListInsert(iter, b); /*a, b */
 	
 	if(!(SListCount(list) == 2))
 	{
@@ -73,25 +73,20 @@ int main() {
 	}
 	
 	iter2 = SListIterNext(iter2);
-	SListRemove(iter2);/*a,b*/
+	SListRemove(iter2);/*a, b*/
 	
 	if(!(SListCount(list) == 2))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
-	
-	if(!(strcmp((char*)SListIterGetData(iter2),"Dumbeldore" ) == 0))
+
+	if(!(*(int*)SListIterGetData(iter2) == 100))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
+	SListRemove(iter3);/*a*/
 	
 	if(!(*(int*)SListIterGetData(iter3) == 5))
-	{
-		printf("fail in %d\n", __LINE__);
-	}
-	SListRemove(iter3);/*b*/
-	
-	if(!(strcmp((char*)SListIterGetData(iter3),"Dumbeldore" ) == 0))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
