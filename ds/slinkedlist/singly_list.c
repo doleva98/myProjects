@@ -2,6 +2,8 @@
 #include <assert.h>
 #include "singly_list.h"
 
+static int PlusOne(void* data, void* param);
+
 struct SList
 {
 	snode_t *head;
@@ -144,11 +146,47 @@ struct SListNode
  }
  
  
+slist_iter_t SListFind(slist_iter_t from, slist_iter_t to, match_func_t is_match_func, void *param)
+{
+	
+	for(;!SListIterIsEqual(from, to); from = SListIterNext(from))
+	{
+		if(is_match_func(from.node->data, param))
+		{
+			return from;
+		}
+	}	
+	return from;
+}
+
+int SListForEach(slist_iter_t from, slist_iter_t to, action_func_t action_func, void *param)
+{
+
+	for(;!SListIterIsEqual(from, to); from = SListIterNext(from))
+	{
+		if(!action_func(from.node->data, param))
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
  
+  size_t SListCountForEach(slist_t *list)
+  {
+  	size_t count = 0;
+  	
+	SListForEach(SListBegin(list), SListEnd(list), PlusOne, &count);
+	return count;
+  }
  
- 
- 
- 
+static int PlusOne(void* data, void* param)
+{
+	(void)data;
+	++*(size_t*)param;
+	return 1;
+}
+
  
  
  

@@ -6,6 +6,10 @@
 
 typedef struct SList slist_t;
 typedef struct SListNode snode_t;
+
+typedef int (*action_func_t)(void *data, void *param);
+typedef int (*match_func_t)(void *data, void *param);
+
 typedef struct
 {
 	snode_t* node;
@@ -28,5 +32,9 @@ extern slist_iter_t SListIterNext(slist_iter_t iter);
 extern int SListIterIsEqual(slist_iter_t iter1, slist_iter_t iter2);
 extern void* SListIterGetData(slist_iter_t iter);
 
+slist_iter_t SListFind(slist_iter_t from, slist_iter_t to, match_func_t is_match_func, void *param);
+int SListForEach(slist_iter_t from, slist_iter_t to, action_func_t action_func, void *param);
+
+  size_t SListCountForEach(slist_t *list);
 
 #endif
