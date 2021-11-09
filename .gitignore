@@ -2,3 +2,5 @@
 !*.h
 !*.c
 !*/
+!Makefile
+!makefile
