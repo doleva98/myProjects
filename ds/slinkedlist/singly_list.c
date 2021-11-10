@@ -12,7 +12,7 @@ struct SList
 
 struct SListNode
 {
-	void *data;
+	const void *data;
 	snode_t *next;
 };
 
@@ -82,7 +82,7 @@ struct SListNode
 	return iter;
  }
  
- slist_iter_t SListInsert(slist_iter_t iter, void *item)
+ slist_iter_t SListInsert(slist_iter_t iter, const void *item)
  {	
  	snode_t *temp = NULL; 
  	assert(iter.node);
@@ -142,7 +142,7 @@ struct SListNode
  void* SListIterGetData(slist_iter_t iter)
  {
  	assert(iter.node);
- 	return iter.node->data;
+ 	return (void*)iter.node->data;
  }
  
  
@@ -151,7 +151,7 @@ slist_iter_t SListFind(slist_iter_t from, slist_iter_t to, match_func_t is_match
 	
 	for(;!SListIterIsEqual(from, to); from = SListIterNext(from))
 	{
-		if(is_match_func(from.node->data, param))
+		if(is_match_func((void*)from.node->data, param))
 		{
 			return from;
 		}
@@ -164,7 +164,7 @@ int SListForEach(slist_iter_t from, slist_iter_t to, action_func_t action_func, 
 
 	for(;!SListIterIsEqual(from, to); from = SListIterNext(from))
 	{
-		if(!action_func(from.node->data, param))
+		if(!action_func((void*)from.node->data, param))
 		{
 			return 0;
 		}
