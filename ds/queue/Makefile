@@ -1,30 +1,42 @@
-
-#write target name here:
-TARGET = queue
-
-SRCS=$(wildcard *.c)
-OBJS=$(patsubst %.c,%.o,$(SRCS))
-
 CC = gcc
-CFLAGS = -ansi -pedantic-errors -Wall -Wextra -g
-
-all : $(TARGET)
-
-$(TARGET) : $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
-	
-%.o : %.c
-	$(CC) $(CFLAGS) -c $<
-	
-		
-.PHONY : clean
-clean : 
-	rm $(TARGET) $(OBJS)
-	
-#write o files and theire prerequisites (headers)
-# .o : .h	
-queue.o : queue.h ../singly_list/singly_list.h
-queue_tests.o: queue.h
+CFLAGS = -ansi -pedantic-errors -Wall -Wextra
+DEBUG = -g
+SRC = queue.c test_queue.c 
+PROTECTEDOBJ = ../obj/singly_list.o
+OBJ = $(filter %.o, $(SRC:%.c=../obj/%.o))
+OBJ_DEBUG = $(SRC:.c=.dbg.o)
 
 
-	
+queue.out :$(OBJ) 
+	@$(CC) $(CFLAGS) $(OBJ) $(PROTECTEDOBJ) -o queue.out
+
+../obj/%.o: %.c 
+	@$(CC) $(CFLAGS) -c -o $(@D)/$(*F).o $< 
+
+%.dbg.o: %.c 
+	@$(CC) $(CFLAGS) $(DEBUG) $< -c 
+
+
+
+.PHONY: clean
+
+clean:
+	rm $(OBJ) *.out
+
+.PHONY: all
+all: $(SRC) 
+	@$(CC) $(CFLAGS) $(DEBUG) $(SRC) 
+
+debug :$(OBJ_DEBUG) 
+	@$(CC) $(CFLAGS) $(DEBUG) $(OBJ) -o  debug.out
+
+
+queue.ar: $(OBJ)
+	ar -r archive $(OBJ)
+
+
+
+queue.o : ../singly_list/singly_list.h queue.h
+test_queue.o : queue.h
+../obj/singly_list.o : ../slinkedlist/singly_list.c
+
