@@ -1,3 +1,7 @@
+/*hello guys this is a test for circular queue
+if it doesnt print anything it is ok (slava style)
+credit for Daniel and Dolev*/
+
 #include <stdio.h>
 #include "circular_buffer.h"
 
@@ -24,17 +28,17 @@ int main()
 		printf("fail in %d\n", __LINE__);
 	}
 	
-	if(!(CBufferWrite(cbuffer, &a[0], 4) == 4))/*4000*/
+	if(!(CBufferWrite(cbuffer, &a[0], 4) == 0))/*4000*/
 	{
 		printf("fail in %d\n", __LINE__);
 	}
 	
-	if(!(CBufferWrite(cbuffer, &a[1], 4) == 4))/*4000, 16*/
+	if(!(CBufferWrite(cbuffer, &a[1], 4) == 0))/*4000, 16*/
 	{
 		printf("fail in %d\n", __LINE__);
 	}
 	
-	if(!(CBufferRead(cbuffer, &test, 4) == 4))/*16*/
+	if(!(CBufferRead(cbuffer, &test, 4) == 0))/*16*/
 	{
 		printf("fail in %d\n", __LINE__);
 	}
@@ -43,13 +47,12 @@ int main()
 	{
 		printf("fail in %d\n", __LINE__);
 	}
-
 	if(!(CBufferFreeSpace(cbuffer) == 6))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
 	
-	if(!(CBufferWrite(cbuffer, &a[2], 4) == 4))/*16, -650*/
+	if(!(CBufferWrite(cbuffer, &a[2], 4) == 0))/*16, -650*/
 	{
 		printf("fail in %d\n", __LINE__);
 	}
@@ -59,7 +62,7 @@ int main()
 		printf("fail in %d\n", __LINE__);
 	}
 	
-	if(!(CBufferRead(cbuffer, &test, 4) == 4))/*-650*/
+	if(!(CBufferRead(cbuffer, &test, 4) == 0))/*-650*/
 	{
 		printf("fail in %d\n", __LINE__);
 	}
@@ -74,12 +77,12 @@ int main()
 		printf("fail in %d\n", __LINE__);
 	}
 	
-	if(!(CBufferWrite(cbuffer, &a[0], 4) == 4))/*-650, 4000*/
+	if(!(CBufferWrite(cbuffer, &a[0], 4) == 0))/*-650, 4000*/
 	{
 		printf("fail in %d\n", __LINE__);
 	}
 	
-	if(!(CBufferRead(cbuffer, &test, 4) == 4))/*4000*/
+	if(!(CBufferRead(cbuffer, &test, 4) == 0))/*4000*/
 	{
 		printf("fail in %d\n", __LINE__);
 	}

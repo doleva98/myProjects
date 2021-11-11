@@ -25,8 +25,8 @@ cbuffer_t *CBufferCreate(size_t size)
 	}
 	cbuffer->size = 0;
 	cbuffer->capacity = size;
-	cbuffer->front = size;
-	cbuffer->rear = size;
+	cbuffer->front = 0;
+	cbuffer->rear = 0;
 	return cbuffer;
 }
 
@@ -40,6 +40,7 @@ void CBufferDestroy(cbuffer_t *cbuffer)
 /* write to a circular buffer without overwrite return 0 to cnt value*/
 ssize_t CBufferWrite(cbuffer_t *cbuffer, const void *buf, size_t cnt)
 {	
+	ssize_t res = 0;
 	size_t howMuch;
 	assert(cbuffer);
 	assert(buf);
@@ -51,23 +52,26 @@ ssize_t CBufferWrite(cbuffer_t *cbuffer, const void *buf, size_t cnt)
 	
 	if(cnt > CBufferFreeSpace(cbuffer))
 	{
-		return -1;
+		cnt = CBufferFreeSpace(cbuffer);
+		res = cnt;
 	}
 	
 	howMuch = cbuffer->capacity - cbuffer->rear;
 	cbuffer->size += cnt;
 	if(cnt < howMuch)
 	{
-		memcpy(cbuffer + cbuffer->rear, buf, cnt);
+		memcpy(cbuffer->arr + cbuffer->rear, buf, cnt);
 		cbuffer->rear += cnt;
-		return cnt;
+		cbuffer->rear = cbuffer->rear % cbuffer->capacity;
+		return res;
 	}
 	else
 	{
-		memcpy(cbuffer + cbuffer->rear, buf, howMuch);
-		memcpy(cbuffer + 3, buf, cnt - howMuch);
+		memcpy(cbuffer->arr + cbuffer->rear, buf, howMuch);
+		memcpy(cbuffer->arr, buf, cnt - howMuch);
 		cbuffer->rear = cnt - howMuch;
-		return cnt;
+		cbuffer->rear = cbuffer->rear % cbuffer->capacity;
+		return res;
 	}
 	
 	return -1;
@@ -89,16 +93,18 @@ ssize_t CBufferRead(cbuffer_t *cbuffer, void *buf, size_t cnt)
 	cbuffer->size -= cnt;
 	if(cnt < howMuch)
 	{
-		memcpy(buf, cbuffer + cbuffer->front, cnt);
+		memcpy(buf, cbuffer->arr + cbuffer->front, cnt);
 		cbuffer->front += cnt;
-		return cnt;
+		cbuffer->front = cbuffer->front % cbuffer->capacity;
+		return 0;
 	}
 	else
 	{
-		memcpy(buf,cbuffer + cbuffer->front, howMuch);
-		memcpy(buf, cbuffer + 3, cnt - howMuch);
+		memcpy(buf,cbuffer->arr + cbuffer->front, howMuch);
+		memcpy(buf, cbuffer->arr, cnt - howMuch);
 		cbuffer->front = cnt - howMuch;
-		return cnt;
+		cbuffer->front = cbuffer->front % cbuffer->capacity;
+		return 0;
 	}
 	return -1;
 }
