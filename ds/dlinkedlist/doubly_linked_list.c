@@ -272,8 +272,8 @@ dlist_iter_t DListSplice(dlist_iter_t where,
 	else
 	{
 		if(tempAfter->next){
-		prevlist->head = tempAfter;
-		prevlist->IterHead->node = tempAfter;
+			prevlist->head = tempAfter;
+			prevlist->IterHead->node = tempAfter;
 		} 
 	}
 	
