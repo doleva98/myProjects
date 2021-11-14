@@ -4,6 +4,14 @@
 
 void testDoubly();
 void testDoubly2();
+void TestSplice1();
+void TestSplice2();
+void TestSplice3();
+void TestSplice4();
+void TestSplice5();
+void TestSplice6();
+void TestSplice7();
+void TestSplice8();
 
 typedef struct 
 {
@@ -200,6 +208,17 @@ int main() {
 	
 	testDoubly();
 	testDoubly2();
+	puts("");
+	puts("MATAN TESTS");
+	puts("");
+	TestSplice1();
+	TestSplice2();
+	TestSplice3();
+	TestSplice4();
+	TestSplice5();
+	TestSplice6();
+	TestSplice7();
+	TestSplice8();
    return 0;
 }
 
@@ -340,5 +359,242 @@ void testDoubly2()
 	DListDestroy(list2);
 }
 
+/*MATTTTTAAANNNN*/
+int PrintAll (void *data, void *param)
+{
+	if	(NULL == data || NULL == param)
+	{
+		return 0;
+	}
+	printf("%d ", *(int*)data);
+	return 1;
+}
 
+
+void DListPrint(dlist_t *list)
+{
+	int x = 3;
+	action_func_t print = PrintAll;
+	printf("List Elements:          ");
+	DListForEach(DListBegin(list), DListEnd(list), print, &x);
+	printf("\n");
+}
+
+
+
+void TestSplice1()
+{
+	dlist_iter_t iter;
+	int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+	dlist_t *list = DListCreate();
+	iter = DListBegin(list);
+	DListInsert(iter, &a);
+	DListInsert(iter, &b);		
+	DListInsert(iter, &c);	
+	DListInsert(iter, &d);
+	DListInsert(iter, &e);
+	DListInsert(iter, &f);
+	
+	puts("Splice test 1");
+	puts("before:");
+	DListPrint(list);
+	puts("after:");
+	DListSplice(DListIterNext(DListBegin(list)), DListIterNext(DListIterNext(DListBegin(list))), DListIterPrev(DListEnd(list)));	
+	DListPrint(list);
+
+	puts("###");
+# if 0
+# endif
+	DListDestroy(list);
+}
+
+
+void TestSplice2()
+{
+	dlist_iter_t iter;
+	int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+	dlist_t *list = DListCreate();
+	iter = DListBegin(list);
+	DListInsert(iter, &a);
+	DListInsert(iter, &b);		
+	DListInsert(iter, &c);	
+	DListInsert(iter, &d);
+	DListInsert(iter, &e);
+	DListInsert(iter, &f);
+	
+	puts("Splice test 2");
+	puts("before:");
+	DListPrint(list);
+	puts("after:");
+	DListSplice(DListEnd(list), DListIterNext(DListBegin(list)), DListIterPrev(DListIterPrev(DListEnd(list))));
+	DListPrint(list);
+	puts(" ###");
+
+# if 0
+# endif
+	DListDestroy(list);
+}
+
+
+void TestSplice3()
+{
+	dlist_iter_t iter;
+	int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+	dlist_t *list = DListCreate();
+	iter = DListBegin(list);
+	DListInsert(iter, &a);
+	DListInsert(iter, &b);		
+	DListInsert(iter, &c);	
+	DListInsert(iter, &d);
+	DListInsert(iter, &e);
+	DListInsert(iter, &f);
+
+	puts("Splice test 3");
+	puts("before:");
+	DListPrint(list);
+	puts("after:");
+	DListSplice(DListBegin(list), DListIterNext(DListBegin(list)), DListIterPrev(DListIterPrev(DListEnd(list))));
+	DListPrint(list);
+
+	puts("###");
+# if 0
+# endif
+	DListDestroy(list);
+}
+
+
+
+void TestSplice4()
+{
+	dlist_iter_t iter;
+	int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+	dlist_t *list = DListCreate();
+	iter = DListBegin(list);
+	DListInsert(iter, &a);
+	DListInsert(iter, &b);		
+	DListInsert(iter, &c);	
+	DListInsert(iter, &d);
+	DListInsert(iter, &e);
+	DListInsert(iter, &f);
+	
+	puts("Splice test 4");
+	puts("before:");
+	DListPrint(list);
+	puts("after:");
+	DListSplice(DListBegin(list), DListIterNext(DListBegin(list)), DListIterPrev(DListEnd(list)));
+	DListPrint(list);
+	puts("###");
+# if 0
+# endif
+	DListDestroy(list);
+}
+
+
+void TestSplice5()
+{
+	dlist_iter_t iter;
+	int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+	dlist_t *list = DListCreate();
+	iter = DListBegin(list);
+	DListInsert(iter, &a);
+	DListInsert(iter, &b);		
+	DListInsert(iter, &c);	
+	DListInsert(iter, &d);
+	DListInsert(iter, &e);
+	DListInsert(iter, &f);
+
+	puts("Splice test 5");
+	puts("before:");
+	DListPrint(list);
+	puts("after:");
+	
+	DListSplice(DListBegin(list), DListIterNext(DListIterNext(DListBegin(list))), DListIterPrev(DListEnd(list)));
+	DListPrint(list);
+	puts("###");
+# if 0
+# endif
+	DListDestroy(list);
+}
+
+
+
+void TestSplice6()
+{
+	dlist_iter_t iter;
+	int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+	dlist_t *list = DListCreate();
+	iter = DListBegin(list);
+	DListInsert(iter, &a);
+	DListInsert(iter, &b);		
+	DListInsert(iter, &c);	
+	DListInsert(iter, &d);
+	DListInsert(iter, &e);
+	DListInsert(iter, &f);
+	
+	puts("Splice test 6");
+	puts("before:");
+	DListPrint(list);
+	puts("after:");
+	
+	DListSplice(DListEnd(list), DListBegin(list), DListIterPrev(DListIterPrev(DListEnd(list))));
+	DListPrint(list);
+	puts("###");
+# if 0
+# endif
+	DListDestroy(list);
+}
+
+
+void TestSplice7()
+{
+	dlist_iter_t iter;
+	int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+	dlist_t *list = DListCreate();
+	iter = DListBegin(list);
+	DListInsert(iter, &a);
+	DListInsert(iter, &b);		
+	DListInsert(iter, &c);	
+	DListInsert(iter, &d);
+	DListInsert(iter, &e);
+	DListInsert(iter, &f);
+	
+	puts("Splice test 7");
+	puts("before:");
+	DListPrint(list);
+	puts("after:");
+	
+	DListSplice(DListEnd(list), DListBegin(list), DListIterPrev(DListIterPrev(DListIterPrev(DListEnd(list)))));
+	DListPrint(list);
+	puts("###");
+# if 0
+# endif
+	DListDestroy(list);
+}
+
+
+void TestSplice8()
+{
+	dlist_iter_t iter;
+	int a = 1, b = 2, c = 3, d = 4, e = 5, f = 6;
+	dlist_t *list = DListCreate();
+	iter = DListBegin(list);
+	DListInsert(iter, &a);
+	DListInsert(iter, &b);		
+	DListInsert(iter, &c);	
+	DListInsert(iter, &d);
+	DListInsert(iter, &e);
+	DListInsert(iter, &f);
+	
+	puts("Splice test 8");
+	puts("before:");
+	DListPrint(list);
+	puts("after:");
+	
+	DListSplice(DListEnd(list), DListBegin(list), DListIterPrev(DListEnd(list)));
+	DListPrint(list);
+	puts("###");
+# if 0
+# endif
+	DListDestroy(list);
+}
 

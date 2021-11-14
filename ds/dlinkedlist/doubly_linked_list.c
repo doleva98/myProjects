@@ -69,7 +69,8 @@ struct DListNode
  }
 
  dlist_iter_t DListBegin(dlist_t *list)
- {
+ { 	 
+ 
  	 assert(list);
  	return *list->IterHead;
  }
@@ -147,7 +148,7 @@ struct DListNode
  	return iter;
  }
  
- extern dlist_iter_t DListIterPrev(dlist_iter_t iter)
+dlist_iter_t DListIterPrev(dlist_iter_t iter)
  {
   	assert(iter.node);
 
@@ -162,7 +163,7 @@ struct DListNode
  
  void* DListIterGetData(dlist_iter_t iter)
  {
- 	assert(iter.node);
+
  	return (void*)iter.node->data;
  }
  
@@ -218,11 +219,13 @@ dlist_iter_t DListPushFront(dlist_t *list, const void *data)
 	DListInsert(DListBegin(list), data);
 	return DListBegin(list);
 }
+
 dlist_iter_t DListPushBack(dlist_t *list, const void *data)
 {
 	DListInsert(DListEnd(list), data);
 	return DListEnd(list);
 }
+
 void *DListPopFront(dlist_t *list)
 {
 	dlist_iter_t iter = DListBegin(list);
@@ -230,6 +233,7 @@ void *DListPopFront(dlist_t *list)
 	DListRemove(iter);
 	return data;
 }
+
 void *DListPopBack(dlist_t *list)
 {
 	void *data = NULL;
@@ -246,6 +250,7 @@ dlist_iter_t DListSplice(dlist_iter_t where,
 {
 	dnode_t *tempBefore = begin.node->prev;
 	dnode_t *tempAfter = end.node->next;
+
 	if(where.node->prev)
 	{
 		where.node->prev->next = begin.node;
