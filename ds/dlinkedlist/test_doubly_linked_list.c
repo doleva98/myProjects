@@ -62,11 +62,6 @@ int main() {
 	person_t p1, p2, p3;
     	dlist_iter_t iter4, iter5;
 	dlist_t* list2;
-	
-	if(!(DListIterIsEqual(iter, iter2) == 1))
-	{
-		printf("fail in %d\n", __LINE__);
-	}
 		
 	
 	

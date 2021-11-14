@@ -12,6 +12,7 @@ typedef int (*match_func_t)(void *data, void *param);
 
 typedef struct
 {
+	dlist_t *list;
 	dnode_t* node;
 } dlist_iter_t;
 

@@ -17,30 +17,30 @@ OBJ_DEBUG = $(SRC:.c=.dbg.o)
 TARGET = doubly_linked_list.out
 ######
 
-$(TARGET) :$(OBJ) 
+$(TARGET) : $(OBJ) 
 	@$(CC) $(CFLAGS) $(OBJ) $(PROTECTEDOBJ) -o $(TARGET)
 
-../obj/%.o: %.c 
+../obj/%.o : %.c 
 	@$(CC) $(CFLAGS) -c -o $(@D)/$(*F).o $< 
 
-%.dbg.o: %.c 
+%.dbg.o : %.c 
 	@$(CC) $(CFLAGS) $(DEBUG) $< -c 
 
 
 
-.PHONY: clean
-clean:
+.PHONY : clean
+clean :
 	rm $(OBJ) $(TARGET)
 
-.PHONY: all
-all: $(SRC) $(PROTECTEDOBJ)
+.PHONY : all
+all : $(SRC) $(PROTECTEDOBJ)
 	@$(CC) $(CFLAGS) $(DEBUG) $(SRC) 
 
-debug :$(OBJ_DEBUG) 
+debug : $(OBJ_DEBUG) 
 	@$(CC) $(CFLAGS) $(DEBUG) $(OBJ) $(PROTECTEDOBJ) -o  debug.out
 
 
-queue.ar: $(OBJ)
+queue.ar : $(OBJ)
 	ar -r archive $(OBJ) $(PROTECTEDOBJ)
 
 #write here the o files that you will be compiled here and its prerequisites

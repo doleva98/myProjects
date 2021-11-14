@@ -45,6 +45,7 @@ struct DListNode
 		return NULL;
 	}
 	list->IterHead->node = list->head;
+	list->IterHead->list = list;
 	return list;
 }
 
@@ -70,7 +71,6 @@ struct DListNode
 
  dlist_iter_t DListBegin(dlist_t *list)
  { 	 
- 
  	 assert(list);
  	return *list->IterHead;
  }
@@ -248,6 +248,7 @@ dlist_iter_t DListSplice(dlist_iter_t where,
                          dlist_iter_t begin, 
                          dlist_iter_t end)
 {
+	dlist_t *prevlist = begin.list;
 	dnode_t *tempBefore = begin.node->prev;
 	dnode_t *tempAfter = end.node->next;
 
@@ -255,23 +256,32 @@ dlist_iter_t DListSplice(dlist_iter_t where,
 	{
 		where.node->prev->next = begin.node;
 		begin.node->prev = where.node->prev;
-	}                  
+	}    
+	else
+	{
+		where.list->head = begin.node;
+		where.list->IterHead->node = begin.node;
+	}         
+
 	where.node->prev = end.node;
 	end.node->next = where.node;
 	if(tempBefore)
 	{
 		tempBefore->next = tempAfter;
 	}
-	if(tempAfter)
+	else
 	{
-		tempAfter->prev = tempBefore;
+		if(tempAfter->next){
+		prevlist->head = tempAfter;
+		prevlist->IterHead->node = tempAfter;
+		} 
 	}
+	
 	return end;
 	
 }
 
- 
- 
+
  
  
 
