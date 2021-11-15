@@ -3,7 +3,7 @@ CFLAGS = -ansi -pedantic-errors -Wall -Wextra
 DEBUG = -g
 
 #write here all the c files
-SRC = 
+SRC = circular_buffer.c test_circular_buffer.c
 #####
 
 #write here all the obj files in the obj directory that you need
@@ -14,7 +14,7 @@ OBJ = $(filter %.o, $(SRC:%.c=../obj/%.o))
 OBJ_DEBUG = $(SRC:.c=.dbg.o)
 
 #write here the target name
-TARGET = 
+TARGET = circular_buffer.out
 ######
 
 $(TARGET) :$(OBJ) 
@@ -45,7 +45,8 @@ queue.ar: $(OBJ)
 
 #write here the o files that you will be compiled here and its prerequisites
 
-
+circular_buffer.o : circular_buffer.h
+test_circular_buffer.o : circular_buffer.h
 
 ######
 

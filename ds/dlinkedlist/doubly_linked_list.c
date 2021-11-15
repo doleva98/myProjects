@@ -32,6 +32,7 @@ struct DListNode
 	list->head = (dnode_t*)calloc(1,sizeof(dnode_t));/*dummy*/
 	if(!list->head)
 	{
+		free(list);
 		return NULL;
 	}
 	
@@ -42,6 +43,8 @@ struct DListNode
 	list->IterHead = (dlist_iter_t*)calloc(1,sizeof(dlist_iter_t));
 	if(!list->IterHead)
 	{
+		free(list->head);
+		free(list);
 		return NULL;
 	}
 	list->IterHead->node = list->head;

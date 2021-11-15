@@ -18,7 +18,7 @@ struct CBuffer
 cbuffer_t *CBufferCreate(size_t size)
 {
 	
-	cbuffer_t *cbuffer = (cbuffer_t*)calloc(size + sizeof(cbuffer_t),1);
+	cbuffer_t *cbuffer = (cbuffer_t*)calloc(size + sizeof(cbuffer_t) - 8,1);
 	if(!cbuffer)
 	{
 		return NULL;
