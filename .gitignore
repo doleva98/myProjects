@@ -1,6 +1,20 @@
+# this will exclude all the files
+# so we need to include the types that we want to upload (exclude them from this rule)
 *
-!*.h
+
+# we start with a '!', to negate the pattern
+# so this will exclude all the directory from the above rule, viz. to upload them
+!/**/
+
+#ignore node_modules folder
+node_modules
+
+# Source files
 !*.c
-!*/
-!Makefile
-!makefile
+!*.cpp
+!*.h
+!*.hpp
+
+# Specific files
+!.gitignore
+![mM]akefile 
