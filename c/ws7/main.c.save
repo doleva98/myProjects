@@ -1,0 +1,12 @@
+#include "g.h"
+
+int main()
+{
+
+	printf("%d", g_s);
+	Foo();
+	
+
+	return 0;
+}
+        printf("%d", g_s);
