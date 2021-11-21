@@ -8,7 +8,7 @@ typedef struct SortedList sorted_list_t;
 
 typedef int (*is_before_func_t)(const void *new_elem, const void *curr_elem, const void *param);
 typedef int (*act_func_t)(void *data, void *param);
-/*typedef int (*match_func_t)(void *data, void *param); */
+/*typedef int (*match_func_t)(void *data, void *param);*/
 
 typedef struct
 {
@@ -39,7 +39,9 @@ extern sorted_list_t *SortedListInsert(sorted_list_t *list, const void *item);
 extern void SortedListRemove(sorted_list_iter_t which);
 
 extern sorted_list_iter_t SortedListFind(sorted_list_iter_t from, sorted_list_iter_t to, const void *what);
-/*sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from, sorted_list_iter_t to, match_func_t is_match_func, void *param); */
+
+sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from, sorted_list_iter_t to, match_func_t is_match_func, void *param); 
+
 extern int SortedListForEach(sorted_list_iter_t from, sorted_list_iter_t to, act_func_t action_func, void *param);
 
 extern size_t SortedListSize(sorted_list_t *list);

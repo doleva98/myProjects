@@ -1,3 +1,33 @@
+/*
+output:
+
+----------------GOOD GUYS-----------------
+Dumbeldore is number 1
+Harry Potter is number 2
+Ronald Wiseley is number 3
+Hermione Granger is number 8
+-------------HAGRID COMES----------------
+Dumbeldore is a wizard is number 1
+Harry Potter is a wizard is number 2
+Ronald Wiseley is a wizard is number 3
+Hermione Granger is a wizard is number 8
+---------------BAD GUYS-----------------
+a The Death Eater is number 0
+Peter Pettigrew is number 2
+Lord Voldemort is number 5
+Dolores Umbridge is number 7
+---------------FINAL BATTLE-----------------
+a The Death Eater is number 0
+Dumbeldore is a wizard is number 1
+Peter Pettigrew is number 2
+Harry Potter is a wizard is number 2
+Ronald Wiseley is a wizard is number 3
+Lord Voldemort is number 5
+Dolores Umbridge is number 7
+Hermione Granger is a wizard is number 8
+
+*/
+
 #include <stdio.h>
 #include "sorted_list.h"
 #include "string.h"
@@ -10,6 +40,7 @@ typedef struct
 static int IsLower(const void *new_elem, const void *curr_elem, const void *param);
 static int print(void *data, void *param);
 static int catAString(void *data, void *param);
+static int match(void *data, void *param);
 int main()
 {
 	int IsUpParam = 1;
@@ -20,7 +51,7 @@ int main()
 	person_t p3;	
 	person_t p4;	
 	person_t p5;
-	
+	int wow;
 	person_t p6;
 	person_t p7;
 	person_t p8;
@@ -201,7 +232,15 @@ int main()
 	}
 	
 	SortedListForEach(SortedListBegin(list), SortedListEnd(list), print, NULL);
+	wow = 3;
 	
+	if(!(strcmp(((person_t*)SortedListIterGetData(SortedListFindIf(SortedListBegin(list), SortedListEnd(list), match, &wow)))->name, "Ronald Wiseley is a wizard") == 0))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	
+	SortedListDestroy(list);
+	SortedListDestroy(list2);
 	return 0;
 }
 
@@ -237,6 +276,15 @@ static int catAString(void *data, void *param)
 {
 	strcat(((person_t*)data)->name, (char*)param);
 	return 1;
+}
+
+static int match(void *data, void *param)
+{
+	int num1, num2;
+	
+	num1 = ((person_t*)data)->numId;
+	num2 = *(int*)param;
+	return num1 == num2;
 }
 
 

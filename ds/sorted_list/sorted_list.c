@@ -132,6 +132,19 @@ sorted_list_t *SortListMerge(sorted_list_t *dest_list, sorted_list_t *src_list)
 	return dest_list;
 }
 
+sorted_list_iter_t SortedListFindIf(sorted_list_iter_t from, sorted_list_iter_t to, match_func_t is_match_func, void *param)
+{
+	while(!SortedListIterIsEqual(from, to))
+	{
+		if(is_match_func(SortedListIterGetData(from), param))
+		{
+			return from;
+		}
+		from = SortedListIterNext(from);
+	}
+	return SortedListEnd(from.list);
+}
+
 
 
 

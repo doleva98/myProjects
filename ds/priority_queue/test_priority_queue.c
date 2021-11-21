@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "priority_queue.h"
 #include "string.h"
+#include <assert.h>
+
 
 typedef struct
 {
@@ -12,6 +14,19 @@ typedef struct
 static int IsLower(const void *new_elem, const void *curr_elem, const void *param);
 static int match(const void *data, const void *param);
 
+typedef struct
+{
+	int priority;
+	int assignment_code;
+} assignment_t;
+
+enum priorities{URGENT, CASUAL, NON_URGENT};
+
+int Match(const void *curr_item, const void *param);
+int Compare(const void *new_elem, const void *curr_elem, const void *param);
+void PrintJob(assignment_t *job);
+
+
 int main()
 {
 	int IsUpParam = 1;
@@ -21,6 +36,14 @@ int main()
 	person_t p3;	
 	person_t p4;
 	int test;
+	
+	pri_queue_t *p_queue = NULL;
+	size_t i;
+	assignment_t *current;
+	
+	assignment_t jobs[11];
+	jobs[0].priority = CASUAL;
+	
 	p1.numId = 1;
 	strcpy(p1.name, "Dumbeldore");
 	
@@ -171,6 +194,67 @@ int main()
 	}
 	
 	PriQueueDestroy(queue);
+	
+	jobs[0].assignment_code = 1;
+	jobs[1].priority = NON_URGENT;
+	jobs[1].assignment_code = 2;
+	jobs[2].priority = CASUAL;
+	jobs[2].assignment_code = 3;
+	jobs[3].priority = NON_URGENT;
+	jobs[3].assignment_code = 4;
+	jobs[4].priority = URGENT;
+	jobs[4].assignment_code = 5;
+	jobs[5].priority = NON_URGENT;
+	jobs[5].assignment_code = 6;
+	jobs[6].priority = NON_URGENT;
+	jobs[6].assignment_code = 7;
+	jobs[7].priority = CASUAL;
+	jobs[7].assignment_code = 8;
+	jobs[8].priority = NON_URGENT;
+	jobs[8].assignment_code = 9;
+	jobs[9].priority = URGENT;
+	jobs[9].assignment_code = 10;
+	jobs[10].priority = NON_URGENT;
+	jobs[10].assignment_code = 11;
+	
+	p_queue = PriQueueCreate(Compare, NULL);
+	
+	for (i = 0; i < 11 ;++i)
+	{
+		PriQueueEnqueue(p_queue, &jobs[i]); 
+	}
+	PriQueueClear(p_queue);
+	assert(PriQueueIsEmpty(p_queue));
+	
+	
+	puts("Enqueue: ");
+	puts("");
+	printf("Size of priority queue %lu\n\n", PriQueueSize(p_queue));
+	for (i = 0; i < 11 ;++i)
+	{
+		PrintJob(&jobs[i]);
+		PriQueueEnqueue(p_queue, &jobs[i]); 
+	}
+	puts("");
+	
+	
+	printf("PriQueueErase - looking for assignment code %d\n", jobs[2].assignment_code);
+	PriQueueErase(p_queue, Match, &jobs[2].assignment_code);
+	
+	
+	
+	printf("Size of priority queue %lu\n\n", PriQueueSize(p_queue));
+	puts("Dequeue: ");
+	for (i = 0; i < 10 ;++i)
+	{
+		current = PriQueuePeek(p_queue);
+		PrintJob(current);
+		PriQueueDequeue(p_queue);
+	}
+	printf("\nSize of priority queue %lu\n", PriQueueSize(p_queue));
+	assert(PriQueueIsEmpty(p_queue));
+	PriQueueDestroy(p_queue);
+	
 	return 0;
 }
 
@@ -202,4 +286,36 @@ static int match(const void *data, const void *param)
 	num1 = ((person_t*)data)->numId;
 	num2 = *(int*)param;
 	return num1 == num2;
+}
+
+
+int Compare(const void *new_elem, const void *curr_elem, const void *param)
+{
+	(void)param;
+	return *(int *)new_elem > *(int *)curr_elem;	
+}
+
+void PrintJob(assignment_t *job)
+{
+	printf("assignment code = %d \nPriority:                 ", job->assignment_code);
+	switch(job->priority)
+	{
+		case URGENT:
+		printf("URGENT\n");
+		break;
+		case CASUAL:
+		printf("CASUAL\n");
+		break;
+		case NON_URGENT:
+		printf("NON_URGENT\n");
+		break;
+	}
+}
+
+
+int Match(const void *curr_item, const void *param)
+{
+	const assignment_t *temp;
+	temp = curr_item;
+	return temp->assignment_code == *(int *)param;
 }
