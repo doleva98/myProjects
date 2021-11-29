@@ -22,7 +22,7 @@ unique_id_t UIDGenerate(void)
 }
 
 /* check two UIDs for equality */
-bool_t UIDIsEqual(unique_id_t uid1, unique_id_t uid2)
+int UIDIsEqual(unique_id_t uid1, unique_id_t uid2)
 {
 	return uid1.pid == uid2.pid && uid1.counter == uid2.counter && uid1.timestamp == uid2.timestamp;
 
@@ -42,8 +42,8 @@ size_t getPid(unique_id_t uid)
 {
 	return (size_t)uid.pid;
 }
-
+/*
 void setPlusTime(size_t more){
 	uid.timestamp += (time_t)more;
-}
+}*/
 
