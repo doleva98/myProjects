@@ -15,9 +15,8 @@ int main(int argc, char **argv, char **envp)
 		printf("well, that didn\'t work!\n");
 		return -1;
 	}
-	
+
 	fscanf(fp, "%p\n", &p);
-	
 	if(fclose(fp))
 	{
 		printf("ow well.");
