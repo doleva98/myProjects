@@ -1,0 +1,10 @@
+{
+  "files.associations": {
+    "chrono": "c",
+    "random": "c",
+    "limits": "c",
+    "valarray": "c",
+    "comparisonsorts.h": "c",
+    "stdlib.h": "c"
+  }
+}
