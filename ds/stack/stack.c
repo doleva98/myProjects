@@ -12,40 +12,39 @@ struct Stack
 	void **a;
 };
 
-
 /*Return a new stack*/
 extern Stack_t *StackCreate(size_t capacity)
 {
 	Stack_t *stack = NULL;
-	
-	if(capacity <= 0)
+
+	if (capacity <= 0)
 	{
 		return NULL;
 	}
-	
-	stack = (Stack_t*)calloc(1, sizeof(Stack_t) + capacity * sizeof(void**));
-	if(!stack)
+
+	stack = (Stack_t *)calloc(1, sizeof(Stack_t) + capacity * sizeof(void **));
+	if (!stack)
 	{
 		return NULL;
 	}
 	stack->capacity = capacity;
 	stack->top = 0;
-	stack->a = (void**)(stack + 1);
-	
+	stack->a = (void **)(stack + 1);
+
 	return stack;
 }
 
 /*Delete the stack */
 extern void StackDestroy(Stack_t *stack)
-{	
+{
 	assert(stack);
 	free(stack);
 	stack = NULL;
 }
 
 /*Add a new element to the top of the stack */
-extern void StackPush(Stack_t *stack, void* new_element)
-{	
+extern void StackPush(Stack_t *stack, void *new_element)
+{
 	assert(stack && new_element && stack->top != stack->capacity);
 	stack->a[stack->top] = new_element;
 	++stack->top;
@@ -53,14 +52,14 @@ extern void StackPush(Stack_t *stack, void* new_element)
 
 /*Remove the last element */
 extern void StackPop(Stack_t *stack)
-{	
+{
 	assert(stack && !StackIsEmpty(stack));
-	
+
 	--stack->top;
 }
-
+/*hello*/
 /*Return the value of the last element */
-extern void* StackPeek(Stack_t *stack)
+extern void *StackPeek(Stack_t *stack)
 {
 	assert(stack && !StackIsEmpty(stack));
 
@@ -87,5 +86,3 @@ extern size_t StackCapacity(Stack_t *stack)
 	assert(stack);
 	return stack->capacity;
 }
-
-

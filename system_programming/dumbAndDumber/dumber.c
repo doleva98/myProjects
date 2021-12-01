@@ -24,6 +24,5 @@ int main(int argc, char **argv, char **envp)
 	}
 	
 	printf("p points to: %d\n", *p);
-
 	return 0;
 }
