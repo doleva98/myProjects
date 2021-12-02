@@ -72,7 +72,8 @@ all: $(PROJ_DEPENDS) $(BIN_DIR)/$(PROJ_OUT)
 $(BIN_DIR)/$(basename $(PROJ_OUT)).out: $(PROJ_OBJS) $(PROJ_OTHER_OBJS)
 	@echo Creating application $(@F)
 	$(ECHO_FLAG)$(LD) $(PROJ_OBJS) $(PROJ_OTHER_OBJS) -Wl,-rpath="\$$ORIGIN" $(LDFLAGS) $(PROJ_LIBS:%=-l%) -o $@
-	$(ECHO_FLAG)ln -s -f $(@) $(basename $(PROJ_OUT)).$(CONFIG).out
+	
+#$(ECHO_FLAG)ln -s -f $(@) $(basename $(PROJ_OUT)).$(CONFIG).out
 
 $(BIN_DIR)/$(basename $(PROJ_OUT)).so: $(PROJ_OBJS) $(PROJ_OTHER_OBJS)
 	@echo Creating shared object $(@F)
