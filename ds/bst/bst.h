@@ -1,5 +1,5 @@
-#ifndef _BST_H_
-#define _BST_H_
+#ifndef __BST_H__
+#define __BST_H__
 
 typedef int (*compare_func_t)(const void *new_elem, const void *curr_elem, const void *param);
 typedef int (*match_func_t)(const void *data, const void *param);
