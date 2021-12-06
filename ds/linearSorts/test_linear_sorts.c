@@ -51,7 +51,7 @@ int main()
 		g[i] = (rand() % (10000000 - 1000000 + 1)) + 1000000;
 	}
 
-	NewRadixSort(g, 5000);
+	NewRadixSort(g, 5000, 4);
 
 	for (i = 0; i < 5000 - 1; ++i)
 	{

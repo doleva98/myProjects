@@ -5,8 +5,7 @@
 #include "linear_sorts.h"
 static int GetMax(int *arr, size_t n);
 static int *MyCountingSort(int *arr, size_t n, int exp);
-static int *NewMyCountingSort(int *arr, size_t n, int exp);
-
+static int *NewMyCountingSort(int *arr, size_t n, int exp, size_t bit_number);
 #define RADIX 4
 
 int *CountingSort(int *arr, size_t n)
@@ -128,7 +127,7 @@ int *RadixSort(int *arr, size_t n)
 	return arr;
 }
 
-static int *NewMyCountingSort(int *arr, size_t n, int exp)
+static int *NewMyCountingSort(int *arr, size_t n, int exp, size_t bit_number)
 {
 	int size_counter = 0;
 	int *counter = NULL;
@@ -136,7 +135,7 @@ static int *NewMyCountingSort(int *arr, size_t n, int exp)
 	size_t i;
 	int j;
 
-	size_counter = 16;
+	size_counter = 1 << bit_number;
 
 	counter = (int *)calloc(size_counter, sizeof(int));
 	if (!counter)
@@ -152,7 +151,7 @@ static int *NewMyCountingSort(int *arr, size_t n, int exp)
 
 	for (i = 0; i < n; ++i)
 	{
-		++counter[(arr[i] >> exp) & 0xF];
+		++counter[(arr[i] >> exp) & (size_counter - 1)];
 	}
 
 	for (j = 1; j < size_counter; ++j)
@@ -162,8 +161,8 @@ static int *NewMyCountingSort(int *arr, size_t n, int exp)
 
 	for (i = 0; i < n; ++i)
 	{
-		res[counter[(arr[n - 1 - i] >> exp) & 0xF] - 1] = arr[n - 1 - i];
-		--counter[(arr[n - 1 - i] >> exp) & 0xF];
+		res[counter[(arr[n - 1 - i] >> exp) & (size_counter - 1)] - 1] = arr[n - 1 - i];
+		--counter[(arr[n - 1 - i] >> exp) & (size_counter - 1)];
 	}
 
 	for (i = 0; i < n; ++i)
@@ -175,12 +174,12 @@ static int *NewMyCountingSort(int *arr, size_t n, int exp)
 	return arr;
 }
 
-int *NewRadixSort(int *arr, size_t n)
+int *NewRadixSort(int *arr, size_t n, size_t bit_number)
 {
 	size_t exp = 0;
-	for (; sizeof(arr[0]) * 8 > exp; exp += RADIX)
+	for (; sizeof(arr[0]) * 8 > exp; exp += bit_number)
 	{
-		NewMyCountingSort(arr, n, exp);
+		NewMyCountingSort(arr, n, exp, bit_number);
 	}
 	return arr;
 }
