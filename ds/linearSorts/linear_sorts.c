@@ -5,6 +5,9 @@
 #include "linear_sorts.h"
 static int GetMax(int *arr, size_t n);
 static int *MyCountingSort(int *arr, size_t n, int exp);
+static int *NewMyCountingSort(int *arr, size_t n, int exp);
+
+#define RADIX 4
 
 int *CountingSort(int *arr, size_t n)
 {
@@ -38,6 +41,7 @@ int *CountingSort(int *arr, size_t n)
 	res = (int *)malloc(n * sizeof(int));
 	if (!res)
 	{
+		free(counter);
 		return NULL;
 	}
 
@@ -68,8 +72,6 @@ int *CountingSort(int *arr, size_t n)
 
 static int *MyCountingSort(int *arr, size_t n, int exp)
 {
-	int max = 10;
-	int min = 1;
 	int size_counter = 0;
 	int *counter = NULL;
 	int *res = NULL;
@@ -122,6 +124,63 @@ int *RadixSort(int *arr, size_t n)
 	for (; max / exp > 0; exp *= 10)
 	{
 		MyCountingSort(arr, n, exp);
+	}
+	return arr;
+}
+
+static int *NewMyCountingSort(int *arr, size_t n, int exp)
+{
+	int size_counter = 0;
+	int *counter = NULL;
+	int *res = NULL;
+	size_t i;
+	int j;
+
+	size_counter = 16;
+
+	counter = (int *)calloc(size_counter, sizeof(int));
+	if (!counter)
+	{
+		return NULL;
+	}
+
+	res = (int *)malloc(n * sizeof(int));
+	if (!res)
+	{
+		return NULL;
+	}
+
+	for (i = 0; i < n; ++i)
+	{
+		++counter[(arr[i] >> exp) & 0xF];
+	}
+
+	for (j = 1; j < size_counter; ++j)
+	{
+		counter[j] += counter[j - 1];
+	}
+
+	for (i = 0; i < n; ++i)
+	{
+		res[counter[(arr[n - 1 - i] >> exp) & 0xF] - 1] = arr[n - 1 - i];
+		--counter[(arr[n - 1 - i] >> exp) & 0xF];
+	}
+
+	for (i = 0; i < n; ++i)
+	{
+		arr[i] = res[i];
+	}
+	free(counter);
+	free(res);
+	return arr;
+}
+
+int *NewRadixSort(int *arr, size_t n)
+{
+	size_t exp = 0;
+	for (; sizeof(arr[0]) * 8 > exp; exp += RADIX)
+	{
+		NewMyCountingSort(arr, n, exp);
 	}
 	return arr;
 }

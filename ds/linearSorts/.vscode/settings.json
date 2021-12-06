@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "linear_sorts.h": "c"
+        "linear_sorts.h": "c",
+        "limits": "c"
     }
 }
