@@ -23,8 +23,9 @@ extern size_t BstSize(bst_t *bst);
 extern int BstIsEmpty(bst_t *bst);
 
 extern void BstInsert(bst_t *bst, const void *data);
+/*maybe returns iterator*/
 
-extern void BstRemove(bst_t *bst, const void *data);
+extern void BstRemove(bst_iter_t iter);
 
 extern bst_iter_t BstBegin(bst_t *bst);
 extern bst_iter_t BstEnd(bst_t *bst);
