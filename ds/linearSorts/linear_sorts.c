@@ -183,7 +183,7 @@ int *NewRadixSort(int *arr, size_t n, size_t bit_number)
 	}
 	return arr;
 }
-
+/**/
 static int GetMax(int *arr, size_t n)
 {
 	int max = 0;
