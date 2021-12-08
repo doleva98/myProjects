@@ -111,12 +111,14 @@ bst_iter_t BstInsert(bst_t *bst, const void *data)
 
 		if (!BstIterGetData(iter))
 		{
-			bst_node_t *temp_node = NULL;
 
-			temp_node = CreateNode(NULL);
+			bst_node_t *temp_node = iter.node;
 
-			iter.node->data = data;
+			iter.node = CreateNode(data);
+
 			iter.node->right_son = temp_node;
+			iter.node->parent = temp_node->parent;
+			temp_node->parent->right_son = iter.node;
 			temp_node->parent = iter.node;
 		}
 		else if (iter.bst->cmp_func(data, BstIterGetData(iter), iter.bst->param) < 0)
@@ -227,7 +229,7 @@ bst_iter_t BstEnd(bst_t *bst)
 {
 	bst_iter_t iter;
 	iter.bst = bst;
-	iter.node = iter.bst->root;
+	iter.node = bst->root;
 	return FindMaxInSubTree(iter);
 }
 
@@ -237,7 +239,7 @@ bst_iter_t BstIterNext(bst_iter_t iter)
 	if (iter.node->right_son)
 	{
 		iter.node = iter.node->right_son;
-		return FindMinInSubTree(iter);
+		iter = FindMinInSubTree(iter);
 	}
 	else /*right_son == NULL*/
 	{
@@ -245,8 +247,8 @@ bst_iter_t BstIterNext(bst_iter_t iter)
 		{
 			iter.node = iter.node->parent;
 		} while (iter.node != iter.bst->root && iter.bst->cmp_func(data, BstIterGetData(iter), iter.bst->param) > 0);
-		return iter;
 	}
+	return iter;
 }
 
 bst_iter_t BstIterPrev(bst_iter_t iter)
@@ -255,12 +257,11 @@ bst_iter_t BstIterPrev(bst_iter_t iter)
 	if (!data)
 	{
 		iter.node = iter.node->parent;
-		return iter;
 	}
 	else if (iter.node->left_son)
 	{
 		iter.node = iter.node->left_son;
-		return FindMaxInSubTree(iter);
+		iter = FindMaxInSubTree(iter);
 	}
 	else /*left_son == NULL*/
 	{
@@ -268,8 +269,8 @@ bst_iter_t BstIterPrev(bst_iter_t iter)
 		{
 			iter.node = iter.node->parent;
 		} while (iter.node != iter.bst->root && iter.bst->cmp_func(data, BstIterGetData(iter), iter.bst->param) < 0);
-		return iter;
 	}
+	return iter;
 }
 
 int BstIterIsEqual(bst_iter_t iter1, bst_iter_t iter2)
