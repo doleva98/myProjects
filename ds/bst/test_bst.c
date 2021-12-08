@@ -161,8 +161,6 @@ static void test10(void)
 	bst_t *bst = NULL;
 	int a[10];
 	size_t i = 0;
-	bst_iter_t iter3;
-	bst_iter_t iter8;
 	int test1;
 
 	srand(0);
@@ -185,18 +183,18 @@ static void test10(void)
 		a[i] = rand() % 1000000;
 		if (i == 2)
 		{
-			iter3 = BstInsert(bst, &a[i]);
+			BstInsert(bst, &a[i]);
+			printf("%d\n", a[i]);
 		}
 		else if (i == 7)
 		{
-			iter8 = BstInsert(bst, &a[i]);
+			BstInsert(bst, &a[i]);
 		}
 		else
 		{
 			BstInsert(bst, &a[i]);
 		}
 	}
-	test1 = *(int *)BstIterGetData(iter8);
 
 	if (!(BstSize(bst) == 10))
 	{
@@ -210,12 +208,19 @@ static void test10(void)
 	printf("before removal\n");
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
-	BstRemove(iter3);
+	/*test1 = *(int *)BstIterGetData(BstIterNext(BstIterNext(BstBegin(bst))));
+	BstRemove(BstFind(bst, &test1));*/
+
+	test1 = *(int *)BstIterGetData(BstIterPrev(BstIterPrev(BstEnd(bst))));
 	BstRemove(BstFind(bst, &test1));
+
+	/*test1 = *(int *)BstIterGetData(BstIterPrev(BstIterPrev(BstIterPrev(BstIterPrev(BstIterNext((BstEnd(bst))))))));
+	BstRemove(BstFind(bst, &test1));*/
+
 	printf("after removal\n");
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
-	if (!(BstSize(bst) == 8))
+	if (!(BstSize(bst) == 9))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
