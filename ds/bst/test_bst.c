@@ -6,7 +6,7 @@
 static int compare_int(const void *n1, const void *n2, const void *param);
 static int print_in_order(void *data, const void *param);
 static void test10(void);
-
+FILE *fp = NULL;
 int main()
 {
 	bst_t *bst = NULL;
@@ -20,39 +20,41 @@ int main()
 	int d = 10;
 	int test = 4;
 
+	fp = fopen("test.txt", "w");
+
 	bst = BstCreate(compare_int, NULL);
-	printf("****************EASY TEST***************\n");
+	fprintf(fp, "****************EASY TEST***************\n");
 
 	if (!(BstSize(bst) == 0))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if (!BstIsEmpty(bst))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter = BstInsert(bst, &a);
 
 	if (!(BstSize(bst) == 1))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if (BstIsEmpty(bst))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if (!(*(int *)BstIterGetData(BstBegin(bst)) == 5))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if (!BstIterIsEqual(iter, BstBegin(bst)))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter2 = BstInsert(bst, &b);
@@ -60,86 +62,86 @@ int main()
 	iter4 = BstInsert(bst, &d);
 	if (!(BstSize(bst) == 4))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if (BstIsEmpty(bst))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter = BstIterNext(iter);
 
 	if (!BstIterIsEqual(iter4, iter))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter = BstBegin(bst);
 
 	if (!(*(int *)BstIterGetData(iter) == 1))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter = BstIterNext(iter);
 
 	if (!(*(int *)BstIterGetData(iter) == 4))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter = BstIterNext(iter);
 
 	if (!(*(int *)BstIterGetData(iter) == 5))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter = BstIterNext(iter);
 
 	if (!(*(int *)BstIterGetData(iter) == 10))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter2 = BstIterPrev(BstEnd(bst));
 
 	if (!(*(int *)BstIterGetData(iter2) == 10))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter2 = BstIterPrev(iter2);
 
 	if (!(*(int *)BstIterGetData(iter2) == 5))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	iter2 = BstIterPrev(iter2);
 
 	if (!(*(int *)BstIterGetData(iter2) == 4))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if (!(*(int *)BstIterGetData(BstFind(bst, &test)) == 4))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if (!(*(int *)BstIterGetData(BstBegin(bst)) == 1))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	test = 100;
 	if (!(BstIterIsEqual(BstFind(bst, &test), BstEnd(bst))))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	printf("before removal\n");
+	fprintf(fp, "before removal\n");
 
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
@@ -147,12 +149,13 @@ int main()
 
 	BstRemove(BstFind(bst, &test));
 
-	printf("after removal\n");
+	fprintf(fp, "after removal\n");
 
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
 	BstDestroy(bst);
 	test10();
+	fclose(fp);
 	return 0;
 }
 
@@ -164,18 +167,18 @@ static void test10(void)
 	int test1;
 
 	srand(0);
-	printf("****************HARD TEST***************\n");
+	fprintf(fp, "****************HARD TEST***************\n");
 
 	bst = BstCreate(compare_int, NULL);
 
 	if (!(BstSize(bst) == 0))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if (!(BstIsEmpty(bst)))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	for (; i < 10; ++i)
@@ -184,7 +187,7 @@ static void test10(void)
 		if (i == 2)
 		{
 			BstInsert(bst, &a[i]);
-			printf("%d\n", a[i]);
+			fprintf(fp, "%d\n", a[i]);
 		}
 		else if (i == 7)
 		{
@@ -198,58 +201,59 @@ static void test10(void)
 
 	if (!(BstSize(bst) == 10))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if ((BstIsEmpty(bst)))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	printf("before removal\n");
+	fprintf(fp, "before removal\n");
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
 	test1 = *(int *)BstIterGetData(BstIterNext(BstIterNext(BstBegin(bst))));
-	printf("please remove %d\n", test1);
+	fprintf(fp, "please remove %d\n", test1);
 	BstRemove(BstFind(bst, &test1));
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
 	if (!(BstSize(bst) == 9))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if ((BstIsEmpty(bst)))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
-	printf("please remove %d\n", a[9]);
+	fprintf(fp, "please remove %d\n", a[9]);
 	BstRemove(BstFind(bst, &a[9]));
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
 	if (!(BstSize(bst) == 8))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if ((BstIsEmpty(bst)))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
-	printf("please remove %d\n", a[3]);
-	BstRemove(BstFind(bst, &a[3]));
+	fprintf(fp, "please remove %d\n", a[1]);
+	BstRemove(BstFind(bst, &a[1]));
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
 	if (!(BstSize(bst) == 7))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
 	if ((BstIsEmpty(bst)))
 	{
-		printf("fail in %d\n", __LINE__);
+		fprintf(fp, "fail in %d\n", __LINE__);
 	}
+	BstDestroy(bst);
 }
 
 static int compare_int(const void *n1, const void *n2, const void *param)
@@ -273,6 +277,6 @@ static int compare_int(const void *n1, const void *n2, const void *param)
 static int print_in_order(void *data, const void *param)
 {
 	(void)param;
-	printf("%d\n", *(int *)data);
+	fprintf(fp, "%d\n", *(int *)data);
 	return 1;
 }

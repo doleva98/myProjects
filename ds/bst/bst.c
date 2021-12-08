@@ -236,7 +236,7 @@ bst_iter_t BstIterNext(bst_iter_t iter)
 	}
 	else /*right_son == NULL*/
 	{
-		bst_iter_t iter_res;
+		/*bst_iter_t iter_res;
 		iter_res.node = iter.bst->root;
 		iter.node = iter.bst->root;
 		while (iter.bst->cmp_func(data, BstIterGetData(iter), iter.bst->param) && !BstIterIsEqual(iter, BstEnd(iter.bst)))
@@ -251,7 +251,12 @@ bst_iter_t BstIterNext(bst_iter_t iter)
 				iter.node = iter.node->right_son;
 			}
 		}
-		return iter_res;
+		return iter_res;*/
+		while (iter.node != iter.bst->root && iter.bst->cmp_func(data, BstIterGetData(iter), iter.bst->param) >= 0)
+		{
+			iter.node = iter.node->parent;
+		}
+		return iter;
 	}
 }
 
