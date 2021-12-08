@@ -208,17 +208,27 @@ static void test10(void)
 	printf("before removal\n");
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
-	/*test1 = *(int *)BstIterGetData(BstIterNext(BstIterNext(BstBegin(bst))));
-	BstRemove(BstFind(bst, &test1));*/
+	test1 = *(int *)BstIterGetData(BstIterNext(BstIterNext(BstBegin(bst))));
+	printf("please remove %d\n", test1);
+	BstRemove(BstFind(bst, &test1));
+	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
+
+	if (!(BstSize(bst) == 9))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	if ((BstIsEmpty(bst)))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
 
 	test1 = *(int *)BstIterGetData(BstIterPrev(BstIterPrev(BstEnd(bst))));
+	printf("and please remove %d\n", test1);
 	BstRemove(BstFind(bst, &test1));
 
-	/*test1 = *(int *)BstIterGetData(BstIterPrev(BstIterPrev(BstIterPrev(BstIterPrev(BstIterNext((BstEnd(bst))))))));
+	/*test1 = *(int *)BstIterGetData(BstIterPrev(BstIterNext(BstIterPrev(BstIterPrev(BstIterPrev((BstEnd(bst))))))));
 	BstRemove(BstFind(bst, &test1));*/
-
-	printf("after removal\n");
-	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
 	if (!(BstSize(bst) == 9))
 	{
