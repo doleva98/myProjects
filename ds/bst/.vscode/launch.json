@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${fileDirname}/app.out",
             "args": [],
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
             "externalConsole": false,

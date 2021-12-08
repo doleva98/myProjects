@@ -1,15 +1,17 @@
 #include <stdio.h>
 #include "bst.h"
+#include <stdlib.h>
+#include <time.h>
 
 static int compare_int(const void *n1, const void *n2, const void *param);
 static int print_in_order(void *data, const void *param);
+static void test10(void);
 
 int main()
 {
 	bst_t *bst = NULL;
 	bst_iter_t iter;
 	bst_iter_t iter2;
-	bst_iter_t iter3;
 	bst_iter_t iter4;
 
 	int a = 5;
@@ -19,18 +21,19 @@ int main()
 	int test = 4;
 
 	bst = BstCreate(compare_int, NULL);
+	printf("****************EASY TEST***************\n");
 
 	if (!(BstSize(bst) == 0))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
 
-	/*if (!BstIsEmpty(bst))
+	if (!BstIsEmpty(bst))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
 
-	/*iter = BstInsert(bst, &a);
+	iter = BstInsert(bst, &a);
 
 	if (!(BstSize(bst) == 1))
 	{
@@ -53,9 +56,8 @@ int main()
 	}
 
 	iter2 = BstInsert(bst, &b);
-	iter3 = BstInsert(bst, &c);
+	BstInsert(bst, &c);
 	iter4 = BstInsert(bst, &d);
-
 	if (!(BstSize(bst) == 4))
 	{
 		printf("fail in %d\n", __LINE__);
@@ -68,7 +70,7 @@ int main()
 
 	iter = BstIterNext(iter);
 
-	if (!BstIterIsEqual(iter4, iter2))
+	if (!BstIterIsEqual(iter4, iter))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
@@ -121,24 +123,107 @@ int main()
 	{
 		printf("fail in %d\n", __LINE__);
 	}
-	iter2 = BstIterPrev(iter2);
 
-	if (!(*(int *)BstIterGetData(iter2) == 1))
+	if (!(*(int *)BstIterGetData(BstFind(bst, &test)) == 4))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
 
-	if (!(BstIterIsEqual(BstFind(bst, &test), iter3)))
+	if (!(*(int *)BstIterGetData(BstBegin(bst)) == 1))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
 
-	if (!(*(int *)BstIterGetData(iter2) == 1))
+	test = 100;
+	if (!(BstIterIsEqual(BstFind(bst, &test), BstEnd(bst))))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
-*/
+	printf("before removal\n");
+
+	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
+
+	test = 4;
+
+	BstRemove(BstFind(bst, &test));
+
+	printf("after removal\n");
+
+	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
+
+	BstDestroy(bst);
+	test10();
 	return 0;
+}
+
+static void test10(void)
+{
+	bst_t *bst = NULL;
+	int a[10];
+	size_t i = 0;
+	bst_iter_t iter3;
+	bst_iter_t iter8;
+	int test1;
+
+	srand(0);
+	printf("****************HARD TEST***************\n");
+
+	bst = BstCreate(compare_int, NULL);
+
+	if (!(BstSize(bst) == 0))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	if (!(BstIsEmpty(bst)))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	for (; i < 10; ++i)
+	{
+		a[i] = rand() % 1000000;
+		if (i == 2)
+		{
+			iter3 = BstInsert(bst, &a[i]);
+		}
+		else if (i == 7)
+		{
+			iter8 = BstInsert(bst, &a[i]);
+		}
+		else
+		{
+			BstInsert(bst, &a[i]);
+		}
+	}
+	test1 = *(int *)BstIterGetData(iter8);
+
+	if (!(BstSize(bst) == 10))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	if ((BstIsEmpty(bst)))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	printf("before removal\n");
+	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
+
+	BstRemove(iter3);
+	BstRemove(BstFind(bst, &test1));
+	printf("after removal\n");
+	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
+
+	if (!(BstSize(bst) == 8))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	if ((BstIsEmpty(bst)))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
 }
 
 static int compare_int(const void *n1, const void *n2, const void *param)
@@ -162,6 +247,6 @@ static int compare_int(const void *n1, const void *n2, const void *param)
 static int print_in_order(void *data, const void *param)
 {
 	(void)param;
-	printf("%d", *(int *)data);
+	printf("%d\n", *(int *)data);
 	return 1;
 }
