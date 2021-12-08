@@ -223,14 +223,25 @@ static void test10(void)
 		printf("fail in %d\n", __LINE__);
 	}
 
-	test1 = *(int *)BstIterGetData(BstIterPrev(BstIterPrev(BstEnd(bst))));
-	printf("and please remove %d\n", test1);
-	BstRemove(BstFind(bst, &test1));
+	printf("please remove %d\n", a[9]);
+	BstRemove(BstFind(bst, &a[9]));
+	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
-	/*test1 = *(int *)BstIterGetData(BstIterPrev(BstIterNext(BstIterPrev(BstIterPrev(BstIterPrev((BstEnd(bst))))))));
-	BstRemove(BstFind(bst, &test1));*/
+	if (!(BstSize(bst) == 8))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
 
-	if (!(BstSize(bst) == 9))
+	if ((BstIsEmpty(bst)))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	printf("please remove %d\n", a[3]);
+	BstRemove(BstFind(bst, &a[3]));
+	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
+
+	if (!(BstSize(bst) == 7))
 	{
 		printf("fail in %d\n", __LINE__);
 	}

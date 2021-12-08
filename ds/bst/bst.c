@@ -184,14 +184,29 @@ void BstRemove(bst_iter_t iter)
 	}
 	else
 	{
-		bst_iter_t next_iter = BstIterNext(iter);
-		iter.node->data = BstIterGetData(next_iter);
-		if (next_iter.node->right_son)
+		if ((BstIterIsEqual(iter, BstIterPrev(BstEnd(iter.bst)))))
 		{
-			next_iter.node->right_son->parent = next_iter.node->parent;
-			next_iter.node->parent->left_son = next_iter.node->right_son;
+			bst_iter_t prev_iter = BstIterPrev(iter);
+			iter.node->data = BstIterGetData(prev_iter);
+			if (prev_iter.node->left_son)
+			{
+				prev_iter.node->left_son->parent = prev_iter.node->parent;
+				prev_iter.node->parent->right_son = prev_iter.node->left_son;
+			}
+			free(prev_iter.node);
 		}
-		free(next_iter.node);
+		else
+		{
+
+			bst_iter_t next_iter = BstIterNext(iter);
+			iter.node->data = BstIterGetData(next_iter);
+			if (next_iter.node->right_son)
+			{
+				next_iter.node->right_son->parent = next_iter.node->parent;
+				next_iter.node->parent->left_son = next_iter.node->right_son;
+			}
+			free(next_iter.node);
+		}
 	}
 }
 
@@ -224,7 +239,7 @@ bst_iter_t BstIterNext(bst_iter_t iter)
 		bst_iter_t iter_res;
 		iter_res.node = iter.bst->root;
 		iter.node = iter.bst->root;
-		while (iter.bst->cmp_func(data, BstIterGetData(iter), iter.bst->param))
+		while (iter.bst->cmp_func(data, BstIterGetData(iter), iter.bst->param) && !BstIterIsEqual(iter, BstEnd(iter.bst)))
 		{
 			if (iter.bst->cmp_func(data, BstIterGetData(iter), iter.bst->param) < 0)
 			{
@@ -287,8 +302,12 @@ const void *BstIterGetData(bst_iter_t iter)
 bst_iter_t BstFind(bst_t *bst, const void *data)
 {
 	bst_iter_t iter = BstBegin(bst);
-	while (!BstIterIsEqual(iter, BstEnd(bst)) && bst->cmp_func(data, BstIterGetData(iter), bst->param))
+	while (!BstIterIsEqual(iter, BstEnd(bst)))
 	{
+		if (!bst->cmp_func(data, BstIterGetData(iter), bst->param))
+		{
+			break;
+		}
 		iter = BstIterNext(iter);
 	}
 	return iter;
