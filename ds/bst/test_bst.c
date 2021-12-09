@@ -165,7 +165,6 @@ static void test10(void)
 	int a[10];
 	size_t i = 0;
 	int test1;
-
 	srand(0);
 	fprintf(fp, "****************HARD TEST***************\n");
 
@@ -239,9 +238,9 @@ static void test10(void)
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-
 	fprintf(fp, "please remove %d\n", a[1]);
 	BstRemove(BstFind(bst, &a[1]));
+
 	BstForEach(BstBegin(bst), BstEnd(bst), print_in_order, NULL);
 
 	if (!(BstSize(bst) == 7))
@@ -253,6 +252,7 @@ static void test10(void)
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
+
 	BstDestroy(bst);
 }
 
