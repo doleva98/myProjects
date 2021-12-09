@@ -8,6 +8,7 @@ static bst_iter_t FindMaxInSubTree(bst_iter_t iter);
 static int IsLeaf(bst_iter_t iter);
 static bst_node_t *CreateNode(const void *data);
 static int hasOneChild(bst_iter_t iter);
+static void FindAndLinkParentToSon(bst_iter_t iter, bst_node_t *node_to_change);
 
 struct BST
 {
@@ -103,7 +104,7 @@ bst_iter_t BstInsert(bst_t *bst, const void *data)
 			{
 				iter.node = iter.node->right_son;
 			}
-			else
+			else /*has one child, and i want to add to the NULL child*/
 			{
 				break;
 			}
@@ -155,41 +156,17 @@ void BstRemove(bst_iter_t iter)
 	}
 	else if (hasOneChild(iter))
 	{
-		if (iter.node->right_son)
+		if (iter.node->right_son) /*has right child*/
 		{
-			if (iter.bst->root == iter.node)
-			{
-				iter.bst->root = iter.node->right_son;
-			}
-			else if (iter.node->parent->left_son == iter.node)
-			{
-				iter.node->parent->left_son = iter.node->right_son;
-			}
-			else
-			{
-				iter.node->parent->right_son = iter.node->right_son;
-			}
-			iter.node->right_son->parent = iter.node->parent;
+			FindAndLinkParentToSon(iter, iter.node->right_son);
 		}
-		else
+		else /*has left child*/
 		{
-			if (iter.bst->root == iter.node)
-			{
-				iter.bst->root = iter.node->left_son;
-			}
-			else if (iter.node->parent->left_son == iter.node)
-			{
-				iter.node->parent->left_son = iter.node->left_son;
-			}
-			else
-			{
-				iter.node->parent->right_son = iter.node->left_son;
-			}
-			iter.node->left_son->parent = iter.node->parent;
+			FindAndLinkParentToSon(iter, iter.node->right_son);
 		}
 		free(iter.node);
 	}
-	else
+	else /*2 child*/
 	{
 		if ((BstIterIsEqual(iter, BstIterPrev(BstEnd(iter.bst)))))
 		{
@@ -204,7 +181,6 @@ void BstRemove(bst_iter_t iter)
 		}
 		else
 		{
-
 			bst_iter_t next_iter = BstIterNext(iter);
 			iter.node->data = BstIterGetData(next_iter);
 			if (next_iter.node->right_son)
@@ -349,4 +325,21 @@ static bst_node_t *CreateNode(const void *data)
 	node->right_son = NULL;
 	node->parent = NULL;
 	return node;
+}
+
+static void FindAndLinkParentToSon(bst_iter_t iter, bst_node_t *node_to_change)
+{
+	if (iter.bst->root == iter.node)
+	{
+		iter.bst->root = node_to_change;
+	}
+	else if (iter.node->parent->left_son == iter.node)
+	{
+		iter.node->parent->left_son = node_to_change;
+	}
+	else
+	{
+		iter.node->parent->right_son = node_to_change;
+	}
+	node_to_change->parent = iter.node->parent;
 }
