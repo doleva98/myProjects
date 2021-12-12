@@ -5,10 +5,10 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = stack.c stack_test.c
+PROJ_SRCS = $(wildcard *.c)
 
 # list of directories containing header files
-PROJ_INC_DIR =/.
+PROJ_INC_DIR =
 
 # the executable file
 PROJ_OUT = app.out

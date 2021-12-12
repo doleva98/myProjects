@@ -1,42 +1,36 @@
-CC = gcc
-CFLAGS = -ansi -pedantic-errors -Wall -Wextra
-DEBUG = -g
-SRC = singly_list.c test_singly_list.c
-OBJ = $(filter %.o, $(SRC:%.c=../obj/%.o))
-OBJ_DEBUG = $(SRC:.c=.dbg.o)
 
-TARGET = singly_list.out
+# make clean/all CONFIG=Debug/Release ARCH=linux64/raspi ECHO=0/1
 
-$(TARGET) :$(OBJ) 
-	@$(CC) $(CFLAGS) $(OBJ) -o $(TARGET)
+# the parrent dir of "arch" dir
+ROOT_DIR = ../..
 
-../obj/%.o: %.c 
-	@$(CC) $(CFLAGS) -c -o $(@D)/$(*F).o $< 
+#PROJ_SRCS = $(wildcard *.c)
+PROJ_SRCS = $(wildcard *.c)
 
-%.dbg.o: %.c 
-	@$(CC) $(CFLAGS) $(DEBUG) $< -c 
+# list of directories containing header files
+PROJ_INC_DIR =
 
+# the executable file
+PROJ_OUT = app.out
 
+# list of ADDITIONAL compiler flags (prepended with "-" sign)
+#PROJ_CFLAGS = -Wunused-but-set-variable
+PROJ_CFLAGS =
+PROJ_CPPFLAGS =
 
-.PHONY: clean
+#PROJ_MACROS = _BSD_SOURCE
+PROJ_MACROS =
 
-clean:
-	rm $(TARGET) $(OBJ) 
+# additional object files (created by other projects)
+PROJ_ADD_OBJS =
 
-.PHONY: all
-all: $(SRC) 
-	@$(CC) $(CFLAGS) $(DEBUG) $(SRC) 
+# additional libraries
+PROJ_LIBS =
 
-debug :$(OBJ_DEBUG) 
-	@$(CC) $(CFLAGS) $(DEBUG) $(OBJ) -o  debug.out
+# linker flags
+PROJ_LDFLAGS =
 
+# list of projects (makefiles) this project depends on
+PROJ_DEPENDS  =
 
-queue.ar: $(OBJ)
-	ar -r archive $(OBJ)
-
-
-
-singly_list.o : singly_list.h
-test_singly_list.o : singly_list.h
-
-
+include $(ROOT_DIR)/include/make/Project.mak

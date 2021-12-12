@@ -9,6 +9,7 @@ static int IsLeaf(bst_iter_t iter);
 static bst_node_t *CreateNode(const void *data);
 static int hasOneChild(bst_iter_t iter);
 static void FindAndLinkParentToSon(bst_iter_t iter, bst_node_t *node_to_change);
+static bst_iter_t SetRoot(bst_t *bst);
 
 struct BST
 {
@@ -195,18 +196,12 @@ void BstRemove(bst_iter_t iter)
 
 bst_iter_t BstBegin(bst_t *bst)
 {
-	bst_iter_t iter;
-	iter.bst = bst;
-	iter.node = bst->root;
-	return FindMinInSubTree(iter);
+	return FindMinInSubTree(SetRoot(bst));
 }
 
 bst_iter_t BstEnd(bst_t *bst)
 {
-	bst_iter_t iter;
-	iter.bst = bst;
-	iter.node = bst->root;
-	return FindMaxInSubTree(iter);
+	return FindMaxInSubTree(SetRoot(bst));
 }
 
 bst_iter_t BstIterNext(bst_iter_t iter)
@@ -342,4 +337,12 @@ static void FindAndLinkParentToSon(bst_iter_t iter, bst_node_t *node_to_change)
 		iter.node->parent->right_son = node_to_change;
 	}
 	node_to_change->parent = iter.node->parent;
+}
+
+static bst_iter_t SetRoot(bst_t *bst)
+{
+	bst_iter_t iter;
+	iter.bst = bst;
+	iter.node = bst->root;
+	return iter;
 }

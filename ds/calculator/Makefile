@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = $(wildcard *.c)
 
 # list of directories containing header files
-PROJ_INC_DIR =
+PROJ_INC_DIR = ../stack
 
 # the executable file
 PROJ_OUT = a.out
@@ -22,7 +22,7 @@ PROJ_CPPFLAGS =
 PROJ_MACROS =
 
 # additional object files (created by other projects)
-PROJ_ADD_OBJS =
+PROJ_ADD_OBJS = stack.o
 
 # additional libraries
 PROJ_LIBS =
@@ -31,6 +31,6 @@ PROJ_LIBS =
 PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  =
+PROJ_DEPENDS  = ../stack/Makefile
 
 include $(ROOT_DIR)/include/make/Project.mak
