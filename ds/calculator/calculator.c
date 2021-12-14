@@ -19,6 +19,7 @@ static const char *HandleNumber(const char *str);
 static const char *HandleOpenParentheseas(const char *str);
 static const char *HandleCloseParentheseas(const char *str);
 static void HandleAllOperators(const char *str);
+static void LutInit(void);
 
 exec_func exec_lut[6] = {Mul, Add, NULL, Sub, NULL, Div};
 
@@ -27,21 +28,7 @@ double Calculate(const char *str)
 	double result = 0;
 	parsing_func parsing_lut[128];
 	size_t i;
-	operators = StackCreate(128);
-	numbers = StackCreate(128);
-
-	presedence = (int *)malloc(128 * sizeof(int));
-	if (!presedence)
-	{
-		return -1;
-	}
-	presedence['~'] = 1;
-	presedence['('] = 2;
-	presedence[')'] = 3;
-	presedence['+'] = 4;
-	presedence['-'] = 4;
-	presedence['*'] = 5;
-	presedence['/'] = 5;
+	LutInit();
 
 	for (i = 0; i < 10; ++i)
 	{
@@ -63,7 +50,7 @@ double Calculate(const char *str)
 
 	while (!StackIsEmpty(operators))
 	{
-		HandleAllOperators("~");
+		HandleAllOperators("." - '(');
 	}
 
 	result = *(double *)StackPeek(numbers);
@@ -72,6 +59,25 @@ double Calculate(const char *str)
 	StackDestroy(operators);
 	free(presedence);
 	return result;
+}
+
+static void LutInit(void)
+{
+	operators = StackCreate(128);
+	numbers = StackCreate(128);
+
+	presedence = (int *)malloc(8 * sizeof(int));
+	if (!presedence)
+	{
+		return;
+	}
+	presedence['.' - '('] = 1;
+	presedence['(' - '('] = 2;
+	presedence[')' - '('] = 3;
+	presedence['+' - '('] = 4;
+	presedence['-' - '('] = 4;
+	presedence['*' - '('] = 5;
+	presedence['/' - '('] = 5;
 }
 
 static const char *HandleNumber(const char *str)
@@ -101,7 +107,7 @@ static const char *HandleOperator(const char *str)
 		return NULL;
 	}
 
-	strncpy(operator, str, 1);
+	*operator= * str;
 	StackPush(operators, operator);
 	return str + 1;
 }
@@ -122,7 +128,7 @@ static void HandleAllOperators(const char *str)
 	double *num1 = NULL;
 	double *num2 = NULL;
 	double *res = NULL;
-	while (!StackIsEmpty(operators) && presedence[(int)*str] <= presedence[(int)*(char *)StackPeek(operators)])
+	while (!StackIsEmpty(operators) && presedence[(int)*str - '('] <= presedence[(int)*(char *)StackPeek(operators) - '('])
 	{
 
 		res = (double *)malloc(sizeof(double));
@@ -158,7 +164,7 @@ static const char *HandleOpenParentheseas(const char *str)
 	{
 		return NULL;
 	}
-	strncpy(operator, str, 1);
+	*operator= * str;
 	StackPush(operators, operator);
 	return str + 1;
 }
