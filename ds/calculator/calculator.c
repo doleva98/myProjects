@@ -20,8 +20,12 @@ static const char *HandleOpenParentheseas(const char *str);
 static const char *HandleCloseParentheseas(const char *str);
 static void HandleAllOperators(const char *str);
 static void LutInit(void);
+static const char *HandlePlusMinus(const char *str);
 
 exec_func exec_lut[6] = {Mul, Add, NULL, Sub, NULL, Div};
+
+int is_binary_operator = 0;
+parsing_func plus_minus_lut[2] = {HandleNumber, HandleOperator};
 
 double Calculate(const char *str)
 {
@@ -29,6 +33,8 @@ double Calculate(const char *str)
 	parsing_func parsing_lut[128];
 	size_t i;
 	LutInit();
+
+	is_binary_operator = 0;
 
 	for (i = 0; i < 10; ++i)
 	{
@@ -38,11 +44,10 @@ double Calculate(const char *str)
 	parsing_lut[' '] = HandleWhiteSpace;
 	parsing_lut[')'] = HandleCloseParentheseas;
 	parsing_lut['('] = HandleOpenParentheseas;
-	parsing_lut['-'] = HandleOperator;
-	parsing_lut['+'] = HandleOperator;
+	parsing_lut['-'] = HandlePlusMinus;
+	parsing_lut['+'] = HandlePlusMinus;
 	parsing_lut['*'] = HandleOperator;
 	parsing_lut['/'] = HandleOperator;
-
 	while (*str)
 	{
 		str = parsing_lut[(int)*str](str);
@@ -93,7 +98,13 @@ static const char *HandleNumber(const char *str)
 
 	*num = strtod(str, &end);
 	StackPush(numbers, num);
+	is_binary_operator = 1;
 	return end;
+}
+
+static const char *HandlePlusMinus(const char *str)
+{
+	return plus_minus_lut[is_binary_operator](str);
 }
 
 static const char *HandleOperator(const char *str)
@@ -109,6 +120,7 @@ static const char *HandleOperator(const char *str)
 
 	*operator= * str;
 	StackPush(operators, operator);
+	is_binary_operator = 0;
 	return str + 1;
 }
 
@@ -120,6 +132,7 @@ static const char *HandleCloseParentheseas(const char *str)
 		free(StackPeek(operators));
 		StackPop(operators);
 	}
+	is_binary_operator = 1;
 	return str + 1;
 }
 
@@ -166,6 +179,7 @@ static const char *HandleOpenParentheseas(const char *str)
 	}
 	*operator= * str;
 	StackPush(operators, operator);
+	is_binary_operator = 0;
 	return str + 1;
 }
 
