@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "singly_list.h": "c",
+        "stack.h": "c",
+        "recursion.h": "c"
+    }
+}
