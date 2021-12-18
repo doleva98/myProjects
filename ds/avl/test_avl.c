@@ -86,6 +86,23 @@ int main()
 	{
 		printf("fail in %d\n", __LINE__);
 	}
+
+	if (!(AvlFind(avl, &d)))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	if (!(AvlFind(avl, &test)))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	test = 50;
+
+	if (AvlFind(avl, &test))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
 	return 0;
 }
 

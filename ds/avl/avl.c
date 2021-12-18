@@ -28,6 +28,9 @@ static int AvlForEachHelper(avl_t *avl, avl_node_t *node, action_func_t action_f
 static int Count(const void *data, const void *param);
 static const void *AvlFindHelper(avl_t *avl, avl_node_t *node, const void *data);
 
+static avl_node_t *FindNextInRightSubTree(avl_node_t *node);
+static avl_node_t *FindPrevInLeftSubTree(avl_node_t *node);
+
 avl_t *AvlCreate(compare_func_t cmp_func, const void *param)
 {
 	avl_t *avl = NULL;
@@ -80,7 +83,31 @@ int AvlInsert(avl_t *avl, const void *data)
 }
 
 /* Remove a node  */
-void AvlRemove(avl_t *avl, const void *data);
+void AvlRemove(avl_t *avl, const void *data)
+{
+	if (!avl->root)
+	{
+		return;
+	}
+	if (avl->cmp_func(data, avl->root->data, avl->param) == avl->cmp_func(avl->root->data, data, avl->param))
+	{
+		avl_node_t *temp = NULL;
+		avl_node_t *curr = avl->root;
+		if (avl->root->right_son)
+		{
+			temp = FindNextInRightSubTree(avl->root);
+		}
+		else if (avl->root->left_son)
+		{
+			temp = FindPrevInLeftSubTree(avl->root);
+		}
+		avl->root = temp;
+		avl->root->right_son = curr->right_son;
+		avl->root->left_son = curr->left_son;
+		free(curr);
+	}
+	AvlRemoveHelper(avl, avl->root, data);
+}
 
 /* Find a node in AVL  */
 const void *AvlFind(avl_t *avl, const void *data)
@@ -224,9 +251,46 @@ static int Count(const void *data, const void *param)
 
 static const void *AvlFindHelper(avl_t *avl, avl_node_t *node, const void *data)
 {
+	if (!node)
+	{
+		return NULL;
+	}
 	if (avl->cmp_func(data, node->data, avl->param) == avl->cmp_func(node->data, data, avl->param))
 	{
 		return node->data;
 	}
-	if (avl->cmp_func(data, node->data))
+	if (avl->cmp_func(data, node->data, avl->param) > 0) /*go to the left*/
+	{
+		return AvlFindHelper(avl, node->left_son, data);
+	}
+	else /*go to the right*/
+	{
+		return AvlFindHelper(avl, node->right_son, data);
+	}
+}
+
+/****************remove**************/
+
+static avl_node_t *FindNextInRightSubTree(avl_node_t *node)
+{
+	avl_node_t *curr = node->right_son;
+	while (curr->left_son)
+	{
+		curr = curr->left_son;
+	}
+	return curr;
+}
+
+static avl_node_t *FindPrevInLeftSubTree(avl_node_t *node)
+{
+	avl_node_t *curr = node->left_son;
+	while (curr->right_son)
+	{
+		curr = curr->right_son;
+	}
+	return curr;
+}
+
+static void AvlRemoveHelper(avl_t *avl, avl_node_t *node, const void *data)
+{
 }
