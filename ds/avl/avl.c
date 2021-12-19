@@ -20,6 +20,7 @@ struct AVL
 };
 
 static avl_node_t *CreateNode(const void *data);
+static void AvlDestroyHelper(avl_node_t *node);
 static int AvlInsertHelper(avl_t *avl, avl_node_t *node, const void *data);
 static size_t max(size_t height1, size_t height2);
 static size_t getHeight(avl_node_t *node);
@@ -28,8 +29,10 @@ static int AvlForEachHelper(avl_t *avl, avl_node_t *node, action_func_t action_f
 static int Count(const void *data, const void *param);
 static const void *AvlFindHelper(avl_t *avl, avl_node_t *node, const void *data);
 
-static avl_node_t *FindNextInRightSubTree(avl_node_t *node);
-static avl_node_t *FindPrevInLeftSubTree(avl_node_t *node);
+static int HasOneChild(avl_node_t *node);
+static avl_node_t *FindNextAndRemoveInRightSubTree(avl_node_t *node);
+/*static avl_node_t *FindPrevAndRemoveInLeftSubTree(avl_node_t *node);*/
+static void AvlRemoveHelper(avl_t *avl, avl_node_t *node, const void *data);
 
 avl_t *AvlCreate(compare_func_t cmp_func, const void *param)
 {
@@ -49,7 +52,11 @@ avl_t *AvlCreate(compare_func_t cmp_func, const void *param)
 }
 
 /* Destroy AVL*/
-void AvlDestroy(avl_t *avl);
+void AvlDestroy(avl_t *avl)
+{
+	AvlDestroyHelper(avl->root);
+	free(avl);
+}
 
 /* Size of AVL*/
 size_t AvlSize(const avl_t *avl)
@@ -85,28 +92,48 @@ int AvlInsert(avl_t *avl, const void *data)
 /* Remove a node  */
 void AvlRemove(avl_t *avl, const void *data)
 {
-	if (!avl->root)
+	avl_node_t *curr = avl->root;
+	if (!curr)
 	{
 		return;
 	}
-	if (avl->cmp_func(data, avl->root->data, avl->param) == avl->cmp_func(avl->root->data, data, avl->param))
+	else if (avl->cmp_func(data, avl->root->data, avl->param) == 0)
 	{
-		avl_node_t *temp = NULL;
-		avl_node_t *curr = avl->root;
-		if (avl->root->right_son)
+		if (getHeight(avl->root) == 1)
 		{
-			temp = FindNextInRightSubTree(avl->root);
+			avl->root = NULL;
 		}
-		else if (avl->root->left_son)
+		else if (HasOneChild(avl->root))
 		{
-			temp = FindPrevInLeftSubTree(avl->root);
+			if (avl->root->right_son)
+			{
+				avl->root = avl->root->right_son;
+			}
+			else /*has left child*/
+			{
+				avl->root = avl->root->left_son;
+			}
 		}
-		avl->root = temp;
-		avl->root->right_son = curr->right_son;
-		avl->root->left_son = curr->left_son;
+		else /*root has two sons*/
+		{
+			if (avl->root->right_son->left_son)
+			{
+				avl->root = FindNextAndRemoveInRightSubTree(avl->root->right_son);
+				avl->root->right_son = curr->right_son;
+			}
+			else
+			{
+				avl->root = avl->root->right_son;
+			}
+			avl->root->left_son = curr->left_son;
+		}
 		free(curr);
+		avl->root->height = 1 + max(getHeight(avl->root->left_son), getHeight(avl->root->right_son));
 	}
-	AvlRemoveHelper(avl, avl->root, data);
+	else
+	{
+		AvlRemoveHelper(avl, avl->root, data);
+	}
 }
 
 /* Find a node in AVL  */
@@ -151,7 +178,7 @@ static avl_node_t *CreateNode(const void *data)
 static int AvlInsertHelper(avl_t *avl, avl_node_t *node, const void *data)
 {
 	int result = 1;
-	if (avl->cmp_func(data, node->data, avl->param) > 0) /*needs to go to the left*/
+	if (avl->cmp_func(data, node->data, avl->param) < 0) /*needs to go to the left*/
 	{
 		if (node->left_son)
 		{
@@ -203,9 +230,10 @@ static int AvlForEachHelper(avl_t *avl, avl_node_t *node, action_func_t action_f
 	{
 		return 0;
 	}
+
 	else if (order == PRE_ORDER)
 	{
-		action_func(node, param);
+		action_func(node->data, param);
 		result = AvlForEachHelper(avl, node->left_son, action_func, param, order);
 		if (result == 1)
 		{
@@ -221,7 +249,7 @@ static int AvlForEachHelper(avl_t *avl, avl_node_t *node, action_func_t action_f
 		{
 			return 1;
 		}
-		action_func(node, param);
+		action_func(node->data, param);
 		result = AvlForEachHelper(avl, node->right_son, action_func, param, order);
 		return result;
 	}
@@ -233,7 +261,7 @@ static int AvlForEachHelper(avl_t *avl, avl_node_t *node, action_func_t action_f
 			return 1;
 		}
 		result = AvlForEachHelper(avl, node->right_son, action_func, param, order);
-		action_func(node, param);
+		action_func(node->data, param);
 		return result;
 	}
 }
@@ -259,7 +287,7 @@ static const void *AvlFindHelper(avl_t *avl, avl_node_t *node, const void *data)
 	{
 		return node->data;
 	}
-	if (avl->cmp_func(data, node->data, avl->param) > 0) /*go to the left*/
+	if (avl->cmp_func(data, node->data, avl->param) < 0) /*go to the left*/
 	{
 		return AvlFindHelper(avl, node->left_son, data);
 	}
@@ -271,26 +299,145 @@ static const void *AvlFindHelper(avl_t *avl, avl_node_t *node, const void *data)
 
 /****************remove**************/
 
-static avl_node_t *FindNextInRightSubTree(avl_node_t *node)
+static avl_node_t *FindNextAndRemoveInRightSubTree(avl_node_t *node)
 {
-	avl_node_t *curr = node->right_son;
-	while (curr->left_son)
+	if (node->left_son)
 	{
-		curr = curr->left_son;
+		if (!node->left_son->left_son)
+		{
+			avl_node_t *temp = node->left_son;
+			node->left_son = node->left_son->right_son;
+			return temp;
+		}
+		return FindNextAndRemoveInRightSubTree(node->left_son);
 	}
-	return curr;
+	return NULL;
 }
-
-static avl_node_t *FindPrevInLeftSubTree(avl_node_t *node)
+/*
+static avl_node_t *FindPrevAndRemoveInLeftSubTree(avl_node_t *node)
 {
-	avl_node_t *curr = node->left_son;
-	while (curr->right_son)
+	if (node->right_son)
 	{
-		curr = curr->right_son;
+		if (!node->right_son->right_son)
+		{
+			avl_node_t *temp = node->right_son;
+			node->right_son = node->right_son->left_son;
+			return temp;
+		}
+		return FindNextAndRemoveInRightSubTree(node->right_son);
 	}
-	return curr;
+	return NULL;
+}*/
+
+static int HasOneChild(avl_node_t *node)
+{
+	return (node->right_son && !node->left_son) || (!node->right_son && node->left_son);
 }
 
 static void AvlRemoveHelper(avl_t *avl, avl_node_t *node, const void *data)
 {
+	avl_node_t *curr = NULL;
+	if (avl->cmp_func(data, node->data, avl->param) < 0) /*go to the left*/
+	{
+		curr = node->left_son;
+		if (curr && avl->cmp_func(data, curr->data, avl->param) == 0)
+		{
+			if (getHeight(curr) == 1)
+			{
+				node->left_son = NULL;
+				free(curr);
+			}
+			else if (HasOneChild(curr))
+			{
+				if (curr->left_son)
+				{
+					node->left_son = curr->left_son;
+				}
+				else
+				{
+					node->left_son = curr->right_son;
+				}
+				free(curr);
+			}
+			else /*node has 2 children*/
+			{
+				if (curr->right_son->left_son)
+				{
+					node->left_son = FindNextAndRemoveInRightSubTree(curr->right_son);
+					node->left_son->right_son = curr->right_son;
+				}
+				else
+				{
+					node->left_son = curr->right_son;
+				}
+				node->left_son->left_son = curr->left_son;
+				free(curr);
+				node->right_son->height = 1 + max(getHeight(node->left_son->left_son), getHeight(node->left_son->right_son));
+				return;
+			}
+		}
+		else
+		{
+			AvlRemoveHelper(avl, node->left_son, data);
+		}
+	}
+	else if (avl->cmp_func(data, node->data, avl->param) > 0) /*go to the right*/
+	{
+		curr = node->right_son;
+		if (curr && avl->cmp_func(data, curr->data, avl->param) == 0)
+		{
+			if (getHeight(curr) == 1)
+			{
+				node->right_son = NULL;
+				free(curr);
+			}
+			else if (HasOneChild(curr))
+			{
+				if (curr->left_son)
+				{
+					node->right_son = curr->left_son;
+				}
+				else
+				{
+					node->right_son = curr->right_son;
+				}
+				free(curr);
+			}
+			else /*node has 2 children*/
+			{
+				if (curr->right_son->left_son)
+				{
+					node->right_son = FindNextAndRemoveInRightSubTree(curr->right_son);
+					node->right_son->right_son = curr->right_son;
+				}
+				else
+				{
+					node->right_son = curr->right_son;
+				}
+				node->right_son->left_son = curr->left_son;
+				free(curr);
+				node->right_son->height = 1 + max(getHeight(node->right_son->left_son), getHeight(node->right_son->right_son));
+				return;
+			}
+		}
+		else
+		{
+			AvlRemoveHelper(avl, node->right_son, data);
+		}
+	}
+	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
+}
+
+/**************for destroy**********/
+static void AvlDestroyHelper(avl_node_t *node)
+{
+	if (node->left_son)
+	{
+		AvlDestroyHelper(node->left_son);
+	}
+	if (node->right_son)
+	{
+		AvlDestroyHelper(node->right_son);
+	}
+	free(node);
 }
