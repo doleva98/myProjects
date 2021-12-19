@@ -3,16 +3,18 @@
 
 static int compare_int(const void *n1, const void *n2, const void *param);
 static void EasyTest();
-
+static void HardTest();
 static int print_in_order(const void *data, const void *param);
 
 FILE *fp = NULL;
 
 int main()
 {
-	fp = fopen("test_res", "w");
+	fp = fopen("test_res.txt", "w");
 
 	EasyTest();
+	HardTest();
+	fclose(fp);
 	return 0;
 }
 
@@ -156,6 +158,11 @@ static void EasyTest()
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 	AvlDestroy(avl);
+}
+
+static void HardTest()
+{
+	
 }
 
 static int compare_int(const void *n1, const void *n2, const void *param)
