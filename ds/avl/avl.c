@@ -33,6 +33,7 @@ static int HasOneChild(avl_node_t *node);
 static avl_node_t *FindNextAndRemoveInRightSubTree(avl_node_t *node);
 /*static avl_node_t *FindPrevAndRemoveInLeftSubTree(avl_node_t *node);*/
 static void AvlRemoveHelper(avl_t *avl, avl_node_t *node, const void *data);
+static avl_node_t *BalanceTree(avl_t *avl, avl_node_t *node, const void *data);
 
 avl_t *AvlCreate(compare_func_t cmp_func, const void *param)
 {
@@ -81,12 +82,18 @@ int AvlIsEmpty(const avl_t *avl)
 /* Insert a new node - 0 if success, 1 fail */
 int AvlInsert(avl_t *avl, const void *data)
 {
+	int res = 0;
 	if (!avl->root)
 	{
 		avl->root = CreateNode(data);
-		return !!avl->root;
+		return !avl->root;
 	}
-	return AvlInsertHelper(avl, avl->root, data);
+	res = AvlInsertHelper(avl, avl->root, data);
+	avl->root->height = 1 + max(getHeight(avl->root->left_son), getHeight(avl->root->right_son));
+	avl->root->left_son = BalanceTree(avl, avl->root->left_son, data);
+	avl->root->right_son = BalanceTree(avl, avl->root->right_son, data);
+	avl->root = BalanceTree(avl, avl->root, data);
+	return res;
 }
 
 /* Remove a node  */
@@ -128,12 +135,15 @@ void AvlRemove(avl_t *avl, const void *data)
 			avl->root->left_son = curr->left_son;
 		}
 		free(curr);
-		avl->root->height = 1 + max(getHeight(avl->root->left_son), getHeight(avl->root->right_son));
 	}
 	else
 	{
 		AvlRemoveHelper(avl, avl->root, data);
 	}
+	avl->root->height = 1 + max(getHeight(avl->root->left_son), getHeight(avl->root->right_son));
+	avl->root->left_son = BalanceTree(avl, avl->root->left_son, data);
+	avl->root->right_son = BalanceTree(avl, avl->root->right_son, data);
+	avl->root = BalanceTree(avl, avl->root, data);
 }
 
 /* Find a node in AVL  */
@@ -187,7 +197,7 @@ static int AvlInsertHelper(avl_t *avl, avl_node_t *node, const void *data)
 		else
 		{
 			node->left_son = CreateNode(data);
-			result = !!node->left_son;
+			result = !node->left_son;
 		}
 	}
 	else /*needs to go to the right*/
@@ -199,9 +209,12 @@ static int AvlInsertHelper(avl_t *avl, avl_node_t *node, const void *data)
 		else
 		{
 			node->right_son = CreateNode(data);
-			result = !!node->right_son;
+			result = !node->right_son;
 		}
 	}
+	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
+	node->left_son = BalanceTree(avl, node->left_son, data);
+	node->right_son = BalanceTree(avl, node->right_son, data);
 	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
 
 	return result;
@@ -426,6 +439,8 @@ static void AvlRemoveHelper(avl_t *avl, avl_node_t *node, const void *data)
 		}
 	}
 	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
+	node->left_son = BalanceTree(avl, node->left_son, data);
+	node->right_son = BalanceTree(avl, node->right_son, data);
 }
 
 /**************for destroy**********/
@@ -440,4 +455,87 @@ static void AvlDestroyHelper(avl_node_t *node)
 		AvlDestroyHelper(node->right_son);
 	}
 	free(node);
+}
+
+/**************Rotation***************/
+
+static int GetBalance(avl_node_t *node)
+{
+	if (!node)
+	{
+		return 0;
+	}
+	return getHeight(node->left_son) - getHeight(node->right_son);
+}
+
+/*rotate a subtree that node is the root of him to the right*/
+static avl_node_t *RightRotate(avl_t *avl, avl_node_t *node)
+{
+	avl_node_t *new_root = node->left_son;
+	avl_node_t *T2 = new_root->right_son;
+
+	new_root->right_son = node;
+	node->left_son = T2;
+
+	node->height = max(getHeight(node->left_son), getHeight(node->right_son)) + 1;
+	new_root->height = max(getHeight(new_root->left_son), getHeight(new_root->right_son)) + 1;
+	if (avl->root == new_root->right_son)
+	{
+		avl->root = new_root;
+	}
+	return new_root;
+}
+
+static avl_node_t *LeftRotate(avl_t *avl, avl_node_t *node)
+{
+	avl_node_t *new_root = node->right_son;
+	avl_node_t *T2 = new_root->left_son;
+	;
+
+	new_root->left_son = node;
+	node->right_son = T2;
+
+	node->height = max(getHeight(node->right_son), getHeight(node->left_son)) + 1;
+	new_root->height = max(getHeight(new_root->right_son), getHeight(new_root->left_son)) + 1;
+	if (avl->root == new_root->left_son)
+	{
+		avl->root = new_root;
+	}
+	return new_root;
+}
+
+static avl_node_t *BalanceTree(avl_t *avl, avl_node_t *node, const void *data)
+{
+	int balance = 0;
+	if (!node)
+	{
+		return NULL;
+	}
+	balance = GetBalance(node);
+	/*left left*/
+	if (balance > 1 && avl->cmp_func(data, node->left_son->data, avl->param) < 0)
+	{
+		return RightRotate(avl, node);
+	}
+	/*right right*/
+	else if (balance < -1 && avl->cmp_func(data, node->right_son->data, avl->param) > 0)
+	{
+		return LeftRotate(avl, node);
+	}
+	/*left right*/
+	else if (balance > 1 && avl->cmp_func(data, node->left_son->data, avl->param) > 0)
+	{
+		node->left_son = LeftRotate(avl, node->left_son);
+		return RightRotate(avl, node);
+	}
+	/*right left*/
+	else if (balance < -1 && avl->cmp_func(data, node->right_son->data, avl->param) < 0)
+	{
+		node->right_son = RightRotate(avl, node->right_son);
+		return LeftRotate(avl, node);
+	}
+
+	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
+
+	return node;
 }

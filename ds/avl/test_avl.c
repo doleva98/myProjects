@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "avl.h"
+#include <stdlib.h>
 
 static int compare_int(const void *n1, const void *n2, const void *param);
 static void EasyTest();
@@ -29,7 +30,7 @@ static void EasyTest()
 	int test = 4;
 
 	avl = AvlCreate(compare_int, NULL);
-
+	fprintf(fp, "****************EASY TEST***************\n");
 	if (!AvlIsEmpty(avl))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
@@ -86,13 +87,13 @@ static void EasyTest()
 	AvlInsert(avl, &c);
 	AvlInsert(avl, &d);
 
-	fprintf(fp, "print 1 4 5 10\n");
+	fprintf(fp, "IN_ORDER : print 1 4 5 10\n");
 	AvlForEach(avl, print_in_order, NULL, IN_ORDER);
 
-	fprintf(fp, "print 5 1 4 10\n");
+	fprintf(fp, "PRE_ORDER : print 4 1 5 10\n");
 	AvlForEach(avl, print_in_order, NULL, PRE_ORDER);
 
-	fprintf(fp, "print 4 1 10 5\n");
+	fprintf(fp, "POST_ORDER : print 1 10 5 4\n");
 	AvlForEach(avl, print_in_order, NULL, POST_ORDER);
 
 	if (AvlIsEmpty(avl))
@@ -137,7 +138,8 @@ static void EasyTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	if (!(AvlHeight(avl) == 3))
+
+	if (!(AvlHeight(avl) == 2))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -157,12 +159,101 @@ static void EasyTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
+
+	if (AvlIsEmpty(avl))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
 	AvlDestroy(avl);
 }
 
 static void HardTest()
 {
-	
+	int a[10];
+	avl_t *avl = NULL;
+	size_t i;
+	srand(0);
+
+	avl = AvlCreate(compare_int, NULL);
+	fprintf(fp, "****************HARD TEST***************\n");
+
+	if (!(AvlSize(avl) == 0))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	if (!(AvlHeight(avl) == 0))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	if (!AvlIsEmpty(avl))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	for (i = 0; i < 10; ++i)
+	{
+		a[i] = rand() % 1000000;
+		printf("%d\n", a[i]);
+		AvlInsert(avl, &a[i]);
+	}
+	if (!(AvlSize(avl) == 10))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	if (!(AvlHeight(avl) == 4))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	if (AvlIsEmpty(avl))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	fprintf(fp, "print preorder\n");
+	AvlForEach(avl, print_in_order, NULL, IN_ORDER);
+	fprintf(fp, "remove %d\n", a[3]);
+	AvlRemove(avl, &a[0]);
+
+	if (!(AvlSize(avl) == 9))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	if (!(AvlHeight(avl) == 4))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	fprintf(fp, "remove %d\n", a[3]);
+	AvlRemove(avl, &a[3]);
+
+	if (!(AvlSize(avl) == 8))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	if (!(AvlHeight(avl) == 4))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	fprintf(fp, "remove %d\n", a[5]);
+	AvlRemove(avl, &a[5]);
+	fprintf(fp, "remove %d\n", a[7]);
+	AvlRemove(avl, &a[7]);
+	fprintf(fp, "remove %d\n", a[9]);
+	AvlRemove(avl, &a[9]);
+	fprintf(fp, "print preorder\n");
+	AvlForEach(avl, print_in_order, NULL, IN_ORDER);
+
+	if (!(AvlSize(avl) == 5))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	if (!(AvlHeight(avl) == 3))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	AvlRemove(avl, &a[2]);
+	AvlRemove(avl, &a[8]);
 }
 
 static int compare_int(const void *n1, const void *n2, const void *param)
