@@ -1,6 +1,9 @@
+
 #include <stdio.h>
 #include "avl.h"
 #include <stdlib.h>
+
+#define EMPTY_TREE 0 /*change to your height of empty tree*/
 
 static int compare_int(const void *n1, const void *n2, const void *param);
 static void EasyTest();
@@ -11,11 +14,33 @@ FILE *fp = NULL;
 
 int main()
 {
+	FILE *res = NULL;
 	fp = fopen("test_res.txt", "w");
-
 	EasyTest();
 	HardTest();
 	fclose(fp);
+	system("diff test_res.txt avl_sol.txt > results.txt");
+	res = fopen("results.txt", "r");
+	if (fgetc(res) == EOF)
+	{
+		printf("\033[0;32m");
+		printf("GOOD JOB PASSED ALL TESTS");
+		printf("\033[0m\n");
+	}
+	else
+	{
+		printf("\033[0;31m");
+		printf("FAILED TEST\n");
+		printf("\033[0;35m");
+
+		printf("left: your results\t\t\t\t\t\tright: expected results");
+
+		printf("\033[0m\n");
+	}
+	system("diff -y --suppress-common-lines test_res.txt avl_sol.txt");
+
+	fclose(res);
+	remove("results.txt");
 	return 0;
 }
 
@@ -41,7 +66,7 @@ static void EasyTest()
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
-	if (!(AvlHeight(avl) == 0))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 0))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -60,7 +85,7 @@ static void EasyTest()
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
-	if (!(AvlHeight(avl) == 1))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 1))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -79,7 +104,7 @@ static void EasyTest()
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
-	if (!(AvlHeight(avl) == 2))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 2))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -106,7 +131,7 @@ static void EasyTest()
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
-	if (!(AvlHeight(avl) == 3))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 3))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -139,7 +164,7 @@ static void EasyTest()
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
-	if (!(AvlHeight(avl) == 2))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 2))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -155,7 +180,7 @@ static void EasyTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	if (!(AvlHeight(avl) == 2))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 2))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -181,7 +206,7 @@ static void HardTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	if (!(AvlHeight(avl) == 0))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 0))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -194,14 +219,13 @@ static void HardTest()
 	for (i = 0; i < 10; ++i)
 	{
 		a[i] = rand() % 1000000;
-		printf("%d\n", a[i]);
 		AvlInsert(avl, &a[i]);
 	}
 	if (!(AvlSize(avl) == 10))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	if (!(AvlHeight(avl) == 4))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 4))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -219,7 +243,7 @@ static void HardTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	if (!(AvlHeight(avl) == 4))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 4))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -230,7 +254,7 @@ static void HardTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	if (!(AvlHeight(avl) == 4))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 4))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -248,12 +272,28 @@ static void HardTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	if (!(AvlHeight(avl) == 3))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 3))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	AvlRemove(avl, &a[2]);
+
+	fprintf(fp, "remove %d\n", a[1]);
+	AvlRemove(avl, &a[1]);
+	fprintf(fp, "remove %d\n", a[8]);
 	AvlRemove(avl, &a[8]);
+	fprintf(fp, "print preorder\n");
+
+	AvlForEach(avl, print_in_order, NULL, IN_ORDER);
+
+	if (!(AvlSize(avl) == 3))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	if (!(AvlHeight(avl) == EMPTY_TREE + 2))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	AvlDestroy(avl);
 }
 
 static int compare_int(const void *n1, const void *n2, const void *param)
