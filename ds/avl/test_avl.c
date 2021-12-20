@@ -9,6 +9,8 @@ static int compare_int(const void *n1, const void *n2, const void *param);
 static void EasyTest();
 static void HardTest();
 static int print_in_order(const void *data, const void *param);
+static void test3();
+static int Compare(const void *new_elem, const void *curr_elem, const void *param);
 
 FILE *fp = NULL;
 
@@ -18,6 +20,7 @@ int main()
 	fp = fopen("test_res.txt", "w");
 	EasyTest();
 	HardTest();
+	test3();
 	fclose(fp);
 	system("diff test_res.txt avl_sol.txt > results.txt");
 	res = fopen("results.txt", "r");
@@ -319,4 +322,111 @@ static int print_in_order(const void *data, const void *param)
 	(void)param;
 	fprintf(fp, "%d\n", *(int *)data);
 	return 0;
+}
+
+static void test3()
+{
+	avl_t *avl = NULL;
+	size_t i = 0;
+	int test1;
+	int a[100];
+
+	srand(0);
+	fprintf(fp, "****************SUPER HARD TEST***************\n");
+
+	avl = AvlCreate(Compare, NULL);
+
+	if (!(AvlSize(avl) == 0))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	if (!(AvlIsEmpty(avl)))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	if (!(AvlHeight(avl) == 0))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	for (; i < 100; ++i)
+	{
+		a[i] = i;
+		AvlInsert(avl, &a[i]);
+	}
+
+	if (!(AvlSize(avl) == 100))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	if ((AvlIsEmpty(avl)))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	if (!(AvlHeight(avl) == 7))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	fprintf(fp, "before removal\n");
+	AvlForEach(avl, print_in_order, NULL, 0);
+
+	test1 = a[4];
+	fprintf(fp, "please remove %d\n", test1);
+	AvlRemove(avl, &test1);
+
+	AvlForEach(avl, print_in_order, NULL, 0);
+	if (!(AvlSize(avl) == 99))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	if ((AvlIsEmpty(avl)))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	fprintf(fp, "please remove %d\n", a[9]);
+
+	AvlRemove(avl, &a[9]);
+
+	AvlForEach(avl, print_in_order, NULL, 0);
+
+	if (!(AvlSize(avl) == 98))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	if ((AvlIsEmpty(avl)))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	fprintf(fp, "please remove %d\n", a[59]);
+	AvlRemove(avl, &a[59]);
+	AvlForEach(avl, print_in_order, NULL, 0);
+
+	if (!(AvlSize(avl) == 97))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+
+	if ((AvlIsEmpty(avl)))
+	{
+		fprintf(fp, "fail in %d\n", __LINE__);
+	}
+	/*AvlRemove(avl, &a[95]);*/
+	for (i = 95; i < 100; ++i)
+	{
+		AvlRemove(avl, &a[i]);
+	}
+	AvlDestroy(avl);
+}
+
+static int Compare(const void *new_elem, const void *curr_elem, const void *param)
+{
+	(void)param;
+	return *(int *)new_elem - *(int *)curr_elem;
 }
