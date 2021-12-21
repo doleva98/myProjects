@@ -110,13 +110,12 @@ int AvlInsert(avl_t *avl, const void *data)
 /* Remove a node  */
 void AvlRemove(avl_t *avl, const void *data)
 {
-	avl_node_t *curr = NULL;
-	if (!AvlFind(avl, data))
+	avl_node_t *curr = avl->root;
+	if (!curr)
 	{
 		return;
 	}
-	curr = avl->root;
-	if (!curr)
+	else if (!AvlFind(avl, data))
 	{
 		return;
 	}
@@ -339,17 +338,20 @@ static const void *AvlFindHelper(avl_t *avl, avl_node_t *node, const void *data)
 
 static avl_node_t *FindNextAndRemoveInRightSubTree(avl_node_t *node)
 {
+	avl_node_t *mynode = NULL;
 	if (node->left_son)
 	{
 		if (!node->left_son->left_son)
 		{
 			avl_node_t *temp = node->left_son;
 			node->left_son = node->left_son->right_son;
+			node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
 			return temp;
 		}
-		return FindNextAndRemoveInRightSubTree(node->left_son);
+		mynode = FindNextAndRemoveInRightSubTree(node->left_son);
+		node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
 	}
-	return NULL;
+	return mynode;
 }
 
 static int HasOneChild(avl_node_t *node)
@@ -523,73 +525,42 @@ static avl_node_t *LeftRotate(avl_t *avl, avl_node_t *node)
 static avl_node_t *BalanceTree(avl_t *avl, avl_node_t *node, const void *data)
 {
 	int balance = 0;
+	int left_balance = 0;
+	int right_balance = 0;
+
+	(void)data;
 	if (!node)
 	{
 		return NULL;
 	}
+	if (node->left_son)
+	{
+		left_balance = GetBalance(node->left_son);
+	}
+	if (node->right_son)
+	{
+		right_balance = GetBalance(node->right_son);
+	}
 	balance = GetBalance(node);
 
-	if (!AvlFind(avl, data))
-	{
-		int left_balance = 0;
-
-		int right_balance = 0;
-
-		if (node->left_son)
-		{
-			left_balance = GetBalance(node->left_son);
-		}
-		if (node->right_son)
-		{
-			right_balance = GetBalance(node->right_son);
-		}
-
-		/*left left*/
-		if (balance > 1 && left_balance > 1)
-		{
-			return RightRotate(avl, node);
-		}
-		/*right right*/
-		else if (balance < -1 && right_balance < -1)
-		{
-			return LeftRotate(avl, node);
-		}
-		/*left right*/
-		else if (balance > 1 && right_balance < -1)
-		{
-			node->left_son = LeftRotate(avl, node->left_son);
-			return RightRotate(avl, node);
-		}
-		/*right left*/
-		else if (balance < -1 && right_balance > 1)
-		{
-			node->right_son = RightRotate(avl, node->right_son);
-			return LeftRotate(avl, node);
-		}
-
-		node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
-
-		return node;
-	}
-
 	/*left left*/
-	if (balance > 1 && avl->cmp_func(data, node->left_son->data, avl->param) < 0)
+	if (balance > 1 && left_balance >= 0)
 	{
 		return RightRotate(avl, node);
 	}
 	/*right right*/
-	else if (balance < -1 && avl->cmp_func(data, node->right_son->data, avl->param) > 0)
+	else if (balance < -1 && right_balance <= 0)
 	{
 		return LeftRotate(avl, node);
 	}
 	/*left right*/
-	else if (balance > 1 && avl->cmp_func(data, node->left_son->data, avl->param) > 0)
+	else if (balance > 1 && right_balance <= 0)
 	{
 		node->left_son = LeftRotate(avl, node->left_son);
 		return RightRotate(avl, node);
 	}
 	/*right left*/
-	else if (balance < -1 && avl->cmp_func(data, node->right_son->data, avl->param) < 0)
+	else if (balance < -1 && right_balance >= 0)
 	{
 		node->right_son = RightRotate(avl, node->right_son);
 		return LeftRotate(avl, node);

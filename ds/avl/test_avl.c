@@ -12,15 +12,7 @@ static void HardTest();
 static int print_in_order(const void *data, const void *param);
 static void test3();
 static int Compare(const void *new_elem, const void *curr_elem, const void *param);
-
-static void AvlPrintAll(avl_t *avl);
-
-static int Print(const void *data, const void *param);
-int MatchFunc(const void *curr_item, const void *param);
-
-void TestSortLargeAmount(void);
-static int IsSorted(const void *data, const void *param);
-static void TestFunctionality();
+static void test10();
 
 FILE *fp = NULL;
 
@@ -53,10 +45,34 @@ int main()
 	system("diff -y --suppress-common-lines test_res.txt avl_sol.txt");
 	fclose(res);
 	remove("results.txt");
-	TestFunctionality();
-	TestSortLargeAmount();
+	test10();
 
 	return 0;
+}
+
+static void test10()
+{
+	avl_t *avl = NULL;
+	int a[5];
+	size_t i = 0;
+
+	avl = AvlCreate(compare_int, NULL);
+
+	for (i = 0; i < 5; ++i)
+	{
+		a[i] = i;
+	}
+
+	for (i = 0; i < 5; ++i)
+	{
+		AvlInsert(avl, &a[i]);
+	}
+
+	for (i = 0; i < 5; ++i)
+	{
+		AvlRemove(avl, &a[i]);
+	}
+	AvlDestroy(avl);
 }
 
 static void EasyTest()
@@ -178,7 +194,6 @@ static void EasyTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-
 	if (!(AvlHeight(avl) == EMPTY_TREE + 2))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
@@ -304,7 +319,7 @@ static void HardTest()
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
-	if (!(AvlHeight(avl) == EMPTY_TREE + 3))
+	if (!(AvlHeight(avl) == EMPTY_TREE + 2))
 	{
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
@@ -430,7 +445,7 @@ static void test3()
 		fprintf(fp, "fail in %d\n", __LINE__);
 	}
 
-	for (i = 60; i < 100; ++i)
+	for (i = 85; i < 100; ++i)
 	{
 		AvlRemove(avl, &a[i]);
 	}
@@ -441,147 +456,4 @@ static int Compare(const void *new_elem, const void *curr_elem, const void *para
 {
 	(void)param;
 	return *(int *)new_elem - *(int *)curr_elem;
-}
-
-/***********matan*******/
-
-void TestFunctionality()
-{
-	avl_t *avl = NULL;
-	int a = 4, b = 2, c = 7, d = 1325, e = 25, f = 67;
-	puts("Testing for general functionality");
-	avl = AvlCreate(Compare, NULL);
-
-	if (!AvlIsEmpty(avl))
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-
-	if (AvlHeight(avl) != -1 + 1)
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-
-	AvlInsert(avl, &a);
-
-	if (AvlIsEmpty(avl))
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-
-	if (AvlHeight(avl) != 0 + 1)
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-
-	AvlInsert(avl, &b);
-	AvlInsert(avl, &c);
-	AvlInsert(avl, &d);
-	AvlInsert(avl, &e);
-	AvlInsert(avl, &f);
-	AvlPrintAll(avl);
-
-	if (AvlSize(avl) != 6)
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-
-	if (*(int *)AvlFind(avl, &d) != d)
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-
-	if (*(int *)AvlFind(avl, &b) != b)
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-
-	if (*(int *)AvlFind(avl, &a) != a)
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-
-	if (AvlHeight(avl) != 2 + 1)
-	{
-		printf("Failed in line %d\n", __LINE__ - 2);
-	}
-	AvlRemove(avl, &a);
-	AvlPrintAll(avl);
-	AvlDestroy(avl);
-}
-
-static int Print(const void *data, const void *param)
-{
-	(void)param;
-	printf("%d ", *(int *)data);
-	return 1;
-}
-
-void AvlPrintAll(avl_t *avl)
-{
-	printf("\n### Printing Avl using foreach in In-order.   Avl Elements: ");
-	AvlForEach(avl, Print, NULL, IN_ORDER);
-	printf("###\n### Printing Avl using foreach in Pre-order.  Avl Elements: ");
-	AvlForEach(avl, Print, NULL, PRE_ORDER);
-	printf("###\n### Printing Avl using foreach in Post-order. Avl Elements: ");
-	AvlForEach(avl, Print, NULL, POST_ORDER);
-	printf("###\n");
-}
-
-#define ARR_SIZE 10000
-static int comp;
-void TestSortLargeAmount()
-{
-	int arr[ARR_SIZE];
-	avl_t *avl = NULL;
-	size_t i;
-	int height = 0;
-	srand(time(NULL));
-	printf("\n### Testing Sorting large amount of data: %d.\n\n", ARR_SIZE);
-	comp = -1;
-	avl = AvlCreate(Compare, NULL);
-	printf("Height of tree with %d nodes is %ld\n\n", 0, AvlHeight(avl));
-
-	printf("\n### Inserting nodes ###\n\n");
-
-	for (i = 0; i < ARR_SIZE; ++i)
-	{
-		arr[i] = rand();
-		AvlInsert(avl, &arr[i]);
-		if ((int)AvlHeight(avl) > height)
-		{
-			height = AvlHeight(avl);
-			printf("New height %d - updated when inserting node number %lu\n", height, i + 1);
-		}
-	}
-	printf("\n### Height of tree with %d nodes is %ld\n", ARR_SIZE, AvlHeight(avl));
-
-	/* checking if elements are sorted */
-	AvlForEach(avl, IsSorted, &comp, IN_ORDER);
-
-	printf("\n### Removing all nodes ###\n\n");
-
-	for (i = 0; i < ARR_SIZE; ++i)
-	{
-		AvlRemove(avl, &arr[i]);
-		if ((int)AvlHeight(avl) < height)
-		{
-			height = AvlHeight(avl);
-			printf("New height %d - updated when reducing to %lu elements\n", height, ARR_SIZE - i - 1);
-		}
-	}
-
-	AvlDestroy(avl);
-}
-
-static int IsSorted(const void *data, const void *param)
-{
-	(void)param;
-	if (*(int *)data > comp)
-	{
-		comp = *(int *)data;
-		return 1;
-	}
-	printf("FAILED IN SORTING\n");
-	return 0;
 }
