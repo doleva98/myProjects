@@ -12,9 +12,6 @@ static void HardTest();
 static int print_in_order(const void *data, const void *param);
 static void test3();
 static int Compare(const void *new_elem, const void *curr_elem, const void *param);
-/* static void test10(); */
-static int IsSorted(const void *data, const void *param);
-void TestSortLargeAmount();
 
 FILE *fp = NULL;
 
@@ -47,37 +44,8 @@ int main()
 	system("diff -y --suppress-common-lines test_res.txt avl_sol.txt");
 	fclose(res);
 	remove("results.txt");
-	/* test10(); */
-	TestSortLargeAmount();
 	return 0;
 }
-
-/*static void test10()
-{
-	avl_t *avl = NULL;
-	const size_t SIZE = 2;
-	int *a = (int *)malloc(SIZE);
-	size_t i = 0;
-
-	avl = AvlCreate(compare_int, NULL);
-
-	for (i = 0; i < SIZE; ++i)
-	{
-		a[i] = i;
-	}
-
-	for (i = 0; i < SIZE; ++i)
-	{
-		AvlInsert(avl, &a[i]);
-	}
-
-	for (i = 0; i < SIZE; ++i)
-	{
-		AvlRemove(avl, &a[i]);
-	}
-	free(a);
-	AvlDestroy(avl);
-}*/
 
 static void EasyTest()
 {
@@ -460,62 +428,4 @@ static int Compare(const void *new_elem, const void *curr_elem, const void *para
 {
 	(void)param;
 	return *(int *)new_elem - *(int *)curr_elem;
-}
-
-#define ARR_SIZE 100000
-static int comp;
-void TestSortLargeAmount()
-{
-	int arr[ARR_SIZE];
-	avl_t *avl = NULL;
-	size_t i;
-	int height = 0;
-	srand(time(NULL));
-	printf("\n### Testing Sorting large amount of data: %d.\n\n", ARR_SIZE);
-	comp = -1;
-	avl = AvlCreate(Compare, NULL);
-	printf("Height of tree with %d nodes is %d\n\n", 0, AvlHeight(avl));
-
-	printf("\n### Inserting nodes ###\n\n");
-
-	for (i = 0; i < ARR_SIZE; ++i)
-	{
-		arr[i] = rand();
-		AvlInsert(avl, &arr[i]);
-		if (AvlHeight(avl) > height)
-		{
-			height = AvlHeight(avl);
-			printf("New height %d - updated when inserting node number %lu\n", height, i + 1);
-		}
-	}
-	printf("\n### Height of tree with %d nodes is %d\n", ARR_SIZE, AvlHeight(avl));
-
-	/* checking if elements are sorted */
-	AvlForEach(avl, IsSorted, &comp, IN_ORDER);
-
-	printf("\n### Removing all nodes ###\n\n");
-
-	for (i = 0; i < ARR_SIZE; ++i)
-	{
-		AvlRemove(avl, &arr[i]);
-		if (AvlHeight(avl) < height)
-		{
-			height = AvlHeight(avl);
-			printf("New height %d - updated when reducing to %lu elements\n", height, ARR_SIZE - i - 1);
-		}
-	}
-
-	AvlDestroy(avl);
-}
-
-static int IsSorted(const void *data, const void *param)
-{
-	(void)param;
-	if (*(int *)data > comp)
-	{
-		comp = *(int *)data;
-		return 1;
-	}
-	printf("FAILED IN SORTING\n");
-	return 0;
 }
