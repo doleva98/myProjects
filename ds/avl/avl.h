@@ -41,4 +41,5 @@ const void *AvlFind(avl_t *avl, const void *data);
 
 int AvlForEach(avl_t *avl, action_func_t action_func, const void *param, traversal_t order);
 
+void nAvlRemove(avl_t *avl, const void *data);
 #endif

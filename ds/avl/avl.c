@@ -29,12 +29,11 @@ static int AvlForEachHelper(avl_t *avl, avl_node_t *node, action_func_t action_f
 static int Count(const void *data, const void *param);
 static const void *AvlFindHelper(avl_t *avl, avl_node_t *node, const void *data);
 
-static int HasOneChild(avl_node_t *node);
-static avl_node_t *FindNextAndRemoveInRightSubTree(avl_node_t *node);
-static void AvlRemoveHelper(avl_t *avl, avl_node_t *node, const void *data);
 static avl_node_t *BalanceTree(avl_t *avl, avl_node_t *node, const void *data);
 static avl_node_t *RightRotate(avl_t *avl, avl_node_t *node);
 static avl_node_t *LeftRotate(avl_t *avl, avl_node_t *node);
+static avl_node_t *MinFromRightSubTree(avl_node_t *node);
+static avl_node_t *Remove(avl_t *avl, avl_node_t *node, const void *data);
 
 avl_t *AvlCreate(compare_func_t cmp_func, const void *param)
 {
@@ -107,61 +106,9 @@ int AvlInsert(avl_t *avl, const void *data)
 	return res;
 }
 
-/* Remove a node  */
 void AvlRemove(avl_t *avl, const void *data)
 {
-	avl_node_t *curr = avl->root;
-	if (!curr)
-	{
-		return;
-	}
-	else if (!AvlFind(avl, data))
-	{
-		return;
-	}
-	else if (avl->cmp_func(data, avl->root->data, avl->param) == 0)
-	{
-		if (getHeight(avl->root) == 1)
-		{
-			avl->root = NULL;
-		}
-		else if (HasOneChild(avl->root))
-		{
-			if (avl->root->right_son)
-			{
-				avl->root = avl->root->right_son;
-			}
-			else /*has left child*/
-			{
-				avl->root = avl->root->left_son;
-			}
-		}
-		else /*root has two sons*/
-		{
-			if (avl->root->right_son->left_son)
-			{
-				avl->root = FindNextAndRemoveInRightSubTree(avl->root->right_son);
-				avl->root->right_son = curr->right_son;
-			}
-			else
-			{
-				avl->root = avl->root->right_son;
-			}
-			avl->root->left_son = curr->left_son;
-		}
-		free(curr);
-	}
-	else
-	{
-		AvlRemoveHelper(avl, avl->root, data);
-	}
-	if (avl->root)
-	{
-		avl->root->height = 1 + max(getHeight(avl->root->left_son), getHeight(avl->root->right_son));
-		avl->root->left_son = BalanceTree(avl, avl->root->left_son, data);
-		avl->root->right_son = BalanceTree(avl, avl->root->right_son, data);
-		avl->root = BalanceTree(avl, avl->root, data);
-	}
+	avl->root = Remove(avl, avl->root, data);
 }
 
 /* Find a node in AVL  */
@@ -334,130 +281,6 @@ static const void *AvlFindHelper(avl_t *avl, avl_node_t *node, const void *data)
 	}
 }
 
-/****************remove**************/
-
-static avl_node_t *FindNextAndRemoveInRightSubTree(avl_node_t *node)
-{
-	avl_node_t *mynode = NULL;
-	if (node->left_son)
-	{
-		if (!node->left_son->left_son)
-		{
-			avl_node_t *temp = node->left_son;
-			node->left_son = node->left_son->right_son;
-			node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
-			return temp;
-		}
-		mynode = FindNextAndRemoveInRightSubTree(node->left_son);
-		node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
-	}
-	return mynode;
-}
-
-static int HasOneChild(avl_node_t *node)
-{
-	return (node->right_son && !node->left_son) || (!node->right_son && node->left_son);
-}
-
-static void AvlRemoveHelper(avl_t *avl, avl_node_t *node, const void *data)
-{
-	avl_node_t *curr = NULL;
-	if (avl->cmp_func(data, node->data, avl->param) < 0) /*go to the left*/
-	{
-		curr = node->left_son;
-		if (curr && avl->cmp_func(data, curr->data, avl->param) == 0)
-		{
-			if (!curr->right_son && !curr->left_son)
-			{
-				node->left_son = NULL;
-				free(curr);
-			}
-			else if (HasOneChild(curr))
-			{
-				if (curr->left_son)
-				{
-					node->left_son = curr->left_son;
-				}
-				else
-				{
-					node->left_son = curr->right_son;
-				}
-				free(curr);
-			}
-			else /*node has 2 children*/
-			{
-				if (curr->right_son->left_son)
-				{
-					node->left_son = FindNextAndRemoveInRightSubTree(curr->right_son);
-					node->left_son->right_son = curr->right_son;
-				}
-				else
-				{
-					node->left_son = curr->right_son;
-				}
-				node->left_son->left_son = curr->left_son;
-				free(curr);
-				node->left_son->height = 1 + max(getHeight(node->left_son->left_son), getHeight(node->left_son->right_son));
-				node = BalanceTree(avl, node, data);
-				return;
-			}
-		}
-		else
-		{
-			AvlRemoveHelper(avl, node->left_son, data);
-		}
-	}
-	else if (avl->cmp_func(data, node->data, avl->param) > 0) /*go to the right*/
-	{
-		curr = node->right_son;
-		if (curr && avl->cmp_func(data, curr->data, avl->param) == 0)
-		{
-			if (!curr->right_son && !curr->left_son)
-			{
-				node->right_son = NULL;
-				free(curr);
-			}
-			else if (HasOneChild(curr))
-			{
-				if (curr->left_son)
-				{
-					node->right_son = curr->left_son;
-				}
-				else
-				{
-					node->right_son = curr->right_son;
-				}
-				free(curr);
-			}
-			else /*node has 2 children*/
-			{
-				if (curr->right_son->left_son)
-				{
-					node->right_son = FindNextAndRemoveInRightSubTree(curr->right_son);
-					node->right_son->right_son = curr->right_son;
-				}
-				else
-				{
-					node->right_son = curr->right_son;
-				}
-				node->right_son->left_son = curr->left_son;
-				free(curr);
-				node->right_son->height = 1 + max(getHeight(node->right_son->left_son), getHeight(node->right_son->right_son));
-				node = BalanceTree(avl, node, data);
-				return;
-			}
-		}
-		else
-		{
-			AvlRemoveHelper(avl, node->right_son, data);
-		}
-	}
-
-	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
-	node->left_son = BalanceTree(avl, node->left_son, data);
-	node->right_son = BalanceTree(avl, node->right_son, data);
-}
-
 /**************for destroy**********/
 static void AvlDestroyHelper(avl_node_t *node)
 {
@@ -528,6 +351,17 @@ static avl_node_t *BalanceTree(avl_t *avl, avl_node_t *node, const void *data)
 	int left_balance = 0;
 	int right_balance = 0;
 
+	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
+
+	if (node->left_son)
+	{
+		node->left_son = BalanceTree(avl, node->left_son, data);
+	}
+	if (node->right_son)
+	{
+		node->right_son = BalanceTree(avl, node->right_son, data);
+	}
+
 	(void)data;
 	if (!node)
 	{
@@ -542,6 +376,16 @@ static avl_node_t *BalanceTree(avl_t *avl, avl_node_t *node, const void *data)
 		right_balance = GetBalance(node->right_son);
 	}
 	balance = GetBalance(node);
+
+	if (left_balance > 1 || left_balance < -1)
+	{
+		BalanceTree(avl, node->left_son, data);
+	}
+
+	if (right_balance > 1 || right_balance < -1)
+	{
+		BalanceTree(avl, node->right_son, data);
+	}
 
 	/*left left*/
 	if (balance > 1 && left_balance >= 0)
@@ -569,4 +413,60 @@ static avl_node_t *BalanceTree(avl_t *avl, avl_node_t *node, const void *data)
 	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
 
 	return node;
+}
+
+static avl_node_t *Remove(avl_t *avl, avl_node_t *node, const void *data)
+{
+	if (!node)
+	{
+		return NULL;
+	}
+	if (avl->cmp_func(data, node->data, avl->param) == 0)
+	{
+		avl_node_t *temp = NULL;
+		if (!node->right_son && !node->left_son)
+		{
+			free(node);
+			return NULL;
+		}
+		else if (node->right_son)
+		{
+			temp = MinFromRightSubTree(node->right_son);
+			temp->left_son = node->left_son;
+			if (node->right_son != temp)
+			{
+				temp->right_son = node->right_son;
+			}
+		}
+		else /*2 child*/
+		{
+			temp = node->left_son;
+		}
+		free(node);
+		node = temp;
+	}
+	else if (avl->cmp_func(data, node->data, avl->param) > 0)
+	{
+		node->right_son = Remove(avl, node->right_son, data);
+	}
+	else
+	{
+		node->left_son = Remove(avl, node->left_son, data);
+	}
+	return BalanceTree(avl, node, data);
+}
+
+static avl_node_t *MinFromRightSubTree(avl_node_t *node)
+{
+	avl_node_t *temp = NULL;
+	if (!node->left_son)
+	{
+		return node;
+	}
+	temp = MinFromRightSubTree(node->left_son);
+	if (node->left_son == temp)
+	{
+		node->left_son = temp->right_son;
+	}
+	return temp;
 }
