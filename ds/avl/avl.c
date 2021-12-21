@@ -452,7 +452,6 @@ static void AvlRemoveHelper(avl_t *avl, avl_node_t *node, const void *data)
 	}
 
 	node->height = 1 + max(getHeight(node->left_son), getHeight(node->right_son));
-
 	node->left_son = BalanceTree(avl, node->left_son, data);
 	node->right_son = BalanceTree(avl, node->right_son, data);
 }

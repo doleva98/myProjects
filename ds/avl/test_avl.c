@@ -55,6 +55,7 @@ int main()
 	remove("results.txt");
 	TestFunctionality();
 	TestSortLargeAmount();
+
 	return 0;
 }
 
@@ -506,6 +507,7 @@ void TestFunctionality()
 	}
 	AvlRemove(avl, &a);
 	AvlPrintAll(avl);
+	AvlDestroy(avl);
 }
 
 static int Print(const void *data, const void *param)
@@ -526,7 +528,7 @@ void AvlPrintAll(avl_t *avl)
 	printf("###\n");
 }
 
-#define ARR_SIZE 1000
+#define ARR_SIZE 10000
 static int comp;
 void TestSortLargeAmount()
 {
