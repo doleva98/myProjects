@@ -433,7 +433,7 @@ static int Compare(const void *new_elem, const void *curr_elem, const void *para
 	return *(int *)new_elem - *(int *)curr_elem;
 }
 
-#define ARR_SIZE 5000
+#define ARR_SIZE 1000
 static int comp;
 void TestSortLargeAmount()
 {
