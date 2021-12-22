@@ -39,7 +39,7 @@ static void test2()
 		printf("fail in %d\n", __LINE__);
 	}
 
-	fp = fopen("words", "r");
+	fp = fopen("/usr/share/dict/words", "r");
 	if (fp == NULL)
 	{
 		exit(EXIT_FAILURE);
@@ -87,7 +87,7 @@ static void test2()
 		if (HashFind(ht, input))
 		{
 			printf("\033[0;32m");
-			printf("THAT WAS SOME WORDS IN THE DICTIONARY\n");
+			printf("THAT WAS A WORD IN THE DICTIONARY\n");
 			printf("\033[0m");
 		}
 		else
