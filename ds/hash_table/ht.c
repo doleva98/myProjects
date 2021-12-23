@@ -134,3 +134,8 @@ static int PlusOne(void *data, void *param)
 	++*(size_t *)param;
 	return 1;
 }
+
+float HashLoad(hash_t *hash)
+{
+	return HashSize(hash) / hash->size;
+}

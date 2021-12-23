@@ -33,4 +33,6 @@ extern const void *HashFind(hash_t *hash, const void *data);
 /* Execute operation on each element in table */
 extern int HashForEach(hash_t *hash, hash_action_func_t action_func, void *action_param);
 
+
+extern float HashLoad(hash_t *hash);
 #endif
