@@ -29,7 +29,7 @@ void *IterBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare
 	ssize_t m = 0;
 	ssize_t l = 0;
 	ssize_t r = nmemb - 1;
-
+	assert(base);
 	while (l <= r)
 	{
 		m = (r - l) / 2;
@@ -51,12 +51,15 @@ void *IterBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare
 
 void *RecBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare, const void *data)
 {
+	assert(base);
+
 	return RecBinarySearchHelper(base, 0, nmemb - 1, size, compare, data);
 }
 
 static void *RecBinarySearchHelper(void *base, ssize_t l, ssize_t r, size_t size, cmp_func_t compare, const void *data)
 {
 	ssize_t m = 0;
+
 	if (l > r)
 	{
 		return NULL;
