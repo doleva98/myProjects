@@ -10,6 +10,7 @@ static void *Merge(void *base, size_t size, cmp_func_t compare, size_t l, size_t
 static void QuickSortHelper(void *base, size_t size, cmp_func_t compare, ssize_t l, ssize_t r);
 static size_t QuickSortPartition(void *base, size_t size, cmp_func_t compare, ssize_t l, ssize_t r);
 static void Swap(void *a, void *b, size_t size);
+static void *RecBinarySearchHelper(void *base, ssize_t l, ssize_t r, size_t size, cmp_func_t compare, const void *data);
 
 void MergeSort(void *base, size_t nmemb, size_t size, cmp_func_t compare)
 {
@@ -25,9 +26,9 @@ void QuickSort(void *base, size_t nmemb, size_t size, cmp_func_t compare)
 
 void *IterBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare, const void *data)
 {
-	size_t m = 0;
-	size_t l = 0;
-	size_t r = nmemb;
+	ssize_t m = 0;
+	ssize_t l = 0;
+	ssize_t r = nmemb - 1;
 
 	while (l <= r)
 	{
@@ -48,7 +49,32 @@ void *IterBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare
 	return NULL;
 }
 
-void *RecBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare, const void *data);
+void *RecBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare, const void *data)
+{
+	return RecBinarySearchHelper(base, 0, nmemb - 1, size, compare, data);
+}
+
+static void *RecBinarySearchHelper(void *base, ssize_t l, ssize_t r, size_t size, cmp_func_t compare, const void *data)
+{
+	ssize_t m = 0;
+	if (l > r)
+	{
+		return NULL;
+	}
+	m = (r - l) / 2;
+	if (compare(data, (void *)((size_t)base + (m * size))) < 0)
+	{
+		return RecBinarySearchHelper(base, l, m - 1, size, compare, data);
+	}
+	else if (0 == compare((void *)((size_t)base + (m * size)), data))
+	{
+		return (void *)data;
+	}
+	else
+	{
+		return RecBinarySearchHelper(base, m + 1, r, size, compare, data);
+	}
+}
 
 static void QuickSortHelper(void *base, size_t size, cmp_func_t compare, ssize_t l, ssize_t r)
 {
