@@ -2,10 +2,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <sys/types.h>
 #include "sorts.h"
 
-static void *MergeSortHelper(void *base, size_t size, cmp_func_t compare, size_t l, size_t r);
+static void MergeSortHelper(void *base, size_t size, cmp_func_t compare, size_t l, size_t r);
 static void *Merge(void *base, size_t size, cmp_func_t compare, size_t l, size_t m, size_t r);
+static void QuickSortHelper(void *base, size_t size, cmp_func_t compare, ssize_t l, ssize_t r);
+static size_t QuickSortPartition(void *base, size_t size, cmp_func_t compare, ssize_t l, ssize_t r);
+static void Swap(void *a, void *b, size_t size);
 
 void MergeSort(void *base, size_t nmemb, size_t size, cmp_func_t compare)
 {
@@ -13,13 +17,84 @@ void MergeSort(void *base, size_t nmemb, size_t size, cmp_func_t compare)
 	MergeSortHelper(base, size, compare, 0, nmemb - 1);
 }
 
-void QuickSort(void *base, size_t nmemb, size_t size, cmp_func_t compare);
+void QuickSort(void *base, size_t nmemb, size_t size, cmp_func_t compare)
+{
+	assert(base);
+	QuickSortHelper(base, size, compare, 0, nmemb - 1);
+}
 
-void *IterBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare, const void *data);
+void *IterBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare, const void *data)
+{
+	size_t m = 0;
+	size_t l = 0;
+	size_t r = nmemb;
+
+	while (l <= r)
+	{
+		m = (r - l) / 2;
+		if (0 == compare((void *)((size_t)base + (m * size)), data))
+		{
+			return (void *)data;
+		}
+		else if (compare(data, (void *)((size_t)base + (m * size))) < 0)
+		{
+			r = m - 1;
+		}
+		else
+		{
+			l = m + 1;
+		}
+	}
+	return NULL;
+}
 
 void *RecBinarySearch(void *base, size_t nmemb, size_t size, cmp_func_t compare, const void *data);
 
-static void *MergeSortHelper(void *base, size_t size, cmp_func_t compare, size_t l, size_t r)
+static void QuickSortHelper(void *base, size_t size, cmp_func_t compare, ssize_t l, ssize_t r)
+{
+	size_t pivot_location = 0;
+	if (l < r)
+	{
+		pivot_location = QuickSortPartition(base, size, compare, l, r);
+
+		QuickSortHelper(base, size, compare, l, pivot_location - 1);
+		QuickSortHelper(base, size, compare, pivot_location + 1, r);
+	}
+}
+
+static size_t QuickSortPartition(void *base, size_t size, cmp_func_t compare, ssize_t l, ssize_t r)
+{
+
+	ssize_t i = l - 1;
+	ssize_t j = 0;
+
+	for (j = l; j <= r; ++j)
+	{
+		if (compare((void *)((size_t)base + (j * size)), (void *)((size_t)base + (r * size))) < 0)
+		{
+			++i;
+			Swap((void *)((size_t)base + (j * size)), (void *)((size_t)base + (i * size)), size);
+		}
+	}
+	Swap((void *)((size_t)base + (r * size)), (void *)((size_t)base + ((i + 1) * size)), size);
+	return i + 1;
+}
+
+static void Swap(void *a, void *b, size_t size)
+{
+	void *temp = NULL;
+	temp = malloc(size);
+	if (!temp)
+	{
+		return;
+	}
+	memcpy(temp, a, size);
+	memcpy(a, b, size);
+	memcpy(b, temp, size);
+	free(temp);
+}
+
+static void MergeSortHelper(void *base, size_t size, cmp_func_t compare, size_t l, size_t r)
 {
 	size_t m = 0;
 	if (l < r)
@@ -30,7 +105,6 @@ static void *MergeSortHelper(void *base, size_t size, cmp_func_t compare, size_t
 		MergeSortHelper(base, size, compare, m + 1, r);
 		Merge(base, size, compare, l, m, r);
 	}
-	return base;
 }
 
 static void *Merge(void *base, size_t size, cmp_func_t compare, size_t l, size_t m, size_t r)

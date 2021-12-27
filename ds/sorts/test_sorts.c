@@ -7,33 +7,58 @@ static void PrintArray(int *a, size_t len);
 static int CompareInt(const void *n1, const void *n2);
 static void CheckIfOrdered(int *a, size_t len);
 static void CheckMergeSort();
+static void CheckQuickSort();
 
 int main()
 {
 	CheckMergeSort();
+	CheckQuickSort();
 	return 0;
 }
 
-static void CheckMergeSort()
+static void CheckQuickSort()
 {
-	int a[] = {2, 5, 3, 0, 100, 9898, -8, 86};
 	int b[20];
 	size_t i = 0;
 
 	srand(time(NULL));
-	puts("before sorting");
-	PrintArray(a, sizeof(a) / sizeof(*a));
-	puts("after sorting");
-	MergeSort(a, sizeof(a) / sizeof(*a), sizeof(*a), CompareInt);
-	PrintArray(a, sizeof(a) / sizeof(*a));
-	CheckIfOrdered(a, sizeof(a) / sizeof(*a));
-
 	for (i = 0; i < sizeof(b) / sizeof(*b); ++i)
 	{
 		b[i] = rand();
 	}
+	QuickSort(b, sizeof(b) / sizeof(*b), sizeof(*b), CompareInt);
+	CheckIfOrdered(b, sizeof(b) / sizeof(*b));
+}
+
+static void CheckMergeSort()
+{
+	int b[20];
+	size_t i = 0;
+	int test = 50;
+	srand(time(NULL));
+	for (i = 0; i < sizeof(b) / sizeof(*b); ++i)
+	{
+		b[i] = rand();
+		if (b[i] == test)
+		{
+			b[i] = i;
+		}
+	}
 	MergeSort(b, sizeof(b) / sizeof(*b), sizeof(*b), CompareInt);
 	CheckIfOrdered(b, sizeof(b) / sizeof(*b));
+	if (!(b[4] == *(int *)IterBinarySearch(b, sizeof(b) / sizeof(*b), sizeof(*b), CompareInt, &b[4])))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	if (test == *(int *)IterBinarySearch(b, sizeof(b) / sizeof(*b), sizeof(*b), CompareInt, &b[4]))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	if (IterBinarySearch(b, sizeof(b) / sizeof(*b), sizeof(*b), CompareInt, &test) != NULL)
+	{
+		printf("fail in %d\n", __LINE__);
+	}
 }
 
 static void PrintArray(int *a, size_t len)
