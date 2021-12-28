@@ -7,12 +7,21 @@ static int CompareInt(const void *n1, const void *n2);
 static void CheckIfOrdered(int *a, size_t len);
 static void CheckMergeSort();
 static void CheckQuickSort();
+static void Check();
 
 int main()
 {
 	CheckMergeSort();
 	CheckQuickSort();
+	Check();
 	return 0;
+}
+
+void Check()
+{
+	int arr[] = {3, 6, 7, 5, 3, 5, 6, 2, 9, 1};
+	QuickSort(arr, sizeof(arr) / sizeof(*arr), sizeof(*arr), CompareInt);
+	CheckIfOrdered(arr, sizeof(arr) / sizeof(*arr));
 }
 
 static void CheckQuickSort()

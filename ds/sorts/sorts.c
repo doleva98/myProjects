@@ -20,6 +20,10 @@ void MergeSort(void *base, size_t nmemb, size_t size, cmp_func_t compare)
 void QuickSort(void *base, size_t nmemb, size_t size, cmp_func_t compare)
 {
 	assert(base);
+	if (0 == nmemb)
+	{
+		return;
+	}
 	QuickSortHelper(base, size, compare, 0, nmemb - 1);
 }
 
