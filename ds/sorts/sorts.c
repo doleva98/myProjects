@@ -1,11 +1,11 @@
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include "sorts.h"
 
-static void MergeSortHelper(void *base, size_t size, cmp_func_t compare, size_t l, size_t r);
 static void *Merge(void *base, size_t size, cmp_func_t compare, size_t l, size_t m, size_t r);
+static void MergeSortHelper(void *base, size_t size, cmp_func_t compare, size_t l, size_t r);
 static void QuickSortHelper(void *base, size_t size, cmp_func_t compare, size_t l, size_t r);
 static size_t QuickSortPartition(void *base, size_t size, cmp_func_t compare, size_t l, size_t r);
 static void Swap(void *a, void *b, size_t size);
