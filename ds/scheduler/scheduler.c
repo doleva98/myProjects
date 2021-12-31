@@ -34,11 +34,7 @@ scheduler_t *SchedulerCreate()
 		return NULL;
 	}
 	scheduler->queue = PriQueueCreate(Compare, &isUp);
-	if (!scheduler->queue)
-	{
-		free(scheduler);
-		return NULL;
-	}
+
 	return scheduler;
 }
 
@@ -66,7 +62,7 @@ unique_id_t SchedulerTaskAdd(scheduler_t *scheduler, task_func_t task,
 	new_task->interval = interval_in_secs;
 	new_task->param = param;
 
-	if (!PriQueueEnqueue(scheduler->queue, new_task))
+	if (1 == PriQueueEnqueue(scheduler->queue, new_task))
 	{
 		return uid_null_uid;
 	}
@@ -91,7 +87,7 @@ int SchedulerRun(scheduler_t *scheduler)
 		curr_task = (task_t *)PriQueuePeek(scheduler->queue);
 		PriQueueDequeue(scheduler->queue);
 		sleep(curr_task->interval + getTime(curr_task->uid) - curr_time);
-		if (curr_task->task(curr_task->param))
+		if (0 == curr_task->task(curr_task->param))
 		{
 			SchedulerTaskAdd(scheduler, curr_task->task, curr_task->interval, curr_task->param);
 		}
@@ -149,9 +145,9 @@ static int SameUid(const void *curr_item, const void *param)
 	if (UIDIsEqual(((task_t *)curr_item)->uid, *(unique_id_t *)param))
 	{
 		free((void *)curr_item);
-		return 1;
+		return 0;
 	}
-	return 0;
+	return 1;
 }
 
 static void clearAll(scheduler_t *scheduler)

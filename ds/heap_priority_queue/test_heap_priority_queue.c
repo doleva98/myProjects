@@ -1,23 +1,17 @@
 #include <stdio.h>
-#include <string.h>
 #include "heap_priority_queue.h"
+#include "string.h"
 #include <assert.h>
 
-typedef struct Person
-{
-	char name[50];
-	size_t id;
-	size_t u_id;
-} Person_t;
-/*************DOLEV TESTS TYPEDEF**********/
 typedef struct
 {
 	int numId;
 	char name[50];
 } person_t;
-/**********END OF DOLEV TYPEDEF********************/
 
-/**********MATAN TESTS TYPEDEF&FUNCS***************/
+static int IsLower(const void *new_elem, const void *curr_elem, const void *param);
+static int match(const void *data, const void *param);
+
 typedef struct
 {
 	int priority;
@@ -34,36 +28,8 @@ enum priorities
 int Match(const void *curr_item, const void *param);
 int Compare(const void *new_elem, const void *curr_elem, const void *param);
 void PrintJob(assignment_t *job);
-/*********END OF MATAN TESTS TYPEDEF&FUNCS*********/
 
-int PrintPerson(void *data, void *param)
-{
-	size_t id = ((Person_t *)data)->id;
-	char *name = ((Person_t *)data)->name;
-	printf("Person n.%lu Name: %s ID: %lu \n", *(size_t *)param, name, id);
-	(*(size_t *)param)++;
-	return 1;
-}
-
-int isBefore(const void *data1, const void *data2, const void *param)
-{
-	int i1 = (int)((Person_t *)data1)->id;
-	int i2 = (int)((Person_t *)data2)->id;
-	(void)param;
-	return i1 - i2;
-}
-
-int isMatch(const void *data, const void *param)
-{
-	size_t u_id;
-	u_id = ((Person_t *)data)->u_id;
-
-	return u_id == *(size_t *)param;
-}
-
-static int IsLower(const void *new_elem, const void *curr_elem, const void *param);
-static int match(const void *data, const void *param);
-int TestDolev(void)
+int main()
 {
 	int IsUpParam = 1;
 	pri_queue_t *queue = PriQueueCreate(IsLower, &IsUpParam);
@@ -72,6 +38,14 @@ int TestDolev(void)
 	person_t p3;
 	person_t p4;
 	int test;
+
+	pri_queue_t *p_queue = NULL;
+	size_t i;
+	assignment_t *current;
+
+	assignment_t jobs[11];
+	jobs[0].priority = CASUAL;
+
 	p1.numId = 1;
 	strcpy(p1.name, "Dumbeldore");
 
@@ -137,7 +111,6 @@ int TestDolev(void)
 
 	PriQueueEnqueue(queue, &p4);
 	PriQueueEnqueue(queue, &p2); /*1,2,4*/
-
 	if (!(((person_t *)PriQueuePeek(queue))->numId == 8))
 	{
 		printf("fail in %d\n", __LINE__);
@@ -221,36 +194,7 @@ int TestDolev(void)
 	}
 
 	PriQueueDestroy(queue);
-	return 0;
-}
 
-static int IsLower(const void *new_elem, const void *curr_elem, const void *param)
-{
-	int num1, num2, IsLowToHigh;
-	if (!curr_elem)
-	{
-		return 1;
-	}
-	num1 = ((person_t *)new_elem)->numId;
-	num2 = ((person_t *)curr_elem)->numId;
-	IsLowToHigh = *(int *)param;
-	if (IsLowToHigh)
-	{
-		return num1 <= num2;
-	}
-	else
-	{
-		return num2 <= num1;
-	}
-}
-int TestMatan(void)
-{
-	pri_queue_t *p_queue = NULL;
-	size_t i;
-	assignment_t *current;
-
-	assignment_t jobs[11];
-	jobs[0].priority = CASUAL;
 	jobs[0].assignment_code = 1;
 	jobs[1].priority = NON_URGENT;
 	jobs[1].assignment_code = 2;
@@ -306,13 +250,40 @@ int TestMatan(void)
 	printf("\nSize of priority queue %lu\n", PriQueueSize(p_queue));
 	assert(PriQueueIsEmpty(p_queue));
 	PriQueueDestroy(p_queue);
+
 	return 0;
+}
+
+static int IsLower(const void *curr_elem, const void *new_elem, const void *param)
+{
+	int num1, num2, IsLowToHigh;
+
+	num1 = ((person_t *)curr_elem)->numId;
+	num2 = ((person_t *)new_elem)->numId;
+	IsLowToHigh = *(int *)param;
+	if (IsLowToHigh)
+	{
+		return -(num1 - num2);
+	}
+	else
+	{
+		return num1 - num2;
+	}
+}
+
+static int match(const void *data, const void *param)
+{
+	int num1, num2;
+
+	num1 = ((person_t *)data)->numId;
+	num2 = *(int *)param;
+	return num1 != num2;
 }
 
 int Compare(const void *new_elem, const void *curr_elem, const void *param)
 {
 	(void)param;
-	return *(int *)new_elem < *(int *)curr_elem;
+	return (*(int *)new_elem - *(int *)curr_elem) * -1;
 }
 
 void PrintJob(assignment_t *job)
@@ -336,88 +307,5 @@ int Match(const void *curr_item, const void *param)
 {
 	const assignment_t *temp;
 	temp = curr_item;
-	return temp->assignment_code == *(int *)param;
-}
-
-static int match(const void *data, const void *param)
-{
-	int num1, num2;
-
-	num1 = ((person_t *)data)->numId;
-	num2 = *(int *)param;
-	return num1 == num2;
-}
-int main()
-{
-	pri_queue_t *pqueue = NULL;
-	Person_t p[5] = {{"Daniel", 123, 0}, {"Dolev", 2, 1}, {"Matan", 130, 2}, {"Omer", 150, 3}, {"Rona", 71, 4}};
-	size_t param = 1;
-	size_t i = 0;
-	size_t u_id = 0;
-
-	i = 0;
-	pqueue = PriQueueCreate(isBefore, &param);
-	if (PriQueueSize(pqueue) != 0)
-	{
-		printf("ERROR IN LINE %d\n", __LINE__);
-	}
-	if (!PriQueueIsEmpty(pqueue))
-	{
-		printf("ERROR IN LINE %d\n", __LINE__);
-	}
-
-	PriQueueEnqueue(pqueue, &p[0]);
-	PriQueueEnqueue(pqueue, &p[1]);
-	PriQueueEnqueue(pqueue, &p[2]);
-	PriQueueEnqueue(pqueue, &p[3]);
-	PriQueueEnqueue(pqueue, &p[4]);
-	if (PriQueueIsEmpty(pqueue))
-	{
-		printf("ERROR IN LINE %d\n", __LINE__);
-	}
-	if (PriQueueSize(pqueue) != 5)
-	{
-		printf("ERROR IN LINE %d\n", __LINE__);
-	}
-	while (i < 5)
-	{
-		PrintPerson(PriQueuePeek(pqueue), &i);
-		PriQueueDequeue(pqueue);
-	}
-	if (PriQueueSize(pqueue) != 0)
-	{
-		printf("ERROR IN LINE %d\n", __LINE__);
-	}
-
-	PriQueueEnqueue(pqueue, &p[0]);
-	PriQueueEnqueue(pqueue, &p[1]);
-	PriQueueEnqueue(pqueue, &p[2]);
-	PriQueueEnqueue(pqueue, &p[3]);
-	PriQueueEnqueue(pqueue, &p[4]);
-
-	PriQueueClear(pqueue);
-	if (PriQueueSize(pqueue) != 0 || !PriQueueIsEmpty(pqueue))
-	{
-		printf("ERROR IN LINE %d\n", __LINE__);
-	}
-	PriQueueEnqueue(pqueue, &p[0]);
-	PriQueueEnqueue(pqueue, &p[1]);
-	PriQueueEnqueue(pqueue, &p[2]);
-	PriQueueEnqueue(pqueue, &p[3]);
-	PriQueueEnqueue(pqueue, &p[4]);
-
-	PriQueueErase(pqueue, isMatch, &u_id);
-	i = 0;
-	printf("------After Erase------\n");
-	while (i < 4)
-	{
-		PrintPerson(PriQueuePeek(pqueue), &i);
-		PriQueueDequeue(pqueue);
-	}
-
-	PriQueueDestroy(pqueue);
-
-	/* TestDolev(); */
-	TestMatan();
-	return 0;
+	return temp->assignment_code != *(int *)param;
 }

@@ -35,8 +35,7 @@ extern void PriQueueDestroy(pri_queue_t *pri_queue)
 extern int PriQueueEnqueue(pri_queue_t *pri_queue, const void *data)
 {
 	assert(pri_queue);
-	 HeapPush(pri_queue->heap, data);
-	 return 1;
+	return HeapPush(pri_queue->heap, data);
 }
 
 /* pop item from the front of the pri_queue*/
