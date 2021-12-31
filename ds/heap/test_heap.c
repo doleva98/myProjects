@@ -7,6 +7,7 @@ static int CompareInt(const void *n1, const void *n2, const void *param);
 static void test1();
 static void test2();
 static void test3();
+static void test4();
 
 static int MatchInt(const void *n1, const void *param);
 
@@ -15,12 +16,47 @@ int main()
 	test1();
 	test3();
 	test2();
+	test4();
 	return 0;
 }
+
+static void test4()
+{
+	heap_t *heap = NULL;
+	int b[100];
+	size_t i;
+	srand(0);
+	heap = HeapCreate(CompareInt, NULL);
+
+	for (i = 0; i < sizeof(b) / sizeof(*b); ++i)
+	{
+		b[i] = rand();
+
+		HeapPush(heap, &b[i]);
+	}
+
+	for (i = 0; i < sizeof(b) / sizeof(*b); ++i)
+	{
+		if (b[i] != *(int *)HeapFind(heap, &b[i], MatchInt))
+		{
+			printf("fail in %d\n", __LINE__);
+		}
+	}
+
+	for (i = 0; i < sizeof(b) / sizeof(*b); ++i)
+	{
+		if (b[i] != *(int *)HeapRemove(heap, &b[i], MatchInt))
+		{
+			printf("fail in %d\n", __LINE__);
+		}
+	}
+	HeapDestroy(heap);
+}
+
 static void test2()
 {
 	heap_t *heap = NULL;
-	int b[10];
+	int b[100];
 	size_t i;
 	int min = 0;
 	int temp = 1;

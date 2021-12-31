@@ -58,9 +58,17 @@ int HeapPush(heap_t *heap, const void *data)
 void HeapPop(heap_t *heap)
 {
     assert(heap);
+    if (HeapIsEmpty(heap))
+    {
+        return;
+    }
     SwapPointersInArray(VectorGetAccessToElement(heap->vector, 0),
                         VectorGetAccessToElement(heap->vector, HeapSize(heap) - 1));
     VectorPopBack(heap->vector);
+    if (HeapIsEmpty(heap))
+    {
+        return;
+    }
     HeapifyDownFrom(heap, 0);
 }
 
@@ -97,7 +105,10 @@ void *HeapRemove(heap_t *heap, const void *data, is_match_func_t is_match)
             SwapPointersInArray(VectorGetAccessToElement(heap->vector, i),
                                 VectorGetAccessToElement(heap->vector, HeapSize(heap) - 1));
             VectorPopBack(heap->vector);
-            HeapifyDownFrom(heap, i);
+            if (HeapSize(heap) > 0)
+            {
+                HeapifyDownFrom(heap, i);
+            }
             return (void *)data;
         }
     }
@@ -165,7 +176,7 @@ static void HeapifyDownFrom(heap_t *heap, size_t from)
     size_t next_child;
     current = from;
 
-    while ( 0 != GetFirstChild(heap, current))
+    while (0 != GetFirstChild(heap, current))
     {
         next_child = GetFirstChild(heap, current);
         if (heap->compare((void *)*(size_t *)VectorGetAccessToElement(heap->vector, current),

@@ -1,58 +1,36 @@
-CC = gcc
-CFLAGS = -ansi -pedantic-errors -Wall -Wextra
-DEBUG = -g
 
-#write here all the c files
-SRC = sorted_list.c test_sorted_list.c
-#####
+# make clean/all CONFIG=Debug/Release ARCH=linux64/raspi ECHO=0/1
 
-#write here all the obj files in the obj directory that you need
-PROTECTEDOBJ = ../obj/doubly_linked_list.o
-##########
+# the parrent dir of "arch" dir
+ROOT_DIR = ../..
 
-OBJ = $(filter %.o, $(SRC:%.c=../obj/%.o))
-OBJ_DEBUG = $(SRC:.c=.dbg.o)
+#PROJ_SRCS = $(wildcard *.c)
+PROJ_SRCS = $(wildcard *.c)
 
-#write here the target name
-TARGET = sorted_list.out
-######
+# list of directories containing header files
+PROJ_INC_DIR = ../dlinkedlist
 
-$(TARGET) :$(OBJ) 
-	@$(CC) $(CFLAGS) $(OBJ) $(PROTECTEDOBJ) -o $(TARGET)
+# the executable file
+PROJ_OUT = a.out
 
-../obj/%.o: %.c 
-	@$(CC) $(CFLAGS) -c -o $(@D)/$(*F).o $< 
+# list of ADDITIONAL compiler flags (prepended with "-" sign)
+#PROJ_CFLAGS = -Wunused-but-set-variable
+PROJ_CFLAGS =
+PROJ_CPPFLAGS =
 
-%.dbg.o: %.c 
-	@$(CC) $(CFLAGS) $(DEBUG) $< -c 
+#PROJ_MACROS = _BSD_SOURCE
+PROJ_MACROS =
 
+# additional object files (created by other projects)
+PROJ_ADD_OBJS = doubly_linked_list.o
 
+# additional libraries
+PROJ_LIBS =
 
-.PHONY: clean
-clean:
-	rm $(OBJ) $(TARGET)
+# linker flags
+PROJ_LDFLAGS =
 
-.PHONY: all
-all: $(SRC) $(PROTECTEDOBJ)
-	@$(CC) $(CFLAGS) $(DEBUG) $(SRC) 
+# list of projects (makefiles) this project depends on
+PROJ_DEPENDS  = ../dlinkedlist/Makefile
 
-debug :$(OBJ_DEBUG) 
-	@$(CC) $(CFLAGS) $(DEBUG) $(OBJ) $(PROTECTEDOBJ) -o  debug.out
-
-
-queue.ar: $(OBJ)
-	ar -r archive $(OBJ) $(PROTECTEDOBJ)
-
-#write here the o files that you will be compiled here and its prerequisites
-sorted_list.o : sorted_list.h ../dlinkedlist/doubly_linked_list.h
-test_sorted_list.o : sorted_list.h
-
-
-######
-
-
-
-
-
-
-
+include $(ROOT_DIR)/include/make/Project.mak

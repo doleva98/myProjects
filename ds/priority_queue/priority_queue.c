@@ -1,26 +1,25 @@
 #include <stdio.h>
 #include <assert.h>
 #include "priority_queue.h"
-#include "../sorted_list/sorted_list.h"
+#include "sorted_list.h"
 struct Pri_Queue
 {
 	sorted_list_t *list;
 };
 
-
 /*creat new pri_queue*/
 pri_queue_t *PriQueueCreate(compare_func_t cmp_func, const void *param)
 {
 	pri_queue_t *pri_queue = NULL;
-	pri_queue = (pri_queue_t*)calloc(1,sizeof(pri_queue_t));
-	
-	if(!pri_queue)
+	pri_queue = (pri_queue_t *)calloc(1, sizeof(pri_queue_t));
+
+	if (!pri_queue)
 	{
 		return NULL;
 	}
-	
-	 pri_queue->list = SortedListCreate(cmp_func, param);
-	if(!pri_queue->list)
+
+	pri_queue->list = SortedListCreate(cmp_func, param);
+	if (!pri_queue->list)
 	{
 		free(pri_queue);
 		return NULL;
@@ -40,7 +39,7 @@ void PriQueueDestroy(pri_queue_t *pri_queue)
 /* insert new item to back of the pri_queue */
 int PriQueueEnqueue(pri_queue_t *pri_queue, const void *data)
 {
-	SortedListInsert(pri_queue->list, data); 
+	SortedListInsert(pri_queue->list, data);
 	return 1;
 }
 
@@ -66,12 +65,12 @@ size_t PriQueueSize(const pri_queue_t *pri_queue)
 int PriQueueIsEmpty(const pri_queue_t *pri_queue)
 {
 	return SortedListSize(pri_queue->list) == 0;
-}	/* return value empty - 1, not empty - 0 */
+} /* return value empty - 1, not empty - 0 */
 
 /*remove all elements*/
 void PriQueueClear(pri_queue_t *pri_queue)
 {
-	while(!SortedListIterIsEqual(SortedListBegin(pri_queue->list), SortedListEnd(pri_queue->list)))
+	while (!SortedListIterIsEqual(SortedListBegin(pri_queue->list), SortedListEnd(pri_queue->list)))
 	{
 		PriQueueDequeue(pri_queue);
 	}
@@ -81,20 +80,14 @@ void PriQueueClear(pri_queue_t *pri_queue)
 void PriQueueErase(pri_queue_t *pri_queue, is_match_func match_func, const void *param)
 {
 	sorted_list_iter_t iter = SortedListBegin(pri_queue->list);
-	
-	while(!SortedListIterIsEqual(iter,SortedListEnd(pri_queue->list)))
+
+	while (!SortedListIterIsEqual(iter, SortedListEnd(pri_queue->list)))
 	{
-		if(match_func(SortedListIterGetData(iter), param)){
+		if (match_func(SortedListIterGetData(iter), param))
+		{
 			SortedListRemove(iter);
 			return;
 		}
 		iter = SortedListIterNext(iter);
 	}
 }
-
-
-
-
-
-
-

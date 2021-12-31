@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "heap_priority_queue.h": "c",
+        "scheduler.h": "c",
+        "uid.h": "c"
+    }
+}

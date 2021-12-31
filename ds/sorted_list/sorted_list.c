@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "sorted_list.h"
-#include "../dlinkedlist/doubly_linked_list.h"
+#include "doubly_linked_list.h"
 
 struct SortedList
 {

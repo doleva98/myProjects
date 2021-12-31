@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "scheduler.h"
-#include "heap_priority_queue.h"
+#include "../priority_queue/priority_queue.h"
 #include <stdlib.h>
 
 static int Compare(const void *new_elem, const void *curr_elem, const void *param);
@@ -12,6 +12,7 @@ static int RUN = 1;
 struct scheduler
 {
 	pri_queue_t *queue;
+	
 };
 
 typedef struct
@@ -20,22 +21,23 @@ typedef struct
 	unique_id_t uid;
 	size_t interval;
 	const void *param;
-} task_t;
+}task_t;
+
 
 /*creates new scheduler engine*/
 scheduler_t *SchedulerCreate()
 {
 	int isUp = 1;
 	scheduler_t *scheduler = NULL;
-
-	scheduler = (scheduler_t *)malloc(sizeof(scheduler_t));
-	if (!scheduler)
+	
+	scheduler = (scheduler_t*)calloc(sizeof(scheduler_t), 1);
+	if(!scheduler)
 	{
 		return NULL;
 	}
 	scheduler->queue = PriQueueCreate(Compare, &isUp);
-	if (!scheduler->queue)
-	{
+	if(!scheduler->queue)
+	{	
 		free(scheduler);
 		return NULL;
 	}
@@ -51,27 +53,27 @@ void SchedulerDestroy(scheduler_t *scheduler)
 }
 
 /* insert new task to the scheduler engine*/
-unique_id_t SchedulerTaskAdd(scheduler_t *scheduler, task_func_t task,
-							 size_t interval_in_secs, const void *param)
+unique_id_t SchedulerTaskAdd(scheduler_t *scheduler, task_func_t task, 
+						size_t interval_in_secs, const void *param)
 {
 	task_t *new_task = NULL;
-	new_task = (task_t *)malloc(sizeof(task_t));
-	if (!new_task)
+	new_task = (task_t*)calloc(sizeof(task_t), 1);
+	if(!new_task)
 	{
 		return uid_null_uid;
-	}
-
+	} 	
+	
 	new_task->task = task;
 	new_task->uid = UIDGenerate();
 	new_task->interval = interval_in_secs;
 	new_task->param = param;
-
-	if (!PriQueueEnqueue(scheduler->queue, new_task))
+	
+	if(!PriQueueEnqueue(scheduler->queue, new_task))
 	{
 		return uid_null_uid;
 	}
-
-	return new_task->uid;
+	
+	return new_task->uid;			
 }
 
 /* remove task from scheduler engine*/
@@ -85,13 +87,13 @@ int SchedulerRun(scheduler_t *scheduler)
 {
 	task_t *curr_task;
 	size_t curr_time;
-	while (RUN)
+	while(RUN)
 	{
 		curr_time = time(NULL);
-		curr_task = (task_t *)PriQueuePeek(scheduler->queue);
+		curr_task = (task_t*)PriQueuePeek(scheduler->queue);
 		PriQueueDequeue(scheduler->queue);
-		sleep(curr_task->interval + getTime(curr_task->uid) - curr_time);
-		if (curr_task->task(curr_task->param))
+		sleep(curr_task->interval+ getTime(curr_task->uid) - curr_time);
+		if(curr_task->task(curr_task->param))
 		{
 			SchedulerTaskAdd(scheduler, curr_task->task, curr_task->interval, curr_task->param);
 		}
@@ -126,29 +128,29 @@ void SchedulerClear(scheduler_t *scheduler)
 	PriQueueClear(scheduler->queue);
 }
 
-static int Compare(const void *new_elem, const void *curr_elem, const void *param)
-{
 
+static int Compare(const void *new_elem, const void *curr_elem, const void *param){
+	
 	size_t curr_time = time(NULL);
-	size_t new_interval = ((task_t *)new_elem)->interval;
-	size_t new_time = (size_t)((task_t *)new_elem)->uid.timestamp;
-
-	size_t curr_interval = ((task_t *)curr_elem)->interval;
-	size_t curr_elem_time = (size_t)((task_t *)curr_elem)->uid.timestamp;
-	int isUp = *(int *)param;
-
-	if (isUp)
+	size_t new_interval = ((task_t*)new_elem)->interval;
+	size_t new_time = (size_t)((task_t*)new_elem)->uid.timestamp;
+	
+	size_t curr_interval = ((task_t*)curr_elem)->interval;	
+	size_t curr_elem_time = (size_t)((task_t*)curr_elem)->uid.timestamp;
+	int isUp = *(int*)param;
+	
+	if(isUp)
 	{
-		return new_interval + new_time - curr_time >= curr_interval + curr_elem_time - curr_time;
+		return new_interval+new_time-curr_time >= curr_interval+curr_elem_time-curr_time;
 	}
-	return new_interval + new_time - curr_time <= curr_interval + curr_elem_time - curr_time;
+	return new_interval+new_time-curr_time <= curr_interval+curr_elem_time-curr_time;
 }
 
 static int SameUid(const void *curr_item, const void *param)
 {
-	if (UIDIsEqual(((task_t *)curr_item)->uid, *(unique_id_t *)param))
+	if(UIDIsEqual(((task_t*)curr_item)->uid, *(unique_id_t*)param))
 	{
-		free((void *)curr_item);
+		free((void*)curr_item);
 		return 1;
 	}
 	return 0;
@@ -156,9 +158,14 @@ static int SameUid(const void *curr_item, const void *param)
 
 static void clearAll(scheduler_t *scheduler)
 {
-	while (!SchedulerIsEmpty(scheduler))
+	while(!SchedulerIsEmpty(scheduler))
 	{
 		free(PriQueuePeek(scheduler->queue));
 		PriQueueDequeue(scheduler->queue);
 	}
 }
+
+
+
+
+
