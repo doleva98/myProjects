@@ -23,8 +23,8 @@ extern int HeapIsEmpty(const heap_t *heap);
 
 extern size_t HeapSize(const heap_t *heap);
 
-extern void *HeapRemove(const heap_t *heap, const void *data, is_match_func_t is_match, void *param);
+extern void *HeapRemove(heap_t *heap, const void *data, is_match_func_t is_match);
 
-extern void *HeapFind(const heap_t *heap, const void *data, is_match_func_t is_match, void *param);
+extern void *HeapFind(const heap_t *heap, const void *data, is_match_func_t is_match);
 
 #endif

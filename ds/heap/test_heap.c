@@ -5,37 +5,77 @@
 
 static int CompareInt(const void *n1, const void *n2, const void *param);
 static void test1();
+static void test2();
+static void test3();
+
 static int MatchInt(const void *n1, const void *param);
 
 int main()
 {
 	test1();
-
+	test3();
 	test2();
 	return 0;
+}
+static void test2()
+{
+	heap_t *heap = NULL;
+	int b[10];
+	size_t i;
+	int min = 0;
+	int temp = 1;
+	srand(0);
+	heap = HeapCreate(CompareInt, NULL);
+
+	for (i = 0; i < sizeof(b) / sizeof(*b); ++i)
+	{
+		b[i] = rand();
+		if (0 == i)
+		{
+			min = b[0];
+		}
+		else if (b[i] < min)
+		{
+			min = b[i];
+		}
+		HeapPush(heap, &b[i]);
+	}
+
+	if (min != *(int *)HeapPeek(heap))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	HeapPush(heap, &temp);
+	if (temp != *(int *)HeapPeek(heap))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	HeapPop(heap);
+
+	if (min != *(int *)HeapPeek(heap))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+
+	for (i = 0; i < HeapSize(heap); ++i)
+	{
+		if (min > *(int *)HeapPeek(heap))
+		{
+			printf("fail in %d\n", __LINE__);
+		}
+		min = *(int *)HeapPeek(heap);
+
+		HeapPop(heap);
+	}
+
+	HeapDestroy(heap);
 }
 
 static void test1()
 {
 	heap_t *heap = NULL;
-	int b[20];
-	size_t i = 0;
 	int test = 50;
 	int test2 = 30;
-
-	srand(time(NULL));
-	for (i = 0; i < sizeof(b) / sizeof(*b); ++i)
-	{
-		b[i] = rand();
-		if (b[i] == test)
-		{
-			b[i] = i;
-		}
-		if (b[i] == test2)
-		{
-			b[i] = i;
-		}
-	}
 
 	heap = HeapCreate(CompareInt, NULL);
 
@@ -83,9 +123,12 @@ static void test1()
 		printf("fail in %d\n", __LINE__);
 	}
 
-	HeapPop(heap);
+	if (test != *(int *)HeapRemove(heap, &test, MatchInt))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
 
-	if (test != *(int *)HeapPeek(heap))
+	if (test2 != *(int *)HeapPeek(heap))
 	{
 		printf("fail in %d\n", __LINE__);
 	}
@@ -100,14 +143,41 @@ static void test1()
 		printf("fail in %d\n", __LINE__);
 	}
 
-	for (i = 0; i < sizeof(b) / sizeof(*b); ++i)
+	HeapDestroy(heap);
+}
+
+static void test3()
+{
+	heap_t *heap = NULL;
+	int test2 = 30;
+	int test1 = 50;
+	int test3 = 0;
+	int test4 = 4;
+	int test5 = 7;
+	int test6 = 9;
+	int test7 = 70;
+	int test8 = 1;
+
+	heap = HeapCreate(CompareInt, NULL);
+	HeapPush(heap, &test1);
+	HeapPush(heap, &test2);
+	HeapPush(heap, &test3);
+	HeapPush(heap, &test4);
+	HeapPush(heap, &test5);
+	HeapPush(heap, &test6);
+	HeapPush(heap, &test7);
+	HeapPush(heap, &test8);
+
+	if (0 != *(int *)HeapPeek(heap))
 	{
-		HeapPush(heap, &b[i]);
+		printf("fail in %d\n", __LINE__);
 	}
-
-	HeapRemove(heap, MatchInt, &)
-
-		HeapDestroy(heap);
+	HeapPop(heap);
+	if (1 != *(int *)HeapPeek(heap))
+	{
+		printf("fail in %d\n", __LINE__);
+	}
+	HeapDestroy(heap);
 }
 
 static int MatchInt(const void *n1, const void *param)

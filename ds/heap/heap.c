@@ -11,7 +11,7 @@ struct Heap
     Vector_t *vector;
 };
 
-static void HeapifyDown(heap_t *heap);
+static void HeapifyDownFrom(heap_t *heap, size_t from);
 static size_t LeftChild(size_t i);
 static size_t RightChild(size_t i);
 static size_t GetParent(size_t i);
@@ -61,7 +61,7 @@ void HeapPop(heap_t *heap)
     SwapPointersInArray(VectorGetAccessToElement(heap->vector, 0),
                         VectorGetAccessToElement(heap->vector, HeapSize(heap) - 1));
     VectorPopBack(heap->vector);
-    HeapifyDown(heap);
+    HeapifyDownFrom(heap, 0);
 }
 
 void *HeapPeek(heap_t *heap)
@@ -86,19 +86,36 @@ size_t HeapSize(const heap_t *heap)
     return VectorSize(heap->vector);
 }
 
-void *HeapRemove(const heap_t *heap, const void *data, is_match_func_t is_match, void *param)
+void *HeapRemove(heap_t *heap, const void *data, is_match_func_t is_match)
 {
     size_t i;
-
+    assert(heap);
     for (i = 0; i < HeapSize(heap); ++i)
     {
+        if (0 == is_match((void *)*(size_t *)VectorGetAccessToElement(heap->vector, i), data))
+        {
+            SwapPointersInArray(VectorGetAccessToElement(heap->vector, i),
+                                VectorGetAccessToElement(heap->vector, HeapSize(heap) - 1));
+            VectorPopBack(heap->vector);
+            HeapifyDownFrom(heap, i);
+            return (void *)data;
         }
-    assert(heap);
+    }
+    return NULL;
 }
 
-void *HeapFind(const heap_t *heap, const void *data, is_match_func_t is_match, void *param)
+void *HeapFind(const heap_t *heap, const void *data, is_match_func_t is_match)
 {
+    size_t i;
     assert(heap);
+    for (i = 0; i < HeapSize(heap); ++i)
+    {
+        if (0 == is_match((void *)*(size_t *)VectorGetAccessToElement(heap->vector, i), data))
+        {
+            return (void *)data;
+        }
+    }
+    return NULL;
 }
 
 static size_t LeftChild(size_t i)
@@ -128,61 +145,65 @@ static void HeapifyUp(heap_t *heap)
 
     for (; 0 != current; current = GetParent(current))
     {
-        if (heap->compare(VectorGetAccessToElement(heap->vector, current),
-                          VectorGetAccessToElement(heap->vector, GetParent(current)),
-                          heap->param) <= 0)
-        {
-            return;
-        }
-        else
+        if (heap->compare((void *)*(size_t *)VectorGetAccessToElement(heap->vector, current),
+                          (void *)*(size_t *)VectorGetAccessToElement(heap->vector, GetParent(current)),
+                          heap->param) < 0)
         {
             SwapPointersInArray(VectorGetAccessToElement(heap->vector, current),
                                 VectorGetAccessToElement(heap->vector, GetParent(current)));
         }
-    }
-}
-
-static void HeapifyDown(heap_t *heap)
-{
-    size_t current;
-    current = 0;
-
-    for (; 0 != current; current = GetFirstChild(heap, current))
-    {
-        if (heap->compare(VectorGetAccessToElement(heap->vector, current),
-                          VectorGetAccessToElement(heap->vector, GetFirstChild(heap, current)),
-                          heap->param) >= 0)
+        else
         {
             return;
         }
+    }
+}
+
+static void HeapifyDownFrom(heap_t *heap, size_t from)
+{
+    size_t current;
+    size_t next_child;
+    current = from;
+
+    while ( 0 != GetFirstChild(heap, current))
+    {
+        next_child = GetFirstChild(heap, current);
+        if (heap->compare((void *)*(size_t *)VectorGetAccessToElement(heap->vector, current),
+                          (void *)*(size_t *)VectorGetAccessToElement(heap->vector, next_child),
+                          heap->param) > 0)
+        {
+
+            SwapPointersInArray(VectorGetAccessToElement(heap->vector, current),
+                                VectorGetAccessToElement(heap->vector, next_child));
+            current = next_child;
+        }
         else
         {
-            SwapPointersInArray(VectorGetAccessToElement(heap->vector, current),
-                                VectorGetAccessToElement(heap->vector, GetFirstChild(heap, current)));
+            return;
         }
     }
 }
 
 static size_t GetFirstChild(heap_t *heap, size_t current)
 {
-    if (LeftChild(current) > HeapSize(heap) && RightChild(current) > HeapSize(heap))
+    if (LeftChild(current) > HeapSize(heap) - 1 && RightChild(current) > HeapSize(heap) - 1)
     {
         return 0;
     }
     else
     {
-        if (LeftChild(current) > HeapSize(heap))
+        if (LeftChild(current) > HeapSize(heap) - 1)
         {
             return RightChild(current);
         }
-        else if (RightChild(current) > HeapSize(heap))
+        else if (RightChild(current) > HeapSize(heap) - 1)
         {
             return LeftChild(current);
         }
     }
 
-    return heap->compare(VectorGetAccessToElement(heap->vector, LeftChild(current)),
-                         VectorGetAccessToElement(heap->vector, RightChild(current)), heap->param) <= 0
+    return heap->compare((void *)*(size_t *)VectorGetAccessToElement(heap->vector, LeftChild(current)),
+                         (void *)*(size_t *)VectorGetAccessToElement(heap->vector, RightChild(current)), heap->param) <= 0
                ? LeftChild(current)
                : RightChild(current);
 }
