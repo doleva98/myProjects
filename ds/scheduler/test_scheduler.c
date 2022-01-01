@@ -13,7 +13,7 @@ hello i am task3, Harry Potter
 hello i am task2, Voldemort
 
 it takes 15 seconds for it to fully be printed
-without any valgrin leaks!
+without any valgrind leaks!
 
 any problem contact me on discord, Dolev
 */
@@ -83,7 +83,7 @@ int main()
 	SchedulerTaskAdd(scheduler, task1, 5, "Dumbeldore");
 	SchedulerTaskAdd(scheduler, task2, 2, "Voldemort");
 	SchedulerTaskAdd(scheduler, task3, 7, "Harry Potter");
-	SchedulerTaskAdd(scheduler, task_stop, 15, scheduler);
+	SchedulerTaskAdd(scheduler, task_stop, 14, scheduler);
 	uid1 = SchedulerTaskAdd(scheduler, task0, 1, "a Death Eater");
 	SchedulerTaskCancel(scheduler, uid1);
 

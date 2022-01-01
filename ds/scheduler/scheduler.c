@@ -28,13 +28,17 @@ scheduler_t *SchedulerCreate()
 	int isUp = 1;
 	scheduler_t *scheduler = NULL;
 
-	scheduler = (scheduler_t *)malloc(sizeof(scheduler_t));
+	scheduler = (scheduler_t *)calloc(sizeof(scheduler_t), 1);
 	if (!scheduler)
 	{
 		return NULL;
 	}
 	scheduler->queue = PriQueueCreate(Compare, &isUp);
-
+	if (!scheduler->queue)
+	{
+		free(scheduler);
+		return NULL;
+	}
 	return scheduler;
 }
 
@@ -51,7 +55,7 @@ unique_id_t SchedulerTaskAdd(scheduler_t *scheduler, task_func_t task,
 							 size_t interval_in_secs, const void *param)
 {
 	task_t *new_task = NULL;
-	new_task = (task_t *)malloc(sizeof(task_t));
+	new_task = (task_t *)calloc(sizeof(task_t), 1);
 	if (!new_task)
 	{
 		return uid_null_uid;
@@ -62,7 +66,7 @@ unique_id_t SchedulerTaskAdd(scheduler_t *scheduler, task_func_t task,
 	new_task->interval = interval_in_secs;
 	new_task->param = param;
 
-	if (1 == PriQueueEnqueue(scheduler->queue, new_task))
+	if (PriQueueEnqueue(scheduler->queue, new_task))
 	{
 		return uid_null_uid;
 	}
@@ -122,9 +126,8 @@ void SchedulerClear(scheduler_t *scheduler)
 	PriQueueClear(scheduler->queue);
 }
 
-static int Compare(const void *new_elem, const void *curr_elem, const void *param)
+static int Compare(const void *curr_elem, const void *new_elem, const void *param)
 {
-
 	size_t curr_time = time(NULL);
 	size_t new_interval = ((task_t *)new_elem)->interval;
 	size_t new_time = (size_t)((task_t *)new_elem)->uid.timestamp;
@@ -135,9 +138,9 @@ static int Compare(const void *new_elem, const void *curr_elem, const void *para
 
 	if (isUp)
 	{
-		return new_interval + new_time - curr_time >= curr_interval + curr_elem_time - curr_time;
+		return -((new_interval + new_time - curr_time) - (curr_interval + curr_elem_time - curr_time));
 	}
-	return new_interval + new_time - curr_time <= curr_interval + curr_elem_time - curr_time;
+	return (new_interval + new_time - curr_time) - (curr_interval + curr_elem_time - curr_time);
 }
 
 static int SameUid(const void *curr_item, const void *param)

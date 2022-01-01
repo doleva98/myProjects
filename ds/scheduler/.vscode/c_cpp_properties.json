@@ -14,7 +14,8 @@
             "cppStandard": "c++11",
             "intelliSenseMode": "${default}",
             "includePath": [
-                "../heap_priority_queue"
+                "../heap_priority_queue",
+                "../UID"
             ]
         }
     ],

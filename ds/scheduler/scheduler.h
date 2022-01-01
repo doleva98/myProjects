@@ -2,7 +2,7 @@
 #define __SCHEDULER_H__
 
 #include <stddef.h>
-#include "../UID/uid.h"
+#include "uid.h"
 
 typedef struct scheduler scheduler_t;
 /*typedef struct task task_t;*/
