@@ -24,11 +24,12 @@ int main()
 	}
 	temp = DHCPAllocIP(dhcp);
 	PrintIP(temp);
-/* 	for (i = 0; i < 10; ++i)
+	for (i = 0; i < 10; ++i)
 	{
 		DHCPFreeIP(dhcp, temp + i);
-	} */
+	}
 	DHCPDestroy(dhcp);
+
 	return 0;
 }
 

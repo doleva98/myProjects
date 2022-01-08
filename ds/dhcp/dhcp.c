@@ -27,6 +27,7 @@ static ip_t AllocateHelper(trie_node_t *node, ip_t level);
 static int IsFull(trie_node_t *node);
 static void FreeHelper(trie_node_t *node, ip_t ip, size_t n);
 static void CountHelper(trie_node_t *node, size_t *count);
+trie_node_t *FindNextInIp(trie_node_t *node, ip_t ip);
 
 /*net_add is a string such "xxx.xxx.xxx.xxx"*/
 /*net_mask is num of bits setOn*/
@@ -67,7 +68,6 @@ void DHCPDestroy(dhcp_t *dhcp)
 
 size_t DHCPCountFree(const dhcp_t *dhcp)
 {
-	size_t i = 0;
 	size_t sum = 0;
 
 	assert(dhcp);
@@ -86,9 +86,8 @@ void DHCPFreeIP(dhcp_t *dhcp, ip_t ip_add)
 {
 	assert(dhcp);
 
-	ip_add = ip_add ^ dhcp->net_add;
-/* 	FreeHelper(dhcp, ip_add, 31 - dhcp->net_mask);
- */}
+	FreeHelper(dhcp->root, ip_add, 31 - dhcp->net_mask);
+}
 
 static trie_node_t *TrieNodeCreate()
 {
@@ -218,6 +217,44 @@ static void CountHelper(trie_node_t *node, size_t *count)
 	}
 }
 
-/* static void FreeHelper(trie_node_t *node, ip_t ip, size_t n)
+static void FreeHelper(trie_node_t *node, ip_t ip, size_t n)
 {
-} */
+	if (!node)
+	{
+		return;
+	}
+
+	if (0 == n)
+	{
+		if (ip & 1)
+		{
+			free(node->to_one);
+		}
+		else
+		{
+			free(node->to_zero);
+		}
+		node->is_full = 0;
+		return;
+	}
+
+	if (ip >> n & 1)
+	{
+		FreeHelper(node->to_one, ip, n - 1);
+	}
+
+	else
+	{
+		FreeHelper(node->to_zero, ip, n - 1);
+	}
+
+	if (!node->to_zero && !node->to_one)
+	{
+		free(node);
+	}
+
+	else if (node->is_full)
+	{
+		node->is_full = 0;
+	}
+}
