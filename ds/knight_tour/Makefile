@@ -5,7 +5,7 @@
 ROOT_DIR = ../..
 
 #PROJ_SRCS = $(wildcard *.c)
-PROJ_SRCS = knight_tour.c
+PROJ_SRCS = ds.c
 
 # list of directories containing header files
 PROJ_INC_DIR = ../bitarray ../stack
