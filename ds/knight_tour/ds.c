@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <limits.h>
+#include <stdlib.h>
 #define N 8
 
 int solveKTUtil(int x, int y, int movei, int sol[N][N],
@@ -8,6 +10,9 @@ void printSolution(int sol[N][N]);
 int solveKT();
 int solveKTUtil(int x, int y, int movei, int sol[N][N],
                 int xMove[N], int yMove[N]);
+static void getNextBestCoordinates(int *x, int *y, int sol[N][N],
+                                   int xMove[N], int yMove[N],
+                                   int nextXMove[N], int nextYMove[N]);
 
 /* Driver Code */
 int main()
@@ -44,9 +49,14 @@ int solveKT()
         for (y = 0; y < N; y++)
             sol[x][y] = -1;
 
-    sol[0][0] = 0;
+    srand(0);
 
-    if (solveKTUtil(0, 0, 1, sol, xMove, yMove) == 0)
+    x = rand() % 8;
+    y = rand() % 8;
+
+    sol[x][y] = 0;
+
+    if (solveKTUtil(x, y, 1, sol, xMove, yMove) == 0)
     {
         printf("Solution does not exist");
         return 0;
@@ -60,16 +70,27 @@ int solveKT()
 int solveKTUtil(int x, int y, int movei, int sol[N][N],
                 int xMove[N], int yMove[N])
 {
-    int k, next_x, next_y;
+    int k, next_x = x, next_y = y;
+    int nextXMove[8] = {0};
+    int nextYMove[8] = {0};
     if (N * N == movei)
+    {
         return 1;
+    }
 
     /* Try all next moves from the current coordinate x, y
      */
+
+    getNextBestCoordinates(&next_x, &next_y, sol, xMove, yMove, nextXMove,
+                           nextYMove);
     for (k = 0; k < 8; k++)
     {
-        next_x = x + xMove[k];
-        next_y = y + yMove[k];
+
+        /* next_x = x + xMove[k];
+        next_y = y + yMove[k]; */
+        next_x += nextXMove[k];
+        next_y += nextYMove[k];
+        
         if (isSafe(next_x, next_y, sol))
         {
             sol[next_x][next_y] = movei;
@@ -86,4 +107,39 @@ int solveKTUtil(int x, int y, int movei, int sol[N][N],
     }
 
     return 0;
+}
+
+static void getNextBestCoordinates(int *x, int *y, int sol[N][N],
+                                   int xMove[N], int yMove[N],
+                                   int *nextXMove, int *nextYMove)
+{
+    int coordinates[N];
+    int i = 0, j = 0;
+    int min;
+    int save_min_index;
+    for (i = 0; i < N; ++i)
+    {
+        if (isSafe(*x + xMove[i], *y + yMove[i], sol))
+        {
+            ++coordinates[i];
+        }
+    }
+    for (i = 0; i < N; ++i)
+    {
+        for (j = 0; j < N; ++j)
+        {
+            min = INT_MAX - 1;
+            if (min > coordinates[j])
+            {
+                save_min_index = j;
+            }
+        }
+        if (INT_MAX == min)
+        {
+            continue;
+        }
+        nextXMove[i] = xMove[save_min_index];
+        nextYMove[i] = yMove[save_min_index];
+        coordinates[save_min_index] = INT_MAX;
+    }
 }
