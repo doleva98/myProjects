@@ -51,8 +51,8 @@ int solveKT()
 
     srand(0);
 
-    x = rand() % 8;
-    y = rand() % 8;
+    x = 4;
+    y = 4;
 
     sol[x][y] = 0;
 
@@ -85,12 +85,13 @@ int solveKTUtil(int x, int y, int movei, int sol[N][N],
                            nextYMove);
     for (k = 0; k < 8; k++)
     {
-
+        next_x = x;
+        next_y = y;
         /* next_x = x + xMove[k];
         next_y = y + yMove[k]; */
         next_x += nextXMove[k];
         next_y += nextYMove[k];
-        
+
         if (isSafe(next_x, next_y, sol))
         {
             sol[next_x][next_y] = movei;
@@ -113,28 +114,34 @@ static void getNextBestCoordinates(int *x, int *y, int sol[N][N],
                                    int xMove[N], int yMove[N],
                                    int *nextXMove, int *nextYMove)
 {
-    int coordinates[N];
+    int coordinates[N] = {0};
     int i = 0, j = 0;
     int min;
     int save_min_index;
     for (i = 0; i < N; ++i)
     {
-        if (isSafe(*x + xMove[i], *y + yMove[i], sol))
+        for (j = 0; j < N; ++j)
         {
-            ++coordinates[i];
+            if (isSafe(*x + xMove[i] + xMove[j], *y + yMove[i] + xMove[j], sol))
+            {
+                ++coordinates[i];
+            }
         }
     }
     for (i = 0; i < N; ++i)
     {
+        save_min_index = i;
+        min = INT_MAX - 1;
+
         for (j = 0; j < N; ++j)
         {
-            min = INT_MAX - 1;
             if (min > coordinates[j])
             {
                 save_min_index = j;
+                min = coordinates[j];
             }
         }
-        if (INT_MAX == min)
+        if (INT_MAX - 1 == min)
         {
             continue;
         }
