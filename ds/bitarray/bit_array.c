@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <assert.h>
 #include "bit_array.h"
 
 #define ARRAYSIZE 64
@@ -14,7 +14,7 @@ bitarray_t BitArraySetAll()
 
 bitarray_t BitArrayResetAll()
 {
-	return 0;
+	return 0UL;
 }
 
 bitarray_t BitArraySetOn(bitarray_t array, size_t idx)
@@ -164,7 +164,7 @@ bitarray_t BitArrayLutMirror(bitarray_t array)
 	return array;
 }
 
-extern size_t BitArrayCountOnLUT(bitarray_t array)
+/* extern size_t BitArrayCountOnLUT(bitarray_t array)
 {
 
 	unsigned char lookuptable[256] = { B6(0), B6(1), B6(1), B6(2) };
@@ -181,7 +181,7 @@ extern size_t BitArrayCountOnLUT(bitarray_t array)
 	return count;
 
 }
-
+ */
 
 
 

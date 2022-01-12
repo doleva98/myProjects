@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h>/* malloc */
 #include <assert.h>
 #include "heap.h"
 #include "dynamic_vector.h"
@@ -33,7 +32,7 @@ heap_t *HeapCreate(cmp_func_t compare, const void *param)
     heap->param = param;
 
     heap->vector = VectorCreate(1, sizeof(void *));
-
+    /* check and free */
     return heap;
 }
 
@@ -51,7 +50,7 @@ int HeapPush(heap_t *heap, const void *data)
 
     VectorPushBack(heap->vector, &data);
     HeapifyUp(heap);
-
+    /* check if the size is changed */
     return 0;
 }
 
@@ -97,7 +96,7 @@ size_t HeapSize(const heap_t *heap)
 void *HeapRemove(heap_t *heap, const void *data, is_match_func_t is_match)
 {
     size_t i;
-    assert(heap);
+    assert(heap && is_match);
     for (i = 0; i < HeapSize(heap); ++i)
     {
         if (0 == is_match((void *)*(size_t *)VectorGetAccessToElement(heap->vector, i), data))
@@ -117,7 +116,7 @@ void *HeapRemove(heap_t *heap, const void *data, is_match_func_t is_match)
 
 void *HeapFind(const heap_t *heap, const void *data, is_match_func_t is_match)
 {
-    size_t i;
+    size_t i = 0;
     assert(heap);
     for (i = 0; i < HeapSize(heap); ++i)
     {

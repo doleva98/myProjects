@@ -5,19 +5,23 @@
 
 /* Functions to create and manipulate bit arraysץ
 
-NOTE: variavle bitarray_t array is an array in that we treat it as an array, 
-, and is passed by VALUE and returned by VALUE. 
+NOTE: variavle bitarray_t array is an array in that we treat it as an array,
+, and is passed by VALUE and returned by VALUE.
 Usage of many these functions is expected to be as follows:
 
 {
 	bitarray_t array = 0;
-	
+
 	array = BitArraySetBit(array, 31, BIT_ON);
 }
 
 */
 
-typedef enum { BIT_ON = 1, BIT_OFF = 0 } bitstate_t;
+typedef enum
+{
+	BIT_ON = 1,
+	BIT_OFF = 0
+} bitstate_t;
 
 /* typedef to create a single unit to work with as an array - long isn't portable, need a different option*/
 #ifdef ARCH32
@@ -34,7 +38,7 @@ extern bitarray_t BitArraySetAll();
 extern bitarray_t BitArrayResetAll();
 
 /* Set chosen bit to 1 */
-extern bitarray_t BitArraySetOn(bitarray_t array, size_t idx); 
+extern bitarray_t BitArraySetOn(bitarray_t array, size_t idx);
 
 /* Set chosen bit to 0 */
 extern bitarray_t BitArraySetOff(bitarray_t array, size_t idx);
@@ -71,11 +75,8 @@ extern bitarray_t BitArrayToggleBit(bitarray_t array, size_t idx);
 
 extern bitarray_t BitArrayLutMirror(bitarray_t array);
 
-/* Counts how many bits are on */ 
+/* Counts how many bits are on
 extern size_t BitArrayCountOnLUT(bitarray_t array);
-
-
-
+*/
 
 #endif
-
