@@ -1,59 +1,51 @@
-#define _POSIX_SOURCE
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
 
-static void foo();
-void UsrHandler(int sig);
+void UsrHandlerParent(int sig);
+void UsrHandlerChild(int sig);
 
-static int received = 0;
+static pid_t pid2;
 
 int main()
 {
-	foo();
-	return 0;
-}
+	struct sigaction parent_action, child_action;
 
-void UsrHandler(int sig)
-{
-	if (sig == SIGUSR1)
-	{
-		printf("ping");
-		received = 1;
-	}
+	parent_action.sa_handler = UsrHandlerParent;
+	parent_action.sa_flags = 0;
+	sigemptyset(&parent_action.sa_mask);
 
-	if (sig == SIGUSR2)
-	{
-		printf(" pong");
-	}
-}
+	child_action.sa_handler = UsrHandlerChild;
+	child_action.sa_flags = 0;
+	sigemptyset(&child_action.sa_mask);
 
-static void foo()
-{
-	pid_t parent_pid = getpid();
-	pid_t pid2;
+	sigaction(SIGUSR2, &parent_action, NULL);
+	sigaction(SIGUSR1, &child_action, NULL);
 	pid2 = fork();
 
-	signal(SIGUSR1, UsrHandler);
-
-	signal(SIGUSR2, UsrHandler);
-
-	if (0 > pid2)
-	{
-		printf("Can't create child process\n");
-	}
-	else if (0 == pid2)
-	{
-		/* child process */
-		kill(parent_pid, SIGUSR2);
-	}
-	else
+	if (0 < pid2)
 	{
 		/* parent process */
 		kill(pid2, SIGUSR1);
-
 		wait(NULL);
 	}
+	while (1)
+		;
+
+	return 0;
+}
+
+void UsrHandlerParent(int sig)
+{
+	puts("pong");
+	kill(pid2, SIGUSR1);
+}
+
+void UsrHandlerChild(int sig)
+{
+	puts("ping");
+	kill(getppid(), SIGUSR2);
 }
