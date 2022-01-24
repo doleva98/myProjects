@@ -8,7 +8,7 @@ ROOT_DIR = ../..
 PROJ_SRCS = $(wildcard *.c)
 
 # list of directories containing header files
-PROJ_INC_DIR = ../slinkedlist
+PROJ_INC_DIR = ../../ds/slinkedlist ../../ds/queue
 
 # the executable file
 PROJ_OUT = a.out
@@ -22,15 +22,15 @@ PROJ_CPPFLAGS =
 PROJ_MACROS =
 
 # additional object files (created by other projects)
-PROJ_ADD_OBJS = singly_list.o
+PROJ_ADD_OBJS = singly_list.o queue.o
 
 # additional libraries
-PROJ_LIBS =
+PROJ_LIBS = pthread
 
 # linker flags
 PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  = ../slinkedlist/Makefile
+PROJ_DEPENDS  = ../../ds/slinkedlist/Makefile ../../ds/queue/Makefile
 
 include $(ROOT_DIR)/include/make/Project.mak
