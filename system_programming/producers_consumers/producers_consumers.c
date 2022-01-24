@@ -20,33 +20,33 @@ slist_iter_t iter;
 queue_t *queue;
 pthread_cond_t cond;
 
-void single_reader_writer();
-void *Reader(void *arg);
-void *Writer(void *arg);
+void single_Producer_Consumer();
+void *Producer(void *arg);
+void *Consumer(void *arg);
 
 void ex2();
-void *Reader_ex_2(void *arg);
-void *Writer_ex_2(void *arg);
+void *Producer_ex_2(void *arg);
+void *Consumer_ex_2(void *arg);
 
 void ex3();
-void *Reader_ex_3(void *arg);
-void *Writer_ex_3(void *arg);
+void *Producer_ex_3(void *arg);
+void *Consumer_ex_3(void *arg);
 
 void ex4();
-void *Reader_ex_4(void *arg);
-void *Writer_ex_4(void *arg);
+void *Producer_ex_4(void *arg);
+void *Consumer_ex_4(void *arg);
 
 void ex5();
-void *Reader_ex_5(void *arg);
-void *Writer_ex_5(void *arg);
+void *Producer_ex_5(void *arg);
+void *Consumer_ex_5(void *arg);
 
 void ex6();
-void *Reader_ex_6(void *arg);
-void *Writer_ex_6(void *arg);
+void *Producer_ex_6(void *arg);
+void *Consumer_ex_6(void *arg);
 
 int main()
 {
-	/* single_reader_writer(); */
+	/* single_Producer_Consumer(); */
 	/* ex2(); */
 
 	/* 	ex3();
@@ -59,7 +59,7 @@ int main()
 	return 0;
 }
 
-void *Reader(void *arg)
+void *Producer_ex_1(void *arg)
 {
 	(void)arg;
 	while (is_message_written)
@@ -69,7 +69,7 @@ void *Reader(void *arg)
 	return NULL;
 }
 
-void *Writer(void *arg)
+void *Consumer_ex_1(void *arg)
 {
 	(void)arg;
 
@@ -80,9 +80,9 @@ void *Writer(void *arg)
 	return NULL;
 }
 
-void single_reader_writer()
+void single_Producer_Consumer()
 {
-	pthread_t reader, writer;
+	pthread_t Producer, Consumer;
 
 	message = (char *)malloc(40 * sizeof(*message));
 	if (!message)
@@ -90,16 +90,16 @@ void single_reader_writer()
 		return;
 	}
 
-	pthread_create(&reader, NULL, Reader, NULL);
-	pthread_create(&writer, NULL, Writer, NULL);
+	pthread_create(&Producer, NULL, Producer_ex_1, NULL);
+	pthread_create(&Consumer, NULL, Consumer_ex_1, NULL);
 
-	pthread_join(reader, NULL);
-	pthread_join(writer, NULL);
+	pthread_join(Producer, NULL);
+	pthread_join(Consumer, NULL);
 
 	free(message);
 }
 /* ******************************EX2************************* */
-void *Reader_ex_2(void *arg)
+void *Producer_ex_2(void *arg)
 {
 	size_t i = 0;
 	(void)arg;
@@ -116,7 +116,7 @@ void *Reader_ex_2(void *arg)
 	return NULL;
 }
 
-void *Writer_ex_2(void *arg)
+void *Consumer_ex_2(void *arg)
 {
 	slist_iter_t iter = SListBegin(list);
 	(void)arg;
@@ -132,16 +132,16 @@ void *Writer_ex_2(void *arg)
 
 void ex2()
 {
-	pthread_t reader, writer;
+	pthread_t Producer, Consumer;
 
 	list = SListCreate();
 	a = (int *)malloc(SIZE * sizeof(*a));
 
-	pthread_create(&reader, NULL, Reader_ex_2, NULL);
-	pthread_create(&writer, NULL, Writer_ex_2, NULL);
+	pthread_create(&Producer, NULL, Producer_ex_2, NULL);
+	pthread_create(&Consumer, NULL, Consumer_ex_2, NULL);
 
-	pthread_join(reader, NULL);
-	pthread_join(writer, NULL);
+	pthread_join(Producer, NULL);
+	pthread_join(Consumer, NULL);
 
 	SListDestroy(list);
 	free(a);
@@ -149,7 +149,7 @@ void ex2()
 
 /* ******************************EX3************************* */
 
-void *Reader_ex_3(void *arg)
+void *Producer_ex_3(void *arg)
 {
 	(void)arg;
 
@@ -162,7 +162,7 @@ void *Reader_ex_3(void *arg)
 	return NULL;
 }
 
-void *Writer_ex_3(void *arg)
+void *Consumer_ex_3(void *arg)
 {
 	(void)arg;
 	pthread_mutex_lock(&mutex);
@@ -175,7 +175,7 @@ void *Writer_ex_3(void *arg)
 
 void ex3()
 {
-	pthread_t reader[5], writer[5];
+	pthread_t Producer[5], Consumer[5];
 	size_t i = 0;
 
 	list = SListCreate();
@@ -186,18 +186,18 @@ void ex3()
 	for (i = 0; i < SIZE; ++i)
 	{
 		a[i] = i;
-		pthread_create(&reader[i], NULL, Reader_ex_3, &a[i]);
+		pthread_create(&Producer[i], NULL, Producer_ex_3, &a[i]);
 	}
 
 	for (i = 0; i < SIZE; ++i)
 	{
-		pthread_create(&writer[i], NULL, Writer_ex_3, NULL);
+		pthread_create(&Consumer[i], NULL, Consumer_ex_3, NULL);
 	}
 
 	for (i = 0; i < SIZE; ++i)
 	{
-		pthread_join(reader[i], NULL);
-		pthread_join(writer[i], NULL);
+		pthread_join(Producer[i], NULL);
+		pthread_join(Consumer[i], NULL);
 	}
 	SListDestroy(list);
 	free(a);
@@ -205,7 +205,7 @@ void ex3()
 
 /* ******************************EX4************************* */
 
-void *Reader_ex_4(void *arg)
+void *Producer_ex_4(void *arg)
 {
 	(void)arg;
 	sem_wait(&sema2);
@@ -217,7 +217,7 @@ void *Reader_ex_4(void *arg)
 	return NULL;
 }
 
-void *Writer_ex_4(void *arg)
+void *Consumer_ex_4(void *arg)
 {
 	(void)arg;
 	sem_wait(&sema);
@@ -231,7 +231,7 @@ void *Writer_ex_4(void *arg)
 
 void ex4()
 {
-	pthread_t reader[5], writer[5];
+	pthread_t Producer[5], Consumer[5];
 	size_t i = 0;
 
 	queue = QueueCreate();
@@ -242,18 +242,18 @@ void ex4()
 	{
 		a[i] = i;
 
-		pthread_create(&reader[i], NULL, Reader_ex_4, &a[i]);
+		pthread_create(&Producer[i], NULL, Producer_ex_4, &a[i]);
 	}
 
 	for (i = 0; i < SIZE; ++i)
 	{
-		pthread_create(&writer[i], NULL, Writer_ex_4, NULL);
+		pthread_create(&Consumer[i], NULL, Consumer_ex_4, NULL);
 	}
 
 	for (i = 0; i < SIZE; ++i)
 	{
-		pthread_join(reader[i], NULL);
-		pthread_join(writer[i], NULL);
+		pthread_join(Producer[i], NULL);
+		pthread_join(Consumer[i], NULL);
 	}
 	QueueDestroy(queue);
 	free(a);
@@ -261,7 +261,7 @@ void ex4()
 
 /* ******************************EX5************************* */
 
-void *Reader_ex_5(void *arg)
+void *Producer_ex_5(void *arg)
 {
 	(void)arg;
 	sem_wait(&sema2);
@@ -274,7 +274,7 @@ void *Reader_ex_5(void *arg)
 	return NULL;
 }
 
-void *Writer_ex_5(void *arg)
+void *Consumer_ex_5(void *arg)
 {
 	(void)arg;
 	sem_wait(&sema);
@@ -288,7 +288,7 @@ void *Writer_ex_5(void *arg)
 
 void ex5()
 {
-	pthread_t reader[5], writer[5];
+	pthread_t Producer[5], Consumer[5];
 	size_t i = 0;
 
 	queue = QueueCreate();
@@ -300,18 +300,18 @@ void ex5()
 	{
 		a[i] = i;
 
-		pthread_create(&reader[i], NULL, Reader_ex_5, &a[i]);
+		pthread_create(&Producer[i], NULL, Producer_ex_5, &a[i]);
 	}
 
 	for (i = 0; i < SIZE; ++i)
 	{
-		pthread_create(&writer[i], NULL, Writer_ex_5, NULL);
+		pthread_create(&Consumer[i], NULL, Consumer_ex_5, NULL);
 	}
 
 	for (i = 0; i < SIZE; ++i)
 	{
-		pthread_join(reader[i], NULL);
-		pthread_join(writer[i], NULL);
+		pthread_join(Producer[i], NULL);
+		pthread_join(Consumer[i], NULL);
 	}
 	QueueDestroy(queue);
 	free(a);
@@ -319,7 +319,7 @@ void ex5()
 
 /* ******************************EX6************************* */
 
-void *Reader_ex_6(void *arg)
+void *Producer_ex_6(void *arg)
 {
 	(void)arg;
 
@@ -332,21 +332,21 @@ void *Reader_ex_6(void *arg)
 	return NULL;
 }
 
-void *Writer_ex_6(void *arg)
+void *Consumer_ex_6(void *arg)
 {
 
 	(void)arg;
 	pthread_mutex_lock(&mutex2);
 	pthread_cond_wait(&cond, &mutex2);
 	sem_wait(&sema);
-	puts(message);
+	printf("%s", message);
 	pthread_mutex_unlock(&mutex2);
 	return NULL;
 }
 
 void ex6()
 {
-	pthread_t reader, writer[5];
+	pthread_t Producer, Consumer[5];
 	size_t i = 0;
 	pthread_cond_init(&cond, NULL);
 
@@ -358,18 +358,19 @@ void ex6()
 
 	sem_init(&sema, 0, 5);
 
-	pthread_create(&reader, NULL, Reader_ex_6, NULL);
+	pthread_create(&Producer, NULL, Producer_ex_6, NULL);
 
 	for (i = 0; i < SIZE; ++i)
 	{
-		pthread_create(&writer[i], NULL, Writer_ex_6, NULL);
+		pthread_create(&Consumer[i], NULL, Consumer_ex_6, NULL);
 	}
 
-	pthread_join(reader, NULL);
+	pthread_join(Producer, NULL);
 
 	for (i = 0; i < SIZE; ++i)
 	{
-		pthread_join(writer[i], NULL);
+		pthread_join(Consumer[i], NULL);
 	}
+	free(message);
 	pthread_cond_destroy(&cond);
 }
