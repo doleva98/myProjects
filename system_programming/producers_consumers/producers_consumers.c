@@ -6,7 +6,7 @@
 #include <stdatomic.h>
 #include <semaphore.h>
 
-atomic_int is_message_written;
+volatile int is_message_written;
 char *message;
 
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -15,8 +15,10 @@ slist_t *list;
 int *a;
 const size_t SIZE = 5;
 sem_t sema;
+sem_t sema2;
 slist_iter_t iter;
 queue_t *queue;
+pthread_cond_t cond;
 
 void single_reader_writer();
 void *Reader(void *arg);
@@ -44,15 +46,15 @@ void *Writer_ex_6(void *arg);
 
 int main()
 {
-	/* 	single_reader_writer(); */
+	/* single_reader_writer(); */
 	/* ex2(); */
 
 	/* 	ex3();
 	 */
-	/* 	ex4();
+	/* ex4(); */
+
+	/* 	ex5();
 	 */
-/* 	ex5();
- */
 	ex6();
 	return 0;
 }
@@ -63,7 +65,7 @@ void *Reader(void *arg)
 	while (is_message_written)
 		;
 	fgets(message, 40, stdin);
-	atomic_store(&is_message_written, 1);
+	is_message_written = 1;
 	return NULL;
 }
 
@@ -74,7 +76,7 @@ void *Writer(void *arg)
 	while (!is_message_written)
 		;
 	printf("%s", message);
-	atomic_store(&is_message_written, 0);
+	is_message_written = 0;
 	return NULL;
 }
 
@@ -206,7 +208,7 @@ void ex3()
 void *Reader_ex_4(void *arg)
 {
 	(void)arg;
-
+	sem_wait(&sema2);
 	pthread_mutex_lock(&mutex);
 
 	sem_post(&sema);
@@ -218,8 +220,9 @@ void *Reader_ex_4(void *arg)
 void *Writer_ex_4(void *arg)
 {
 	(void)arg;
-	pthread_mutex_lock(&mutex);
 	sem_wait(&sema);
+	pthread_mutex_lock(&mutex);
+	sem_post(&sema2);
 	printf("%d\n", *(int *)QueuePeek(queue));
 	QueueDequeue(queue);
 	pthread_mutex_unlock(&mutex);
@@ -234,7 +237,7 @@ void ex4()
 	queue = QueueCreate();
 	a = (int *)malloc(SIZE * sizeof(*a));
 	sem_init(&sema, 0, 0);
-
+	sem_init(&sema2, 0, SIZE);
 	for (i = 0; i < SIZE; ++i)
 	{
 		a[i] = i;
@@ -261,6 +264,7 @@ void ex4()
 void *Reader_ex_5(void *arg)
 {
 	(void)arg;
+	sem_wait(&sema2);
 
 	pthread_mutex_lock(&mutex);
 
@@ -273,8 +277,9 @@ void *Reader_ex_5(void *arg)
 void *Writer_ex_5(void *arg)
 {
 	(void)arg;
-	pthread_mutex_lock(&mutex2);
 	sem_wait(&sema);
+	pthread_mutex_lock(&mutex2);
+	sem_post(&sema2);
 	printf("%d\n", *(int *)QueuePeek(queue));
 	QueueDequeue(queue);
 	pthread_mutex_unlock(&mutex2);
@@ -289,6 +294,7 @@ void ex5()
 	queue = QueueCreate();
 	a = (int *)malloc(SIZE * sizeof(*a));
 	sem_init(&sema, 0, 0);
+	sem_init(&sema2, 0, SIZE);
 
 	for (i = 0; i < SIZE; ++i)
 	{
@@ -322,17 +328,16 @@ void *Reader_ex_6(void *arg)
 	fgets(message, 40, stdin);
 	puts("");
 	pthread_mutex_unlock(&mutex);
-	atomic_store(&is_message_written, 1);
-
+	pthread_cond_broadcast(&cond);
 	return NULL;
 }
 
 void *Writer_ex_6(void *arg)
 {
+
 	(void)arg;
-	while (!is_message_written)
-		;
 	pthread_mutex_lock(&mutex2);
+	pthread_cond_wait(&cond, &mutex2);
 	sem_wait(&sema);
 	puts(message);
 	pthread_mutex_unlock(&mutex2);
@@ -343,6 +348,7 @@ void ex6()
 {
 	pthread_t reader, writer[5];
 	size_t i = 0;
+	pthread_cond_init(&cond, NULL);
 
 	message = (char *)malloc(40 * sizeof(*message));
 	if (!message)
@@ -365,4 +371,5 @@ void ex6()
 	{
 		pthread_join(writer[i], NULL);
 	}
+	pthread_cond_destroy(&cond);
 }
