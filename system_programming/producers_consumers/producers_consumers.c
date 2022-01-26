@@ -51,8 +51,8 @@ int main()
 
 	/* 	ex3();
 	 */
-	/* ex4(); */
-
+	/* 	ex4();
+	 */
 	/* 	ex5();
 	 */
 	ex6();
@@ -135,7 +135,15 @@ void ex2()
 	pthread_t Producer, Consumer;
 
 	list = SListCreate();
+	if (!list)
+	{
+		return;
+	}
 	a = (int *)malloc(SIZE * sizeof(*a));
+	if (!a)
+	{
+		return;
+	}
 
 	pthread_create(&Producer, NULL, Producer_ex_2, NULL);
 	pthread_create(&Consumer, NULL, Consumer_ex_2, NULL);
@@ -151,25 +159,37 @@ void ex2()
 
 void *Producer_ex_3(void *arg)
 {
+	size_t i = 0;
 	(void)arg;
+	for (i = 0; i < 5; ++i)
+	{
+		pthread_mutex_lock(&mutex);
 
-	pthread_mutex_lock(&mutex);
+		SListInsert(SListEnd(list), arg);
 
-	sem_post(&sema);
-	SListInsert(SListEnd(list), arg);
+		pthread_mutex_unlock(&mutex);
 
-	pthread_mutex_unlock(&mutex);
+		sem_post(&sema);
+	}
 	return NULL;
 }
 
 void *Consumer_ex_3(void *arg)
 {
+	int data = 0;
+/* 	size_t i = 0;
+ */
 	(void)arg;
-	pthread_mutex_lock(&mutex);
-	sem_wait(&sema);
-	printf("%d\n", *(int *)SListIterGetData(iter));
-	iter = SListIterNext(iter);
-	pthread_mutex_unlock(&mutex);
+	while (1)
+	{
+		sem_wait(&sema);
+
+		pthread_mutex_lock(&mutex);
+		data = *(int *)SListIterGetData(iter);
+		iter = SListIterNext(iter);
+		printf("%d\n", data);
+		pthread_mutex_unlock(&mutex);
+	}
 	return NULL;
 }
 
@@ -179,7 +199,17 @@ void ex3()
 	size_t i = 0;
 
 	list = SListCreate();
+	if (!list)
+	{
+		return;
+	}
+
 	a = (int *)malloc(SIZE * sizeof(*a));
+	if (!a)
+	{
+		return;
+	}
+
 	sem_init(&sema, 0, 0);
 	iter = SListBegin(list);
 
@@ -200,6 +230,7 @@ void ex3()
 		pthread_join(Consumer[i], NULL);
 	}
 	SListDestroy(list);
+	sem_destroy(&sema);
 	free(a);
 }
 
@@ -207,25 +238,32 @@ void ex3()
 
 void *Producer_ex_4(void *arg)
 {
+	size_t i = 0;
 	(void)arg;
-	sem_wait(&sema2);
-	pthread_mutex_lock(&mutex);
+	for (i = 0; i < 5; ++i)
+	{
+		sem_wait(&sema2);
 
-	sem_post(&sema);
-	QueueEnqueue(queue, arg);
-	pthread_mutex_unlock(&mutex);
+		pthread_mutex_lock(&mutex);
+		QueueEnqueue(queue, arg);
+		pthread_mutex_unlock(&mutex);
+		sem_post(&sema);
+	}
 	return NULL;
 }
 
 void *Consumer_ex_4(void *arg)
 {
 	(void)arg;
-	sem_wait(&sema);
-	pthread_mutex_lock(&mutex);
-	sem_post(&sema2);
-	printf("%d\n", *(int *)QueuePeek(queue));
-	QueueDequeue(queue);
-	pthread_mutex_unlock(&mutex);
+	while (1)
+	{
+		sem_wait(&sema);
+		pthread_mutex_lock(&mutex);
+		printf("%d\n", *(int *)QueuePeek(queue));
+		QueueDequeue(queue);
+		pthread_mutex_unlock(&mutex);
+		sem_post(&sema2);
+	}
 	return NULL;
 }
 
@@ -236,6 +274,10 @@ void ex4()
 
 	queue = QueueCreate();
 	a = (int *)malloc(SIZE * sizeof(*a));
+	if (!a)
+	{
+		return;
+	}
 	sem_init(&sema, 0, 0);
 	sem_init(&sema2, 0, SIZE);
 	for (i = 0; i < SIZE; ++i)
@@ -268,9 +310,9 @@ void *Producer_ex_5(void *arg)
 
 	pthread_mutex_lock(&mutex);
 
-	sem_post(&sema);
 	QueueEnqueue(queue, arg);
 	pthread_mutex_unlock(&mutex);
+	sem_post(&sema);
 	return NULL;
 }
 
@@ -278,11 +320,13 @@ void *Consumer_ex_5(void *arg)
 {
 	(void)arg;
 	sem_wait(&sema);
+
 	pthread_mutex_lock(&mutex2);
 	sem_post(&sema2);
 	printf("%d\n", *(int *)QueuePeek(queue));
 	QueueDequeue(queue);
 	pthread_mutex_unlock(&mutex2);
+
 	return NULL;
 }
 
@@ -293,6 +337,10 @@ void ex5()
 
 	queue = QueueCreate();
 	a = (int *)malloc(SIZE * sizeof(*a));
+	if (!a)
+	{
+		return;
+	}
 	sem_init(&sema, 0, 0);
 	sem_init(&sema2, 0, SIZE);
 
@@ -318,23 +366,18 @@ void ex5()
 }
 
 /* ******************************EX6************************* */
-
 void *Producer_ex_6(void *arg)
 {
 	(void)arg;
-
 	pthread_mutex_lock(&mutex);
-
 	fgets(message, 40, stdin);
 	puts("");
 	pthread_mutex_unlock(&mutex);
 	pthread_cond_broadcast(&cond);
 	return NULL;
 }
-
 void *Consumer_ex_6(void *arg)
 {
-
 	(void)arg;
 	pthread_mutex_lock(&mutex2);
 	pthread_cond_wait(&cond, &mutex2);
@@ -343,30 +386,24 @@ void *Consumer_ex_6(void *arg)
 	pthread_mutex_unlock(&mutex2);
 	return NULL;
 }
-
 void ex6()
 {
 	pthread_t Producer, Consumer[5];
 	size_t i = 0;
-	pthread_cond_init(&cond, NULL);
 
+	pthread_cond_init(&cond, NULL);
 	message = (char *)malloc(40 * sizeof(*message));
 	if (!message)
 	{
 		return;
 	}
-
 	sem_init(&sema, 0, 5);
-
 	pthread_create(&Producer, NULL, Producer_ex_6, NULL);
-
 	for (i = 0; i < SIZE; ++i)
 	{
 		pthread_create(&Consumer[i], NULL, Consumer_ex_6, NULL);
 	}
-
 	pthread_join(Producer, NULL);
-
 	for (i = 0; i < SIZE; ++i)
 	{
 		pthread_join(Consumer[i], NULL);
