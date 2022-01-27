@@ -81,8 +81,8 @@ int KeepMeAlive(int argc, char **argv)
 		return 1;
 	}
 
-/* 	pthread_join(WDThread, NULL);
- */	return 0;
+	pthread_join(WDThread, NULL);
+	return 0;
 }
 
 static void *WDThreadFunction(void *arg)
