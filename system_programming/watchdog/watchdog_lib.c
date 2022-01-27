@@ -17,26 +17,36 @@ pid_t other_pid;
 static int got_signal = 0;
 static int is_watchdog = 0;
 char *calling_func = NULL;
+scheduler_t *scheduler = NULL;
 
 static void SigHandlerIsAlive(int signum, siginfo_t *siginfo, void *context);
+static void SigHandlerDNR(int signum, siginfo_t *siginfo, void *context);
 static void *WDThreadFunction(void *arg);
 static int SendSignalTask(const void *param);
 static int ReceiveSignalTask(const void *param);
 
 int KeepMeAlive(int argc, char **argv)
 {
-	struct sigaction signal_handler_is_alive;
+	struct sigaction signal_handler_is_alive, signal_handler_DNR;
 	pthread_t WDThread;
-	scheduler_t *scheduler = NULL;
-	void *thread_ret_value = NULL;
 
 	(void)argc;
+
+	scheduler = SchedulerCreate();
+	if (!scheduler)
+	{
+		return 1;
+	}
 
 	signal(SIGCHLD, SIG_IGN);
 
 	signal_handler_is_alive.sa_sigaction = SigHandlerIsAlive;
 	signal_handler_is_alive.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &signal_handler_is_alive, NULL);
+
+	signal_handler_DNR.sa_sigaction = SigHandlerDNR;
+	signal_handler_DNR.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR2, &signal_handler_DNR, NULL);
 
 	if (argv[1])
 	{
@@ -65,33 +75,21 @@ int KeepMeAlive(int argc, char **argv)
 			execlp("./watchdog.out", "./watchdog.out", argv[0], NULL);
 		}
 	}
-	scheduler = SchedulerCreate();
-	if (!scheduler)
+
+	if (0 != pthread_create(&WDThread, NULL, WDThreadFunction, NULL))
 	{
 		return 1;
 	}
 
-	if (0 != pthread_create(&WDThread, NULL, WDThreadFunction, scheduler))
-	{
-		return 1;
-	}
-	pthread_join(WDThread, &thread_ret_value);
-	if (!thread_ret_value)
-	{
-		return 1;
-	}
-
-	return 0;
+/* 	pthread_join(WDThread, NULL);
+ */	return 0;
 }
 
 static void *WDThreadFunction(void *arg)
 {
+
 	unique_id_t uid = uid_null_uid;
-	scheduler_t *scheduler = NULL;
-
-	assert(arg);
-
-	scheduler = (scheduler_t *)arg;
+	(void)arg;
 
 	uid = SchedulerTaskAdd(scheduler, SendSignalTask, 1, NULL);
 	if (UIDIsEqual(uid, uid_null_uid))
@@ -143,7 +141,7 @@ static int ReceiveSignalTask(const void *param)
 	}
 	else
 	{
-		/* TODO: ressurection */
+		/* ressurection */
 		other_pid = fork();
 		if (-1 == other_pid)
 		{
@@ -172,4 +170,21 @@ static int ReceiveSignalTask(const void *param)
 	got_signal = 0;
 
 	return 0;
+}
+
+void DNR()
+{
+	kill(other_pid, SIGUSR2);
+	kill(getpid(), SIGUSR2);
+}
+
+static void SigHandlerDNR(int signum, siginfo_t *siginfo, void *context)
+{
+	(void)context;
+	(void)siginfo;
+	(void)signum;
+
+	SchedulerStop(scheduler);
+	SchedulerDestroy(scheduler);
+	wait(NULL);
 }

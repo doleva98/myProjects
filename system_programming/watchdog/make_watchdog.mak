@@ -25,12 +25,12 @@ PROJ_MACROS =
 PROJ_ADD_OBJS = scheduler.o heap_priority_queue.o heap.o dynamic_vector.o uid.o
 
 # additional libraries
-PROJ_LIBS = pthread
+PROJ_LIBS = pthread wd
 
 # linker flags
 PROJ_LDFLAGS =
 
 # list of projects (makefiles) this project depends on
-PROJ_DEPENDS  = ../../ds/scheduler/Makefile
+PROJ_DEPENDS  = ../../ds/scheduler/Makefile make_WD_lib.mak
 
 include $(ROOT_DIR)/include/make/Project.mak

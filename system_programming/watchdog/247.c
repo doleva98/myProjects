@@ -8,11 +8,8 @@ int main(int argc, char **argv)
 	{
 		return 1;
 	}
-	while (1)
-	{
-		/* 		printf("hello world\n");
-		 */
-		sleep(2);
-	}
+	sleep(10);
+
+	DNR();
 	return 0;
 }
