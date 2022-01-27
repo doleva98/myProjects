@@ -8,7 +8,10 @@ int main(int argc, char **argv)
 	{
 		return 1;
 	}
-	sleep(10);
+	while (1)
+		{
+			sleep(4);
+		}
 
 	DNR();
 	return 0;
