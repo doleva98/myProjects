@@ -1,7 +1,8 @@
 #include <stdio.h>
+#include <unistd.h> /* sleep */
 #include "watchdog_lib.h"
 
-int main(int argc, char **argv, char **envp)
+int main(int argc, char **argv)
 {
 	if (KeepMeAlive(argc, argv) == 1)
 	{
@@ -9,8 +10,9 @@ int main(int argc, char **argv, char **envp)
 	}
 	while (1)
 	{
-/* 		printf("hello world\n");
- */		sleep(2);
+		/* 		printf("hello world\n");
+		 */
+		sleep(2);
 	}
 	return 0;
 }

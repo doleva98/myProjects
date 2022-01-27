@@ -11,10 +11,12 @@
 #include <unistd.h>	  /* for fork */
 #include <sys/wait.h>
 #include <string.h>
+#include <assert.h>
 
 pid_t other_pid;
 static int got_signal = 0;
 static int is_watchdog = 0;
+char *calling_func = NULL;
 
 static void SigHandlerIsAlive(int signum, siginfo_t *siginfo, void *context);
 static void *WDThreadFunction(void *arg);
@@ -26,30 +28,31 @@ int KeepMeAlive(int argc, char **argv)
 	struct sigaction signal_handler_is_alive;
 	pthread_t WDThread;
 	scheduler_t *scheduler = NULL;
+	void *thread_ret_value = NULL;
 
-	/* 	char *env_var = getenv("env_var_watchdog");
-	 */
 	(void)argc;
+
+	signal(SIGCHLD, SIG_IGN);
+
 	signal_handler_is_alive.sa_sigaction = SigHandlerIsAlive;
 	signal_handler_is_alive.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &signal_handler_is_alive, NULL);
-	/* sem_t *sema;
-	int counter = 0; */
 
-	/* 	sema = sem_open(argv[1], O_CREAT, 0666, counter); */
-
-	if (strcmp(argv[0], "./watchdog.out") == 0)
+	if (argv[1])
 	{
-		/* now in watchdog */
-		is_watchdog = 1;
+		calling_func = argv[1];
 		other_pid = getppid();
+		if (0 == strcmp(argv[0], "./watchdog.out"))
+		{
+			/* now in watchdog */
+			is_watchdog = 1;
+		}
 	}
-
 	else
 	{
-		/* i am the 247 and invoked from console */
-		/* 		setenv("env_var_watchdog", "watchdog", 0);
-		 */
+		/* i am the 247 and the first
+		invoked from console */
+
 		other_pid = fork();
 
 		if (-1 == other_pid)
@@ -59,10 +62,9 @@ int KeepMeAlive(int argc, char **argv)
 
 		else if (0 == other_pid)
 		{
-			execlp("./watchdog.out", "./watchdog.out", NULL);
+			execlp("./watchdog.out", "./watchdog.out", argv[0], NULL);
 		}
 	}
-
 	scheduler = SchedulerCreate();
 	if (!scheduler)
 	{
@@ -73,20 +75,39 @@ int KeepMeAlive(int argc, char **argv)
 	{
 		return 1;
 	}
+	pthread_join(WDThread, &thread_ret_value);
+	if (!thread_ret_value)
+	{
+		return 1;
+	}
+
 	return 0;
 }
 
 static void *WDThreadFunction(void *arg)
 {
+	unique_id_t uid = uid_null_uid;
+	scheduler_t *scheduler = NULL;
 
-	scheduler_t *scheduler = (scheduler_t *)arg;
+	assert(arg);
 
-	SchedulerTaskAdd(scheduler, SendSignalTask, 3, NULL);
-	SchedulerTaskAdd(scheduler, ReceiveSignalTask, 3, NULL);
+	scheduler = (scheduler_t *)arg;
+
+	uid = SchedulerTaskAdd(scheduler, SendSignalTask, 1, NULL);
+	if (UIDIsEqual(uid, uid_null_uid))
+	{
+		return NULL;
+	}
+
+	uid = SchedulerTaskAdd(scheduler, ReceiveSignalTask, 3, NULL);
+	if (UIDIsEqual(uid, uid_null_uid))
+	{
+		return NULL;
+	}
 
 	SchedulerRun(scheduler);
 
-	return NULL;
+	return scheduler;
 }
 
 static void SigHandlerIsAlive(int signum, siginfo_t *siginfo, void *context)
@@ -119,11 +140,36 @@ static int ReceiveSignalTask(const void *param)
 		{
 			puts("247 got signal");
 		}
-		got_signal = 0;
 	}
 	else
 	{
 		/* TODO: ressurection */
+		other_pid = fork();
+		if (-1 == other_pid)
+		{
+			return 1;
+		}
+		else if (0 == other_pid)
+		{
+			if (is_watchdog)
+			{
+				puts("");
+				execlp(calling_func, calling_func, "./watchdog.out", NULL);
+			}
+			else
+			{
+				puts("");
+				execlp("./watchdog.out", "./watchdog.out", calling_func, NULL);
+			}
+		}
+		else
+		{
+			/* 			kill(other_pid, SIGUSR1);
+			 */
+/* 			wait(NULL);
+ */		}
 	}
+	got_signal = 0;
+
 	return 0;
 }
