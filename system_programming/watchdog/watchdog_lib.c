@@ -82,6 +82,7 @@ int KeepMeAlive(int argc, char **argv)
 	}
 
 	pthread_join(WDThread, NULL);
+
 	return 0;
 }
 
@@ -183,8 +184,9 @@ static void SigHandlerDNR(int signum, siginfo_t *siginfo, void *context)
 	(void)context;
 	(void)siginfo;
 	(void)signum;
-
 	SchedulerStop(scheduler);
 	SchedulerDestroy(scheduler);
-	wait(NULL);
-}
+	kill(other_pid, SIGUSR2);
+
+/* 	wait(NULL);
+ */}
