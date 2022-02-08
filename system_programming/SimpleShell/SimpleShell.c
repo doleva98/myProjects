@@ -18,7 +18,7 @@ int main()
 		fgets(input, 20, stdin);
 		MakeStringToArray(input_array, input);
 		pid = fork();
-
+		
 		if (pid == 0)
 		{
 			execvp(input_array[0], input_array);

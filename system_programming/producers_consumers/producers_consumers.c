@@ -177,8 +177,8 @@ void *Producer_ex_3(void *arg)
 void *Consumer_ex_3(void *arg)
 {
 	int data = 0;
-/* 	size_t i = 0;
- */
+	/* 	size_t i = 0;
+	 */
 	(void)arg;
 	while (1)
 	{
@@ -379,9 +379,9 @@ void *Producer_ex_6(void *arg)
 void *Consumer_ex_6(void *arg)
 {
 	(void)arg;
+	sem_wait(&sema);
 	pthread_mutex_lock(&mutex2);
 	pthread_cond_wait(&cond, &mutex2);
-	sem_wait(&sema);
 	printf("%s", message);
 	pthread_mutex_unlock(&mutex2);
 	return NULL;

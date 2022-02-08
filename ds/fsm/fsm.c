@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "fsm.h"
-
+	
 int IsZeroAtBeginAndEnd(const unsigned char c)
 {
 	size_t i = 0;
