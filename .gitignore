@@ -18,6 +18,7 @@ node_modules
 !*.mak
 !*.md
 !*.json
+!*.java
 
 # Specific files
 !.gitignore
