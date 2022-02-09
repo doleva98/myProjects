@@ -6,14 +6,13 @@
 public class SinglyLinkedList {
 
     private Snode head;
-    private ListIterator iter;
 
     private class ListIterator implements GenericIter {
         private Snode node;
 
         /* constructor method */
-        private ListIterator() {
-            this.node = null;
+        private ListIterator(Snode node) {
+            this.node = node;
         }
 
         @Override
@@ -22,8 +21,10 @@ public class SinglyLinkedList {
         }
 
         @Override
-        public void next() {
+        public Object next() {
+            Object data = this.node.data;
             this.node = this.node.next;
+            return data;
         }
     }
 
@@ -40,8 +41,6 @@ public class SinglyLinkedList {
 
     /* constructor method */
     public SinglyLinkedList() {
-        this.head = null;
-        this.iter = new ListIterator();
     }
 
     public void pushFront(Object data) {
@@ -50,20 +49,25 @@ public class SinglyLinkedList {
     }
 
     public Object popFront() {
+        if (this.isEmpty()) {
+            return null;
+        }
         Object data = this.head.data;
         this.head = this.head.next;
         return data;
     }
 
     public int getSize() {
-        this.begin();
-        int count = 1;
         if (this.isEmpty()) {
             return 0;
         }
-        while (this.iter.hasNext()) {
+
+        ListIterator iter = new ListIterator(this.head);
+        int count = 1;
+
+        while (iter.hasNext()) {
             ++count;
-            this.iter.next();
+            iter.next();
         }
         return count;
     }
@@ -72,15 +76,18 @@ public class SinglyLinkedList {
         return this.head == null;
     }
 
-    public void begin() {
-        this.iter.node = this.head;
+    public GenericIter begin() {
+        if (this.head == null) {
+            return null;
+        }
+        return new ListIterator(this.head);
     }
 
-    public Object find(Object data) {
-        this.begin();
-        while (this.iter.hasNext()) {
-            if (data.equals(this.iter.node.data)) {
-                return this.iter.node.data;
+    public GenericIter find(Object data) {
+        ListIterator iter = new ListIterator(this.head);
+        while (iter.hasNext()) {
+            if (data.equals(iter.node.data)) {
+                return iter;
             }
             iter.next();
         }

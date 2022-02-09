@@ -3,5 +3,5 @@ public interface GenericIter {
 
     public boolean hasNext();
 
-    public void next();
+    public Object next();
 }

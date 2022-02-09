@@ -39,15 +39,15 @@ public class TestSinglyLinkedList {
             System.out.println("fail in " + getLineNumber());
         }
 
-        if (!slist.find("hello world").equals("hello world")) {
+        if (slist.find("hello world") == null) {
             System.out.println("fail in " + getLineNumber());
         }
 
-        if ((int) slist.find(30) != 30) {
+        if (slist.find(30) == null) {
             System.out.println("fail in " + getLineNumber());
         }
 
-        if (!slist.find(4).equals(4)) {
+        if (slist.find(4) == null) {
             System.out.println("fail in " + getLineNumber());
         }
 
@@ -65,8 +65,6 @@ public class TestSinglyLinkedList {
             System.out.println("fail in " + getLineNumber());
         }
 
-
     }
 
 }
-
