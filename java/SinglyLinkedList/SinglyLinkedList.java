@@ -1,4 +1,4 @@
-class SinglinkedList {
+class SinglinkedList implements GenericIterator {
 
     private Snode head;
 
@@ -15,15 +15,23 @@ class SinglinkedList {
     public int getSize() {
     }
 
-    public boolean isEmpty()
-    {}
+    public boolean isEmpty() {
+    }
 
     public Object find(Object data) {
         return data;
     }
 
-    public void begin(Iterator iter){}
-    
+    public void begin(Iterator iter) {
+    }
+
+    public boolean hasNext() {
+
+    }
+
+    public Object next() {
+
+    }
 
     private class Snode {
         private Object data;
