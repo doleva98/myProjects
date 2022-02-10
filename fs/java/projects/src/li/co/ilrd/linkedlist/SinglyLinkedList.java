@@ -17,6 +17,10 @@ public class SinglyLinkedList {
 
         @Override
         public boolean hasNext() {
+            if(this.node == null)
+            {
+                return false;
+            }
             return this.node.next != null;
         }
 

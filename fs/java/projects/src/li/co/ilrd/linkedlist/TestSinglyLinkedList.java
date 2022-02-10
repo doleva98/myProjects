@@ -55,6 +55,35 @@ public class TestSinglyLinkedList {
             System.out.println("fail in " + getLineNumber());
         }
 
+        GenericIter iter = slist.begin();
+
+        for (int i = 0; i < 50; ++i) {
+            if ((int) iter.next() != 49 - i) {
+                System.out.println("fail in " + getLineNumber());
+            }
+            if (!iter.hasNext()) {
+                System.out.println("fail in " + getLineNumber());
+            }
+        }
+
+        if (iter.next().equals(4)) {
+            System.out.println("fail in " + getLineNumber());
+
+        }
+        if (iter.hasNext()) {
+            System.out.println("fail in " + getLineNumber());
+        }
+
+        if (iter.next().equals("hello world")) {
+            System.out.println("fail in " + getLineNumber());
+
+        }
+
+        if (iter.hasNext()) {
+            System.out.println("fail in " + getLineNumber());
+
+        }
+
         for (int i = 0; i < 50; ++i) {
             if ((int) slist.popFront() != 49 - i) {
                 System.out.println("fail in " + getLineNumber());
