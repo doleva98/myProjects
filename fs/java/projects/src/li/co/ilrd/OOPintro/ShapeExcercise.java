@@ -1,4 +1,5 @@
 import java.lang.reflect.*;
+import java.util.Scanner;
 
 abstract class Shape {
 
@@ -165,7 +166,7 @@ class Square extends Rectangle {
     }
 }
 
-class Main {
+class MainShape {
     public static int getLineNumber() {
         return Thread.currentThread().getStackTrace()[2].getLineNumber();
     }
@@ -269,6 +270,16 @@ class Main {
         System.out.println(sq1.getColor());
         System.out.println(sq1.getSide());
         System.out.println(sq1.getLength());
+    }
+}
+
+
+class he {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        int x = scan.nextInt();
+        System.out.println(x);
+        scan.close();
     }
 }
 
