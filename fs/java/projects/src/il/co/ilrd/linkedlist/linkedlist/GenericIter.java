@@ -1,4 +1,6 @@
 // Interface
+package linkedlist;
+
 public interface GenericIter {
 
     public boolean hasNext();

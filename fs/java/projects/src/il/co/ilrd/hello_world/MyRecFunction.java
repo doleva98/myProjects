@@ -1,4 +1,3 @@
-import java.lang.Runtime;
 
 class MyRecFunc {
 	public static void main(String[] args) {

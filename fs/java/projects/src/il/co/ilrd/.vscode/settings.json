@@ -1,7 +1,11 @@
 {
-    "java.project.sourcePaths": [
-        "linkedlist",
-        "OOPintro",
-        "test"
-    ]
+  "java.project.sourcePaths": [
+    "linkedlist",
+    "hello_world",
+    "OOPintro",
+    "complex"
+  ]
+}/* {
+  "java.project.sourcePaths": ["test", "linkedlist", "OOPintro", ""]
 }
+ */

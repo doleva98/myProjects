@@ -1,4 +1,6 @@
 
+package linkedlist;
+
 public class TestSinglyLinkedList {
     public static int getLineNumber() {
         return Thread.currentThread().getStackTrace()[2].getLineNumber();
@@ -51,10 +53,6 @@ public class TestSinglyLinkedList {
             System.out.println("fail in " + getLineNumber());
         }
 
-        if (slist.find(4565) != null) {
-            System.out.println("fail in " + getLineNumber());
-        }
-
         GenericIter iter = slist.begin();
 
         for (int i = 0; i < 50; ++i) {
@@ -67,19 +65,6 @@ public class TestSinglyLinkedList {
         }
 
         if (iter.next().equals(4)) {
-            System.out.println("fail in " + getLineNumber());
-
-        }
-        if (iter.hasNext()) {
-            System.out.println("fail in " + getLineNumber());
-        }
-
-        if (iter.next().equals("hello world")) {
-            System.out.println("fail in " + getLineNumber());
-
-        }
-
-        if (iter.hasNext()) {
             System.out.println("fail in " + getLineNumber());
 
         }
