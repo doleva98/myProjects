@@ -9,8 +9,7 @@ class MyTest {
         }
     }
 
-    public static boolean t()
-    {
+    public static boolean t() {
         return true;
     }
 
