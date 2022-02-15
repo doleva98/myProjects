@@ -1,20 +1,32 @@
+/* 
+class Outer {
+    int x = 6;
 
-class MyTest {
+    private void foo() {
+        System.out.println("hello i am outer");
+    }
 
-    public static int high(int x, int y) {
-        if (x > y) {
-            return x;
-        } else {
-            return y;
+    static class Inner {
+        public void goo() {
+            System.out.println("hello i am inner " + x);
+            foo();
         }
-    }
+    } 
+} */
 
-    public static boolean t() {
-        return true;
-    }
+interface Person {
+    void name();
+}
 
+class Main
+{
     public static void main(String[] args) {
-        System.out.println(high(1, 1));
-
+        Person p = new Person() {
+            @Override
+            public void name() {
+                System.out.println("i am dolev");
+            }
+        };
+        p.name();
     }
 }

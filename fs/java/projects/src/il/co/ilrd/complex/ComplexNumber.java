@@ -1,6 +1,6 @@
 /* ellie was here */
-package complex;
 
+package complex;
 import java.util.Scanner;
 
 class ComplexNumber implements Comparable<ComplexNumber> {
