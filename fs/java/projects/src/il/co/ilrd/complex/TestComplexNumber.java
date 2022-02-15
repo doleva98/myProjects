@@ -1,6 +1,6 @@
 
-
 package complex;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -39,7 +39,7 @@ public class TestComplexNumber {
         assertTrue(c1.compareTo(c2) > 0);
         assertTrue(c2.compareTo(c3) == 0);
         assertTrue(c2.compareTo(c1) < 0);
-
+        assertTrue(true);
     }
 
     @Test

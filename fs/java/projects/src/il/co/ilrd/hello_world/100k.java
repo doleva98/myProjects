@@ -1,3 +1,5 @@
+package hello_world;
+
 import java.util.*;
 import java.lang.Runtime;
 

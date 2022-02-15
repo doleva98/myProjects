@@ -1,3 +1,5 @@
+package hello_world;
+
 class MySecondClass{
 	
 	static void foo1()

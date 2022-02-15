@@ -1,3 +1,5 @@
+package OOPintro;
+
 class Vehicle {
     static String color;
     static {

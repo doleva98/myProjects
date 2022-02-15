@@ -1,3 +1,4 @@
+package hello_world;
 
 class MyRecFunc {
 	public static void main(String[] args) {
