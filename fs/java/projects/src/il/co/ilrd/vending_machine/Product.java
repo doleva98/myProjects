@@ -1,6 +1,6 @@
 package vending_machine;
 
-public interface ProductInterface {
+public interface Product{
     public int getPrice();
 
     public String getName();
