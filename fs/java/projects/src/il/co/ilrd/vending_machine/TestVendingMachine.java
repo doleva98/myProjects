@@ -17,9 +17,18 @@ public class TestVendingMachine {
 
         VendingMachine vm = new VendingMachine(list, oc);
         vm.cancel();
+        vm.turnOnMachine();
         vm.chooseProduct("Sprite");
         vm.payment(1);
         vm.payment(1);
+
+        try {
+            Thread.sleep(400);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
         vm.payment(4);
         vm.payment(7);
         vm.chooseProduct("Coca Cola");
@@ -29,6 +38,18 @@ public class TestVendingMachine {
         vm.chooseProduct("water");
         vm.payment(7);
         vm.chooseProduct("water");
+        vm.turnOffMachine();
+        vm.payment(4);
+
+        vm.turnOnMachine();
+        vm.payment(4);
+
+        VendingMachine vm2 = new VendingMachine(list, oc);
+        vm2.turnOnMachine();
+
+        vm2.payment(4);
+        vm2.turnOffMachine(); 
+        vm.turnOffMachine();
     }
 }
 

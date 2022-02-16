@@ -3,27 +3,35 @@ package vending_machine;
 import java.util.List;
 import java.util.ListIterator;
 
-public class VendingMachine {
+public class VendingMachine extends Thread {
     private int money_in_machine;
     private List<Product> list_of_products;
     private Vmstate state;
-    PrintScreen output;
+    private PrintScreen output;
+    private boolean isRunning;
+    private Thread running_thread;
 
     public VendingMachine(List<Product> list, PrintScreen output) {
 
         money_in_machine = 0;
         list_of_products = list;
-        state = Vmstate.WFP;
+        state = Vmstate.OFF;
         this.output = output;
+        isRunning = false;
 
         output.printToMachine("vending machine is ready for use");
     }
 
+    public void turnOffMachine() {
+        state.turnOffMachine(this);
+    }
+
+    public void turnOnMachine() {
+        state.turnOnMachine(this);
+    }
+
     public void payment(int amount) {
-        money_in_machine += amount;
-        state.payment(this);
-        output.printToMachine("vending machine got " + amount + " dollars");
-        output.printToMachine("vending machine has " + money_in_machine + " dollars");
+        state.payment(this, amount);
     }
 
     public void chooseProduct(String product) {
@@ -34,26 +42,78 @@ public class VendingMachine {
         state.cancel(this);
     }
 
+    private class ThreadWaitingOneSecond implements Runnable {
+        VendingMachine vm;
+
+        public void run() {
+            while (vm.isRunning) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    output.printToMachine("ERROR");
+                }
+                vm.state.checkTimeOut(vm);
+            }
+        }
+
+        ThreadWaitingOneSecond(VendingMachine vm) {
+            this.vm = vm;
+        }
+    }
+
     private enum Vmstate {
-        WFP {/* waiting for payment */
+        OFF {
             @Override
-            public void payment(VendingMachine vm) {
-                vm.state = Vmstate.WFS;
+            public void payment(VendingMachine vm, int amount) {
+                vm.output.printToMachine("you cant pay when the machine is off");
+            }
+
+            @Override
+            public void turnOffMachine(VendingMachine vm) {
+                vm.output.printToMachine("the machine is already turned off");
+            }
+
+            @Override
+            public void turnOnMachine(VendingMachine vm) {
+                vm.output.printToMachine("turning machine on");
+                vm.running_thread = new Thread(vm.new ThreadWaitingOneSecond(vm));
+                vm.isRunning = true;
+                vm.running_thread.start();
+                vm.money_in_machine = 0;
+                vm.state = Vmstate.WFP;
+            }
+
+            public void chooseProduct(VendingMachine vm, String product) {
+                vm.output.printToMachine("you cant choose a product when the machine is off");
             }
 
             @Override
             public void cancel(VendingMachine vm) {
-                System.out.println("cant cancel, you didnt insert money");
+                vm.output.printToMachine("cant cancel, the machine is turned off");
+            }
+        },
+        WFP {/* waiting for payment */
+            @Override
+            public void payment(VendingMachine vm, int amount) {
+                vm.state = Vmstate.WFS;
+                super.payment(vm, amount);
+            }
+
+            @Override
+            public void cancel(VendingMachine vm) {
+                vm.output.printToMachine("cant cancel, you didnt insert money");
             }
 
             @Override
             public void chooseProduct(VendingMachine vm, String product) {
-                System.out.println("you cant choose product before inserting money");
+                vm.output.printToMachine("you cant choose product before inserting money");
             }
         },
         WFS {/* waiting for selection */
+
             @Override
-            public void payment(VendingMachine vm) {
+            public void checkTimeOut(VendingMachine vm) {
+                vm.state.cancel(vm);
             }
 
             @Override
@@ -63,29 +123,53 @@ public class VendingMachine {
                     Product current_product = iter.next();
                     if (current_product.getName().equals(product)) {
                         if (current_product.getPrice() > vm.money_in_machine) {
-                            System.out.println("not enough money in machine, you need to add "
+                            vm.output.printToMachine("not enough money in machine, you need to add "
                                     + (current_product.getPrice() - vm.money_in_machine) + " dollars for "
                                     + current_product.getName()
                                     + "\nor you can choose another product");
+                            return;
                         } else {
                             vm.money_in_machine -= current_product.getPrice();
-                            System.out.println("giving you " + current_product.getName() +
+                            vm.output.printToMachine("giving you " + current_product.getName() +
                                     "\nthere is " + vm.money_in_machine + " dollars left in the machine");
+                            return;
                         }
                     }
                 }
-                System.out.println("there is no such product");
+                vm.output.printToMachine("there is no such product");
             }
         };
 
-        abstract public void payment(VendingMachine vm);
+        public void payment(VendingMachine vm, int amount) {
+            vm.money_in_machine += amount;
+            vm.output.printToMachine("vending machine got " + amount + " dollars");
+            vm.output.printToMachine("vending machine has " + vm.money_in_machine + " dollars");
+        }
 
         abstract public void chooseProduct(VendingMachine vm, String product);
+
+        public void checkTimeOut(VendingMachine vm) {
+        }
 
         public void cancel(VendingMachine vm) {
             vm.state = Vmstate.WFP;
             vm.money_in_machine = 0;
-            System.out.println("canceled, now has 0 dollars");
+            vm.output.printToMachine("canceled, now has 0 dollars");
+        }
+
+        public void turnOffMachine(VendingMachine vm) {
+            vm.output.printToMachine("turning machine off");
+            vm.state = Vmstate.OFF;
+            vm.isRunning = false;
+            try {
+                vm.running_thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void turnOnMachine(VendingMachine vm) {
+            vm.output.printToMachine("the machine is already turned on");
         }
     }
 }
