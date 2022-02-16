@@ -1,6 +1,7 @@
 package vending_machine;
 
 import java.util.List;
+import java.util.ListIterator;
 
 public class VendingMachine {
     private int money_in_machine;
@@ -14,6 +15,7 @@ public class VendingMachine {
         list_of_products = list;
         state = Vmstate.WFP;
         this.output = output;
+
         output.printToMachine("vending machine is ready for use");
     }
 
@@ -21,6 +23,7 @@ public class VendingMachine {
         money_in_machine += amount;
         state.payment(this);
         output.printToMachine("vending machine got " + amount + " dollars");
+        output.printToMachine("vending machine has " + money_in_machine + " dollars");
     }
 
     public void chooseProduct(String product) {
@@ -39,11 +42,13 @@ public class VendingMachine {
             }
 
             @Override
-            public void chooseProduct(VendingMachine vm, String product) {
+            public void cancel(VendingMachine vm) {
+                System.out.println("cant cancel, you didnt insert money");
             }
 
             @Override
-            public void cancel(VendingMachine vm) {
+            public void chooseProduct(VendingMachine vm, String product) {
+                System.out.println("you cant choose product before inserting money");
             }
         },
         WFS {/* waiting for selection */
@@ -53,19 +58,34 @@ public class VendingMachine {
 
             @Override
             public void chooseProduct(VendingMachine vm, String product) {
-            }
-
-            @Override
-            public void cancel(VendingMachine vm) {
+                ListIterator<Product> iter = vm.list_of_products.listIterator();
+                while (iter.hasNext()) {
+                    Product current_product = iter.next();
+                    if (current_product.getName().equals(product)) {
+                        if (current_product.getPrice() > vm.money_in_machine) {
+                            System.out.println("not enough money in machine, you need to add "
+                                    + (current_product.getPrice() - vm.money_in_machine) + " dollars for "
+                                    + current_product.getName()
+                                    + "\nor you can choose another product");
+                        } else {
+                            vm.money_in_machine -= current_product.getPrice();
+                            System.out.println("giving you " + current_product.getName() +
+                                    "\nthere is " + vm.money_in_machine + " dollars left in the machine");
+                        }
+                    }
+                }
+                System.out.println("there is no such product");
             }
         };
 
         abstract public void payment(VendingMachine vm);
 
-        public void chooseProduct(VendingMachine vm, String product) {
-        }
+        abstract public void chooseProduct(VendingMachine vm, String product);
 
         public void cancel(VendingMachine vm) {
+            vm.state = Vmstate.WFP;
+            vm.money_in_machine = 0;
+            System.out.println("canceled, now has 0 dollars");
         }
     }
 }

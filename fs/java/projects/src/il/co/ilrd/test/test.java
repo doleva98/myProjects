@@ -6,6 +6,16 @@ class test {
         Outer o = new Outer();
         Outer.Inner i = o.new Inner();
         i.foo();
+
+        i y = new i() {
+            @Override
+            public void foo() {
+                System.out.println("hello");
+            }
+        };
+
+        y.foo();
+
     }
 }
 
@@ -30,4 +40,8 @@ class Outer {
         public void foo() {
         }
     }
+}
+
+interface i {
+    public void foo();
 }
