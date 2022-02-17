@@ -1,5 +1,5 @@
 
-package linkedlist;
+package il.co.ilrd.linkedlist;
 
 public class TestSinglyLinkedList {
     public static int getLineNumber() {

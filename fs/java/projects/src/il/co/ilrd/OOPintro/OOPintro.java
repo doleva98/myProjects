@@ -1,4 +1,4 @@
-package OOPintro;
+package il.co.ilrd.OOPintro;
 
 class Vehicle {
     static String color;

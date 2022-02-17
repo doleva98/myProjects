@@ -1,4 +1,4 @@
-package OOPintro;
+package il.co.ilrd.OOPintro;
 
 import java.lang.reflect.*;
 import java.util.Scanner;

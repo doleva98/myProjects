@@ -3,7 +3,7 @@
  
  shiraz code review
   */
-package linkedlist;
+package il.co.ilrd.linkedlist;
 
 public class SinglyLinkedList {
 

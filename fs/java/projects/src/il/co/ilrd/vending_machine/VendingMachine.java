@@ -1,9 +1,9 @@
-package vending_machine;
+package il.co.ilrd.vending_machine;
 
 import java.util.List;
 import java.util.ListIterator;
 
-public class VendingMachine extends Thread {
+public class VendingMachine {
     private int money_in_machine;
     private List<Product> list_of_products;
     private Vmstate state;
@@ -12,7 +12,6 @@ public class VendingMachine extends Thread {
     private Thread running_thread;
 
     public VendingMachine(List<Product> list, PrintScreen output) {
-
         money_in_machine = 0;
         list_of_products = list;
         state = Vmstate.OFF;
@@ -43,7 +42,7 @@ public class VendingMachine extends Thread {
     }
 
     private class ThreadWaitingOneSecond implements Runnable {
-        VendingMachine vm;
+        private VendingMachine vm;
 
         public void run() {
             while (vm.isRunning) {
@@ -65,7 +64,8 @@ public class VendingMachine extends Thread {
         OFF {
             @Override
             public void payment(VendingMachine vm, int amount) {
-                vm.output.printToMachine("you cant pay when the machine is off");
+                vm.output.printToMachine("you cant pay when"
+                        + " the machine is off");
             }
 
             @Override

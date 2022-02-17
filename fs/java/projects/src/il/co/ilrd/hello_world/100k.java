@@ -1,4 +1,4 @@
-package hello_world;
+package il.co.ilrd.hello_world;
 
 import java.util.*;
 import java.lang.Runtime;

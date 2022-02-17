@@ -1,5 +1,5 @@
 // Interface
-package linkedlist;
+package il.co.ilrd.linkedlist;
 
 public interface GenericIter {
 

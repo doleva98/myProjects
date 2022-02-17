@@ -1,4 +1,4 @@
-package hello_world;
+package il.co.ilrd.hello_world;
 
 class HelloWorld {
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package enums;
+package il.co.ilrd.enums;
 
 enum EWeekDay {
     SUNDAY(1),
