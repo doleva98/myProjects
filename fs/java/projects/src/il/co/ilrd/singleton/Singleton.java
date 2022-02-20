@@ -52,8 +52,8 @@ class SingletonDoubleLocking {
 enum SingletonEnum {
     INSTANCE;
 
-    public static void doSomthing() {
-
+    public static int doSomthing() {
+        return INSTANCE.hashCode();
     }
 }
 
@@ -71,17 +71,17 @@ class SingletonThreadSafeEager {
     }
 }
 
-public class Singleton {
-    private Singleton() {
+class SingletonWithHelper {
+    private SingletonWithHelper() {
         // The body of private constructor
     }
 
-    public static Singleton getInstance() {
+    public static SingletonWithHelper getInstance() {
         return SingletonHolder.instance;
     }
 
     // Inner static class that holds a reference to the singleton
     private static class SingletonHolder {
-        private static final Singleton instance = new Singleton();
+        private static final SingletonWithHelper instance = new SingletonWithHelper();
     }
 }
