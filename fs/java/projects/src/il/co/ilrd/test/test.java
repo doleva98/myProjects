@@ -1,18 +1,19 @@
 package il.co.ilrd.test;
 
+
 class Foo {
 
-    public static void main(String[] args) {
-        hi e = new hi();
-    }
-}
-
-class hi {
-    public hi() {
+    public Foo() {
         System.out.println(toString());
     }
+
+    public static void main(String[] args) {
+        Foo f = new Foo();
+    }
+
+    @Override
     public String toString()
     {
-        return "hello";
+        return "Heloo Dori";
     }
 }

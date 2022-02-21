@@ -28,7 +28,7 @@ public class TestVendingMachine {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         vm.payment(4);
         vm.payment(7);
         vm.chooseProduct("Coca Cola");
@@ -48,8 +48,8 @@ public class TestVendingMachine {
         vm2.turnOnMachine();
 
         vm2.payment(4);
-        vm2.turnOffMachine(); 
-        vm.turnOffMachine(); 
+        vm2.turnOffMachine();
+        vm.turnOffMachine();
     }
 }
 

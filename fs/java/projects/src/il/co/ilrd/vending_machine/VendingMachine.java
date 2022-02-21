@@ -11,6 +11,7 @@ public class VendingMachine {
     private PrintScreen output;
     private boolean isRunning;
     private Thread running_thread;
+    private long startTime;
 
     public VendingMachine(List<Product> list, PrintScreen output) {
         money_in_machine = 0;
@@ -84,6 +85,7 @@ public class VendingMachine {
                 vm.state = Vmstate.WFP;
             }
 
+            @Override
             public void chooseProduct(VendingMachine vm, String product) {
                 vm.output.printToMachine("you cant choose a product when the machine is off");
             }
@@ -97,6 +99,7 @@ public class VendingMachine {
             @Override
             public void payment(VendingMachine vm, int amount) {
                 vm.state = Vmstate.WFS;
+                vm.startTime = System.currentTimeMillis();
                 super.payment(vm, amount);
             }
 
@@ -114,11 +117,15 @@ public class VendingMachine {
 
             @Override
             public void checkTimeOut(VendingMachine vm) {
-                vm.state.cancel(vm);
+                long currTime = System.currentTimeMillis();
+                if (1000 < currTime - vm.startTime) {
+                    cancel(vm);
+                }
             }
 
             @Override
             public void chooseProduct(VendingMachine vm, String product) {
+                vm.startTime = System.currentTimeMillis();
                 ListIterator<Product> iter = vm.list_of_products.listIterator();
                 while (iter.hasNext()) {
                     Product current_product = iter.next();
@@ -142,6 +149,7 @@ public class VendingMachine {
         };
 
         public void payment(VendingMachine vm, int amount) {
+            vm.startTime = System.currentTimeMillis();
             vm.money_in_machine += amount;
             vm.output.printToMachine("vending machine got " + amount + " dollars");
             vm.output.printToMachine("vending machine has " + vm.money_in_machine + " dollars");
