@@ -1,3 +1,4 @@
+/* shiraz code reviewed */
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -309,7 +310,7 @@ void LegendaryAnimalPrintOnce()
 
 void foo(Animal_t *animal)
 {
-	printf("%s\n", (char*)(*animal->o.meta->VTable)[0](animal));
+	printf("%s\n", (char *)(*animal->o.meta->VTable)[0](animal));
 }
 
 int main()
