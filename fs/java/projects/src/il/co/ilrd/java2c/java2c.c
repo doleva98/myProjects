@@ -232,7 +232,6 @@ void CatCtorStr(Cat_t *this, char *color)
 	CatPrintOnce();
 	AnimalCtor(&this->animal);
 	this->color = color;
-	this->animal.num_masters = 2;
 	printf("Cat Ctor with color: %s\n", this->color);
 }
 
@@ -308,20 +307,60 @@ void LegendaryAnimalPrintOnce()
 
 /* ********************************************************* */
 
+void foo(Animal_t *animal)
+{
+	printf("%s\n", (char*)(*animal->o.meta->VTable)[0](animal));
+}
+
 int main()
 {
-	Object_t *animal_o = Alloc(&AnimalClass);
-	Object_t *Dog_o = Alloc(&DogClass);
-	Object_t *Cat_o = Alloc(&CatClass);
-	Object_t *LegendaryAnimal_o = Alloc(&LegendaryAnimalClass);
+	Animal_t *animal = (Animal_t *)Alloc(&AnimalClass);
+	Dog_t *dog = (Dog_t *)Alloc(&DogClass);
+	Cat_t *cat = (Cat_t *)Alloc(&CatClass);
+	LegendaryAnimal_t *la = (LegendaryAnimal_t *)Alloc(&LegendaryAnimalClass);
+	Animal_t *array[5];
+	size_t i = 0;
 
-	AnimalCtor((Animal_t *)animal_o);
+	AnimalCtor(animal);
 
-	DogCtor((Dog_t *)Dog_o);
+	DogCtor(dog);
 
-	CatCtor((Cat_t *)Cat_o);
+	CatCtor(cat);
 
-	LegendaryAnimalCtor((LegendaryAnimal_t *)LegendaryAnimal_o);
-	/* (*((Dog_t *)Dog_o)->animal.o.meta->VTable)[2](Dog_o); */
+	LegendaryAnimalCtor(la);
+
+	(*animal->o.meta->VTable)[3](animal);
+
+	printf("%d\n", animal->ID);
+	printf("%d\n", dog->animal.ID);
+	printf("%d\n", cat->animal.ID);
+	printf("%d\n", la->cat.animal.ID);
+
+	array[0] = (Animal_t *)Alloc(&DogClass);
+	DogCtor((Dog_t *)array[0]);
+
+	array[1] = (Animal_t *)Alloc(&CatClass);
+	CatCtor((Cat_t *)array[1]);
+
+	array[2] = (Animal_t *)Alloc(&CatClass);
+	CatCtorStr((Cat_t *)array[2], "white");
+
+	array[3] = (Animal_t *)Alloc(&LegendaryAnimalClass);
+	LegendaryAnimalCtor((LegendaryAnimal_t *)array[3]);
+
+	array[4] = (Animal_t *)Alloc(&AnimalClass);
+	AnimalCtor(array[4]);
+
+	for (i = 0; i < 5; ++i)
+	{
+		(*array[i]->o.meta->VTable)[2](array[i]);
+		printf("%d\n", (int)(*array[i]->o.meta->VTable)[4](array[i]));
+	}
+
+	for (i = 0; i < 5; ++i)
+	{
+		foo(array[i]);
+	}
+
 	return 0;
 }
