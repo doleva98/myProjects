@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdio.h>
 
+int char_buffer = 40;
+char ret[40];
+
 typedef struct Object Object_t;
 typedef struct Class Class_t;
 typedef void *(*vf_t)(void *);
@@ -9,23 +12,32 @@ typedef void *(*vf_t)(void *);
 typedef struct Animal Animal_t;
 typedef struct Dog Dog_t;
 typedef struct Cat Cat_t;
+typedef struct LegendaryAnimal LegendaryAnimal_t;
 
 char *ObjectToString(void *this);
 void *ObjectFinalize(void *this);
 
+void AnimalPrintOnce();
 char *AnimalToString(void *this);
 void *AnimalFinalize(void *this);
 int AnimalGetNumMasters(Animal_t *this);
 void *AnimalShowCounter(Animal_t *this);
 void *AnimalSayHello(Animal_t *this);
 
+void DogPrintOnce();
 char *DogToString(void *this);
 void *DogFinalize(void *this);
 void *DogSayHello(Dog_t *this);
 
+void CatPrintOnce();
 void CatCtorStr(Cat_t *this, char *color);
 char *CatToString(void *this);
 void *CatFinalize(void *this);
+
+void LegendaryAnimalPrintOnce();
+void *LegendaryAnimalSayHello(void *this);
+void *LegendaryAnimalFinalize(void *this);
+char *LegendaryAnimalToString(void *this);
 
 struct Class
 {
@@ -53,8 +65,6 @@ Object_t *Alloc(Class_t *meta)
 
 char *ObjectToString(void *this)
 {
-	int char_buffer = 40;
-	char *ret = (char *)malloc(char_buffer);
 	snprintf(ret, char_buffer, "%s@%p", ((Object_t *)this)->meta->name, this);
 	return ret;
 }
@@ -75,7 +85,6 @@ struct Animal
 {
 	Object_t o;
 	int num_legs;
-	int counter;
 	int num_masters;
 	int ID;
 };
@@ -84,10 +93,10 @@ Class_t AnimalClass = {"Animal", sizeof(Animal_t), &ObjectClass, &Animal_vt};
 
 void AnimalCtor(Animal_t *this)
 {
+	AnimalPrintOnce();
 	printf("Instance initialization block Animal\n");
 	printf("Animal Ctor\n");
 	this->ID = ++animal_counter;
-	this->counter = animal_counter;
 	this->num_legs = 5;
 	this->num_masters = 1;
 	(*this->o.meta->VTable)[2](this);								  /* animal sayHello */
@@ -98,10 +107,10 @@ void AnimalCtor(Animal_t *this)
 
 void AnimalCtorInt(Animal_t *this, int num_masters)
 {
+	AnimalPrintOnce();
 	printf("Instance initialization block Animal\n");
 	printf("Animal Ctor int\n");
 	this->ID = ++animal_counter;
-	this->counter = animal_counter;
 
 	this->num_legs = 5;
 	this->num_masters = num_masters;
@@ -116,7 +125,7 @@ void *AnimalSayHello(Animal_t *this)
 
 void *AnimalShowCounter(Animal_t *this)
 {
-	printf("%d\n", this->counter);
+	printf("%d\n", animal_counter);
 	return NULL;
 }
 
@@ -127,8 +136,6 @@ int AnimalGetNumMasters(Animal_t *this)
 
 char *AnimalToString(void *this)
 {
-	int char_buffer = 40;
-	char *ret = (char *)malloc(char_buffer);
 	snprintf(ret, char_buffer, "animal with id %d", ((Animal_t *)this)->ID);
 	return ret;
 }
@@ -138,6 +145,17 @@ void *AnimalFinalize(void *this)
 	printf("finalize Animal with ID: %d\n", ((Animal_t *)this)->ID);
 	(*((Animal_t *)this)->o.meta->parent->VTable)[1](this); /* object finalizer */
 	return NULL;
+}
+
+void AnimalPrintOnce()
+{
+	static int wasPrinted = 0;
+	if (!wasPrinted)
+	{
+		puts("Static block Animal 1");
+		puts("Static block Animal 2");
+		wasPrinted = 1;
+	}
 }
 
 /* ********************************************************* */
@@ -153,6 +171,7 @@ Class_t DogClass = {"Dog", sizeof(Dog_t), &AnimalClass, &Dog_vt};
 
 void DogCtor(Dog_t *this)
 {
+	DogPrintOnce();
 	AnimalCtorInt(&this->animal, 2);
 	printf("Instance initialization block Dog\n");
 	this->animal.num_legs = 4;
@@ -167,8 +186,6 @@ void *DogSayHello(Dog_t *this)
 
 char *DogToString(void *this)
 {
-	int char_buffer = 40;
-	char *ret = (char *)malloc(char_buffer);
 	snprintf(ret, char_buffer, "Dog with id %d", ((Dog_t *)this)->animal.ID);
 	return ret;
 }
@@ -178,6 +195,16 @@ void *DogFinalize(void *this)
 	printf("finalize Dog with ID: %d\n", ((Dog_t *)this)->animal.ID);
 	(*((Dog_t *)this)->animal.o.meta->parent->VTable)[1](this); /* animal finalizer */
 	return NULL;
+}
+
+void DogPrintOnce()
+{
+	static int wasPrinted = 0;
+	if (!wasPrinted)
+	{
+		puts("Static block Dog");
+		wasPrinted = 1;
+	}
 }
 
 /* ********************************************************* */
@@ -194,6 +221,7 @@ Class_t CatClass = {"Cat", sizeof(Cat_t), &AnimalClass, &Cat_vt};
 
 void CatCtor(Cat_t *this)
 {
+	CatPrintOnce();
 	CatCtorStr(this, "black");
 	printf("Cat Ctor\n");
 	this->animal.num_masters = 2;
@@ -201,6 +229,8 @@ void CatCtor(Cat_t *this)
 
 void CatCtorStr(Cat_t *this, char *color)
 {
+	CatPrintOnce();
+	AnimalCtor(&this->animal);
 	this->color = color;
 	this->animal.num_masters = 2;
 	printf("Cat Ctor with color: %s\n", this->color);
@@ -208,8 +238,6 @@ void CatCtorStr(Cat_t *this, char *color)
 
 char *CatToString(void *this)
 {
-	int char_buffer = 40;
-	char *ret = (char *)malloc(char_buffer);
 	snprintf(ret, char_buffer, "Cat with id %d", ((Cat_t *)this)->animal.ID);
 	return ret;
 }
@@ -221,9 +249,62 @@ void *CatFinalize(void *this)
 	return NULL;
 }
 
+void CatPrintOnce()
+{
+	static int wasPrinted = 0;
+	if (!wasPrinted)
+	{
+		puts("Static block Cat");
+		wasPrinted = 1;
+	}
+}
+
 /* ********************************************************* */
 
+vf_t LegendaryAnimal_vt[] = {(vf_t)LegendaryAnimalToString, (vf_t)LegendaryAnimalFinalize, (vf_t)LegendaryAnimalSayHello, (vf_t)AnimalShowCounter, (vf_t)AnimalGetNumMasters};
 
+struct LegendaryAnimal
+{
+	Cat_t cat;
+};
+
+Class_t LegendaryAnimalClass = {"LegendaryAnimal", sizeof(LegendaryAnimal_t), &CatClass, &LegendaryAnimal_vt};
+
+void LegendaryAnimalCtor(LegendaryAnimal_t *this)
+{
+	LegendaryAnimalPrintOnce();
+	CatCtor(&this->cat);
+	printf("Legendary Ctor\n");
+}
+
+char *LegendaryAnimalToString(void *this)
+{
+	snprintf(ret, char_buffer, "LegendaryAnimal with id %d", ((LegendaryAnimal_t *)this)->cat.animal.ID);
+	return ret;
+}
+
+void *LegendaryAnimalFinalize(void *this)
+{
+	printf("finalize LegendaryAnimal with ID: %d\n", ((LegendaryAnimal_t *)this)->cat.animal.ID);
+	(*((LegendaryAnimal_t *)this)->cat.animal.o.meta->parent->VTable)[1](this); /* animal finalizer */
+	return NULL;
+}
+
+void *LegendaryAnimalSayHello(void *this)
+{
+	puts("Legendary Hello!");
+	return NULL;
+}
+
+void LegendaryAnimalPrintOnce()
+{
+	static int wasPrinted = 0;
+	if (!wasPrinted)
+	{
+		puts("Static block Legendary Animal");
+		wasPrinted = 1;
+	}
+}
 
 /* ********************************************************* */
 
@@ -232,20 +313,15 @@ int main()
 	Object_t *animal_o = Alloc(&AnimalClass);
 	Object_t *Dog_o = Alloc(&DogClass);
 	Object_t *Cat_o = Alloc(&CatClass);
-
-	puts("Static block Animal 1");
-	puts("Static block Animal 2");
+	Object_t *LegendaryAnimal_o = Alloc(&LegendaryAnimalClass);
 
 	AnimalCtor((Animal_t *)animal_o);
 
-	puts("Static block Dog");
-
 	DogCtor((Dog_t *)Dog_o);
-
-	puts("Static block Cat");
 
 	CatCtor((Cat_t *)Cat_o);
 
+	LegendaryAnimalCtor((LegendaryAnimal_t *)LegendaryAnimal_o);
 	/* (*((Dog_t *)Dog_o)->animal.o.meta->VTable)[2](Dog_o); */
 	return 0;
 }
