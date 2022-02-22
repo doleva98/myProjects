@@ -344,7 +344,7 @@ int main()
 
 	LegendaryAnimalCtor(la);
 
-	(*animal->o.meta->VTable)[3](animal);
+	(*animal->o.meta->VTable)[SAYHELLO](animal);
 
 	printf("%d\n", animal->ID);
 	printf("%d\n", dog->animal.ID);
@@ -368,14 +368,19 @@ int main()
 
 	for (i = 0; i < 5; ++i)
 	{
-		(*array[i]->o.meta->VTable)[2](array[i]);
-		printf("%d\n", (int)(*array[i]->o.meta->VTable)[4](array[i]));
+		(*array[i]->o.meta->VTable)[SAYHELLO](array[i]);
+		printf("%d\n", (int)(*array[i]->o.meta->VTable)[GETNUMNASTERS](array[i]));
 	}
 
 	for (i = 0; i < 5; ++i)
 	{
 		foo(array[i]);
 	}
+
+	/* 	for (i = 0; i < 5; ++i)
+		{
+			(*array[i]->o.meta->VTable)[FINALIZE](array[i]);
+		} */
 
 	return 0;
 }
