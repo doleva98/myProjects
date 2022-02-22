@@ -103,16 +103,23 @@ Class_t AnimalClass = {"Animal", sizeof(Animal_t), &ObjectClass, &Animal_vt};
 
 void AnimalCtor(Animal_t *this)
 {
+	Class_t *curr_class = this->o.meta;
 	AnimalPrintOnce();
 	printf("Instance initialization block Animal\n");
 	printf("Animal Ctor\n");
 	this->ID = ++animal_counter;
 	this->num_legs = 5;
 	this->num_masters = 1;
-	(*this->o.meta->VTable)[SAYHELLO](this);								 /* animal sayHello */
-	(*this->o.meta->VTable)[SHOWCOUNTER](this);								 /* animal showCounter */
-	printf("%s\n", (char *)(*this->o.meta->VTable)[TOSTRING](this));		 /* animal toString */
-	printf("%s\n", (char *)(*this->o.meta->parent->VTable)[TOSTRING](this)); /* animal toString */
+	(*this->o.meta->VTable)[SAYHELLO](this);						 /* animal sayHello */
+	(*this->o.meta->VTable)[SHOWCOUNTER](this);						 /* animal showCounter */
+	printf("%s\n", (char *)(*this->o.meta->VTable)[TOSTRING](this)); /* animal toString */
+	while (0 != strcmp(curr_class->name, "Animal"))
+	{
+		curr_class = curr_class->parent;
+	}
+
+	/* printf("%s\n", (char *)(*this->o.meta->parent->VTable)[TOSTRING](this)); */
+	printf("%s\n", (char *)(*curr_class->parent->VTable)[TOSTRING](this));
 }
 
 void AnimalCtorInt(Animal_t *this, int num_masters)
