@@ -40,6 +40,15 @@ void *LegendaryAnimalSayHello(void *this);
 void *LegendaryAnimalFinalize(void *this);
 char *LegendaryAnimalToString(void *this);
 
+enum
+{
+	TOSTRING,
+	FINALIZE,
+	SAYHELLO,
+	SHOWCOUNTER,
+	GETNUMNASTERS
+};
+
 struct Class
 {
 	char *name;
@@ -72,7 +81,7 @@ char *ObjectToString(void *this)
 
 void *ObjectFinalize(void *this)
 {
-	(void)this;
+	free(this);
 	return NULL;
 }
 
@@ -100,10 +109,10 @@ void AnimalCtor(Animal_t *this)
 	this->ID = ++animal_counter;
 	this->num_legs = 5;
 	this->num_masters = 1;
-	(*this->o.meta->VTable)[2](this);								  /* animal sayHello */
-	(*this->o.meta->VTable)[3](this);								  /* animal showCounter */
-	printf("%s\n", (char *)(*this->o.meta->VTable)[0](this));		  /* animal toString */
-	printf("%s\n", (char *)(*this->o.meta->parent->VTable)[0](this)); /* animal toString */
+	(*this->o.meta->VTable)[SAYHELLO](this);								 /* animal sayHello */
+	(*this->o.meta->VTable)[SHOWCOUNTER](this);								 /* animal showCounter */
+	printf("%s\n", (char *)(*this->o.meta->VTable)[TOSTRING](this));		 /* animal toString */
+	printf("%s\n", (char *)(*this->o.meta->parent->VTable)[TOSTRING](this)); /* animal toString */
 }
 
 void AnimalCtorInt(Animal_t *this, int num_masters)
@@ -144,7 +153,8 @@ char *AnimalToString(void *this)
 void *AnimalFinalize(void *this)
 {
 	printf("finalize Animal with ID: %d\n", ((Animal_t *)this)->ID);
-	(*((Animal_t *)this)->o.meta->parent->VTable)[1](this); /* object finalizer */
+	(*((Animal_t *)this)->o.meta->parent->VTable)[FINALIZE](this); /* object finalizer */
+	free(this);
 	return NULL;
 }
 
@@ -175,6 +185,7 @@ void DogCtor(Dog_t *this)
 	DogPrintOnce();
 	AnimalCtorInt(&this->animal, 2);
 	printf("Instance initialization block Dog\n");
+	puts("Dog Ctor");
 	this->animal.num_legs = 4;
 }
 
@@ -194,7 +205,8 @@ char *DogToString(void *this)
 void *DogFinalize(void *this)
 {
 	printf("finalize Dog with ID: %d\n", ((Dog_t *)this)->animal.ID);
-	(*((Dog_t *)this)->animal.o.meta->parent->VTable)[1](this); /* animal finalizer */
+	(*((Dog_t *)this)->animal.o.meta->parent->VTable)[FINALIZE](this); /* animal finalizer */
+	free(this);
 	return NULL;
 }
 
@@ -245,7 +257,8 @@ char *CatToString(void *this)
 void *CatFinalize(void *this)
 {
 	printf("finalize Cat with ID: %d\n", ((Cat_t *)this)->animal.ID);
-	(*((Cat_t *)this)->animal.o.meta->parent->VTable)[1](this); /* animal finalizer */
+	(*((Cat_t *)this)->animal.o.meta->parent->VTable)[FINALIZE](this); /* animal finalizer */
+	free(this);
 	return NULL;
 }
 
@@ -286,7 +299,8 @@ char *LegendaryAnimalToString(void *this)
 void *LegendaryAnimalFinalize(void *this)
 {
 	printf("finalize LegendaryAnimal with ID: %d\n", ((LegendaryAnimal_t *)this)->cat.animal.ID);
-	(*((LegendaryAnimal_t *)this)->cat.animal.o.meta->parent->VTable)[1](this); /* animal finalizer */
+	(*((LegendaryAnimal_t *)this)->cat.animal.o.meta->parent->VTable)[FINALIZE](this); /* animal finalizer */
+	free(this);
 	return NULL;
 }
 
