@@ -20,6 +20,16 @@ class Foo {
     }
 
     public static void main(String[] args) {
+
+        /*         h d = new h();
+         */
+        /*   try {
+            Class<?> hello = Class.forName("hello");
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } */
+
         /*         func2();
         
         try {
@@ -27,19 +37,21 @@ class Foo {
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } */
-
+        } 
+        
         func3();
-
+        
         try {
             func4();
         } catch (MyException2 e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }
+        }*/
 
-        byte[] array = new byte[100];
-        byte t = array[101];
+        /*         byte[] array = new byte[100];
+         */ /*         byte t = array[101];
+                                 */
+
     }
 }
 
