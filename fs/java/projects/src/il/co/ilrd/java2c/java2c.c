@@ -388,6 +388,7 @@ int main()
 		{
 			(*array[i]->o.meta->VTable)[FINALIZE](array[i]);
 		} */
+	/* (*array[i]->o.meta->VTable)[FINALIZE](animal); */
 
 	return 0;
 }
