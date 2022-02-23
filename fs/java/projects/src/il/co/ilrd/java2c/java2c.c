@@ -22,7 +22,7 @@ void AnimalPrintOnce();
 char *AnimalToString(void *this);
 void *AnimalFinalize(void *this);
 int AnimalGetNumMasters(Animal_t *this);
-void *AnimalShowCounter(Animal_t *this);
+static void *AnimalShowCounter(Animal_t *this);
 void *AnimalSayHello(Animal_t *this);
 
 void DogPrintOnce();
@@ -45,7 +45,6 @@ enum
 	TOSTRING,
 	FINALIZE,
 	SAYHELLO,
-	SHOWCOUNTER,
 	GETNUMNASTERS
 };
 
@@ -87,7 +86,7 @@ void *ObjectFinalize(void *this)
 
 /* ********************************************************* */
 
-vf_t Animal_vt[] = {(vf_t)AnimalToString, (vf_t)AnimalFinalize, (vf_t)AnimalSayHello, (vf_t)AnimalShowCounter, (vf_t)AnimalGetNumMasters};
+vf_t Animal_vt[] = {(vf_t)AnimalToString, (vf_t)AnimalFinalize, (vf_t)AnimalSayHello, (vf_t)AnimalGetNumMasters};
 
 static int animal_counter = 0;
 
@@ -111,7 +110,7 @@ void AnimalCtor(Animal_t *this)
 	this->num_legs = 5;
 	this->num_masters = 1;
 	(*this->o.meta->VTable)[SAYHELLO](this);						 /* animal sayHello */
-	(*this->o.meta->VTable)[SHOWCOUNTER](this);						 /* animal showCounter */
+	AnimalShowCounter(this);										 /* animal showCounter */
 	printf("%s\n", (char *)(*this->o.meta->VTable)[TOSTRING](this)); /* animal toString */
 	while (0 != strcmp(curr_class->name, "Animal"))
 	{
@@ -140,7 +139,7 @@ void *AnimalSayHello(Animal_t *this)
 	return NULL;
 }
 
-void *AnimalShowCounter(Animal_t *this)
+static void *AnimalShowCounter(Animal_t *this)
 {
 	printf("%d\n", animal_counter);
 	return NULL;
@@ -178,11 +177,12 @@ void AnimalPrintOnce()
 
 /* ********************************************************* */
 
-vf_t Dog_vt[] = {(vf_t)DogToString, (vf_t)DogFinalize, (vf_t)DogSayHello, (vf_t)AnimalShowCounter, (vf_t)AnimalGetNumMasters};
+vf_t Dog_vt[] = {(vf_t)DogToString, (vf_t)DogFinalize, (vf_t)DogSayHello, (vf_t)AnimalGetNumMasters};
 
 struct Dog
 {
 	Animal_t animal;
+	int num_legs;
 };
 
 Class_t DogClass = {"Dog", sizeof(Dog_t), &AnimalClass, &Dog_vt};
@@ -193,7 +193,7 @@ void DogCtor(Dog_t *this)
 	AnimalCtorInt(&this->animal, 2);
 	printf("Instance initialization block Dog\n");
 	puts("Dog Ctor");
-	this->animal.num_legs = 4;
+	this->num_legs = 4;
 }
 
 void *DogSayHello(Dog_t *this)
@@ -212,7 +212,7 @@ char *DogToString(void *this)
 void *DogFinalize(void *this)
 {
 	printf("finalize Dog with ID: %d\n", ((Dog_t *)this)->animal.ID);
-	(*((Dog_t *)this)->animal.o.meta->parent->VTable)[FINALIZE](this); /* animal finalizer */
+	AnimalFinalize(this);
 	free(this);
 	return NULL;
 }
@@ -229,12 +229,13 @@ void DogPrintOnce()
 
 /* ********************************************************* */
 
-vf_t Cat_vt[] = {(vf_t)CatToString, (vf_t)CatFinalize, (vf_t)AnimalSayHello, (vf_t)AnimalShowCounter, (vf_t)AnimalGetNumMasters};
+vf_t Cat_vt[] = {(vf_t)CatToString, (vf_t)CatFinalize, (vf_t)AnimalSayHello, (vf_t)AnimalGetNumMasters};
 
 struct Cat
 {
 	Animal_t animal;
 	char *color;
+	int num_masters;
 };
 
 Class_t CatClass = {"Cat", sizeof(Cat_t), &AnimalClass, &Cat_vt};
@@ -244,7 +245,7 @@ void CatCtor(Cat_t *this)
 	CatPrintOnce();
 	CatCtorStr(this, "black");
 	printf("Cat Ctor\n");
-	this->animal.num_masters = 2;
+	this->num_masters = 2;
 }
 
 void CatCtorStr(Cat_t *this, char *color)
@@ -252,6 +253,7 @@ void CatCtorStr(Cat_t *this, char *color)
 	CatPrintOnce();
 	AnimalCtor(&this->animal);
 	this->color = color;
+	this->num_masters = 5;
 	printf("Cat Ctor with color: %s\n", this->color);
 }
 
@@ -281,7 +283,7 @@ void CatPrintOnce()
 
 /* ********************************************************* */
 
-vf_t LegendaryAnimal_vt[] = {(vf_t)LegendaryAnimalToString, (vf_t)LegendaryAnimalFinalize, (vf_t)LegendaryAnimalSayHello, (vf_t)AnimalShowCounter, (vf_t)AnimalGetNumMasters};
+vf_t LegendaryAnimal_vt[] = {(vf_t)LegendaryAnimalToString, (vf_t)LegendaryAnimalFinalize, (vf_t)LegendaryAnimalSayHello, (vf_t)AnimalGetNumMasters};
 
 struct LegendaryAnimal
 {
@@ -376,7 +378,7 @@ int main()
 	for (i = 0; i < 5; ++i)
 	{
 		(*array[i]->o.meta->VTable)[SAYHELLO](array[i]);
-		printf("%d\n", (int)(*array[i]->o.meta->VTable)[GETNUMNASTERS](array[i]));
+		printf("%d\n", (int)(*array[i]->o.meta->VTable)[GETNUMNASTERS]((Animal_t *)array[i]));
 	}
 
 	for (i = 0; i < 5; ++i)

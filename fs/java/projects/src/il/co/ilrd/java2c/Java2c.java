@@ -96,7 +96,7 @@ class Cat extends Animal {
 	public Cat() {
 		this("black");
 		System.out.println("Cat Ctor");
-		/* this.num_masters = 2; for not yellow underline*/
+		this.num_masters = 2;
 	}
 
 	static {
@@ -120,7 +120,7 @@ class Cat extends Animal {
 	}
 
 	private String colors;
-	/* private int num_masters = 5; for not yellow underline */
+	public int num_masters = 5;/* should be private */
 }
 
 class LegendaryAnimal extends Cat {
@@ -185,6 +185,7 @@ public class Java2c {
 		for (Animal a : array) {
 			foo(a);
 		}
+		System.out.println(cat.num_masters);
 
 		//System.gc();
 		//System.out.println("After gc");
