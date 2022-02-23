@@ -1,19 +1,22 @@
 package il.co.ilrd.test;
 
+import java.util.Scanner;
 
 class Foo {
-
-    public Foo() {
-        System.out.println(toString());
-    }
-
     public static void main(String[] args) {
-        Foo f = new Foo();
+        try {
+            foo();
+        } catch (ArithmeticException e) {
+            System.out.println("sdsds");
+        }
     }
 
-    @Override
-    public String toString()
-    {
-        return "Heloo Dori";
+    public static void foo() throws IllegalArgumentException, ArithmeticException {
+        try (Scanner scan = new Scanner(System.in)) {
+            throw new IllegalArgumentException();
+        } finally {
+            throw new ArithmeticException();
+
+        }
     }
 }

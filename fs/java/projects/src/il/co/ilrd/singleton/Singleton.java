@@ -31,7 +31,7 @@ class SingletonLazyThreadSafe {
 }
 
 class SingletonDoubleLocking {
-    private static SingletonDoubleLocking instance;
+    private static volatile SingletonDoubleLocking instance;
 
     private SingletonDoubleLocking() {
     }
@@ -59,10 +59,10 @@ enum SingletonEnum {
 
 class SingletonThreadSafeEager {
 
-    public static final SingletonThreadSafeEager instance = new SingletonThreadSafeEager();
+    private static final SingletonThreadSafeEager instance = new SingletonThreadSafeEager();
 
     private SingletonThreadSafeEager() {
-    };
+    }
 
     public static SingletonThreadSafeEager getInstance() {
 
