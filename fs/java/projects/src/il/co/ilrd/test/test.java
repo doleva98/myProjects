@@ -1,20 +1,13 @@
 package il.co.ilrd.test;
 
+import java.util.ArrayList;
+import java.util.List;
 
 class Foo {
-
-    Foo() {
-
-    }
-
-    int x = 5;
-
     public static void main(String[] args) {
-        Foo f = new Foo();
-        System.out.println(f.x);
+        List<String> l = new ArrayList<>(10);
+        l.add(4, "fdff");
+        /* System.out.println(l.get(0)); */
     }
 
-    {
-        System.out.println(x);
-    }
 }
