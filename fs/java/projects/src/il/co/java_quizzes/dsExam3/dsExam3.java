@@ -1,6 +1,7 @@
 package il.co.java_quizzes.dsExam3;
 
 import java.util.Arrays;
+
 import java.util.Stack;
 
 class Main {
@@ -49,16 +50,31 @@ class Main {
          */
         /*         System.out.println(1 & 7);
          */
-        char c = 'f';
-        int[] a = new int[128];
-
-        
-        System.out.println(a[c]);
+        /*  Hashtable<Integer, Integer> h = new Hashtable<>();
+        PriorityQueue<Integer> d = new PriorityQueue<>();
+            d. */
+        char[] a = new char[] { '1', 's', 'f', 'd', 'q' };
+        System.out.println(Arrays.toString(a));
+        efficientNCircularShift(a, 3);
+        System.out.println(Arrays.toString(a));
 
     }
 
-    public static void efficientNCircularShift(char[] array, int n) {
+    private static void mirror(char[] array, int start, int end) {
+        while (start < end) {
+            char temp = array[start];
+            array[start] = array[end];
+            array[end] = temp;
+            ++start;
+            --end;
+        }
+    }
 
+    public static void efficientNCircularShift(char[] array, int n) {
+        n %= array.length;
+        mirror(array, 0, array.length - 1);
+        mirror(array, 0, n - 1);
+        mirror(array, n, array.length - 1);
     }
 
     public static boolean checkIfCharInArray(char[] array, char c) {
