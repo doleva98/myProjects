@@ -1,6 +1,7 @@
 package il.co.ilrd.test;
 
 import java.util.ArrayList;
+
 import java.util.List;
 
 class Foo {

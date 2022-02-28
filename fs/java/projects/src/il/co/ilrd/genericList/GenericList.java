@@ -3,18 +3,21 @@ package il.co.ilrd.genericList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
-public class GenericList<T> implements Iterable<T> {
-    private Snode head;
+public class GenericList<E> implements Iterable<E> {
+    private Snode<E> head;
+    private int versionNum;
 
-    public void pushFront(T data) {
-        head = new Snode(data, head);
+    public void pushFront(E data) {
+        ++versionNum;
+        head = new Snode<>(data, head);
     }
 
-    public T popFront() {
+    public E popFront() {
         if (isEmpty()) {
             return null;
         }
-        T data = head.data;
+        ++versionNum;
+        E data = head.data;
         head = head.next;
         return data;
     }
@@ -25,7 +28,7 @@ public class GenericList<T> implements Iterable<T> {
             return 0;
         }
 
-        GenericIter iter = begin();
+        Iterator<E> iter = iterator();
         int count = 0;
 
         while (iter.hasNext()) {
@@ -39,28 +42,63 @@ public class GenericList<T> implements Iterable<T> {
         return head == null;
     }
 
-    public GenericList<T> newReverse() {
-
-    }
-
-    public static <T> GenericList<T> merge(GenericList<T> l1, GenericList<T> l2) {
-
-    }
-
-    @Override
-    public Iterator<T> iterator() {
+    public Iterator<E> find(E data) {
         if (isEmpty()) {
             return null;
         }
-        return new ListIterator(head);
+        Iterator<E> iter = iterator();
+        Iterator<E> returnIter = iterator();
+
+        while (iter.hasNext() && !iter.next().equals(data)) {
+            returnIter.next();
+        }
+        return returnIter;
     }
 
-    private class ListIterator implements Iterator<T> {
-        private Snode node;
+    public static <E> GenericList<E> newReverse(GenericList<E> list) {
+        GenericList<E> ret_list = new GenericList<>();
+        Iterator<E> iter = list.iterator();
+        E data_to_push = null;
+
+        for (int i = 0; i < list.size(); ++i) {
+            for (int j = 0; j < list.size() - i; ++j) {
+                data_to_push = iter.next();
+            }
+            ret_list.pushFront(data_to_push);
+            iter = list.iterator();
+        }
+        return ret_list;
+    }
+
+    public static <E> GenericList<E> merge(GenericList<E> l1, GenericList<E> l2) {
+        GenericList<E> ret_list = new GenericList<>();
+        Iterator<E> iter = l1.iterator();
+        while (iter.hasNext()) {
+            ret_list.pushFront(iter.next());
+        }
+        iter = l2.iterator();
+        while (iter.hasNext()) {
+            ret_list.pushFront(iter.next());
+        }
+        return ret_list;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        if (isEmpty()) {
+            return null;
+        }
+        return new ListIterator(head, versionNum);
+    }
+
+    private class ListIterator implements Iterator<E> {
+        private Snode<E> node;
+        private int iterVersionNum;
 
         /* constructor method */
-        private ListIterator(Snode node) {
+        private ListIterator(Snode<E> node, int iterVersionNum) {
             this.node = node;
+            this.iterVersionNum = iterVersionNum;
         }
 
         @Override
@@ -69,20 +107,23 @@ public class GenericList<T> implements Iterable<T> {
         }
 
         @Override
-        public T next() throws ConcurrentModificationException{
-            T data = node.data;
+        public E next() {
+            if (iterVersionNum != versionNum) {
+                throw new ConcurrentModificationException();
+            }
+            E data = node.data;
             node = node.next;
             return data;
         }
 
     }
 
-    private class Snode {
-        private Snode next;
+    private static class Snode<T> {
         private T data;
+        private Snode<T> next;
 
         /* constructor method */
-        private Snode(T data, Snode next) {
+        private Snode(T data, Snode<T> next) {
             this.data = data;
             this.next = next;
         }

@@ -39,20 +39,22 @@ public class Generics {
         /*  l.add("testy"); */
         printHello(l);
 
-        /*  List rawList;
+        /* @SuppressWarnings("rawtypes") */
+        /*List rawList;
         List<?> listOfAnyType;
         List<Object> l1 = new ArrayList<Object>();
         List<String> l2 = new ArrayList<String>();
         List<Integer> l3 = new ArrayList<Integer>();
         
-                rawList = listOfAnyType;
+        rawList = listOfAnyType;
         
         rawList = l2;
         rawList = l3;
         listOfAnyType = l2;
-        listOfAnyType = l3; */
-        /* l1 = (List<Object>) l2;
-        l2 = (List<String>) l1; */
+        listOfAnyType = l3;
+        listOfAnyType = l1;
+        l1 = (List<Object>) l2;
+        l2 = (List<String>) l1;*/
     }
 
     public static <T extends Number> void printArray(T[] a) {
@@ -70,13 +72,13 @@ public class Generics {
         System.out.println();
     }
 
-   /*  public static <T> T foo() {
+    /*  public static <T> T foo() {
         return new T();
     } */
 
 }
 
-class FooRefernce<T extends Object> {
+class FooRefernce<T> {
     private T refernece;
 
     public FooRefernce(T refernece) {
