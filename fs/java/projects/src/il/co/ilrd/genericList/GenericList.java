@@ -1,5 +1,6 @@
 package il.co.ilrd.genericList;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 
 public class GenericList<T> implements Iterable<T> {
@@ -42,14 +43,38 @@ public class GenericList<T> implements Iterable<T> {
 
     }
 
-    public static <T> GenericList<T> mergeTwoList(GenericList<T> l1, GenericList<T> l2) {
-        
+    public static <T> GenericList<T> merge(GenericList<T> l1, GenericList<T> l2) {
+
     }
 
     @Override
     public Iterator<T> iterator() {
-        // TODO Auto-generated method stub
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+        return new ListIterator(head);
+    }
+
+    private class ListIterator implements Iterator<T> {
+        private Snode node;
+
+        /* constructor method */
+        private ListIterator(Snode node) {
+            this.node = node;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return node != null;
+        }
+
+        @Override
+        public T next() throws ConcurrentModificationException{
+            T data = node.data;
+            node = node.next;
+            return data;
+        }
+
     }
 
     private class Snode {
