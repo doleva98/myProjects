@@ -30,9 +30,9 @@ class Foo {
             e.printStackTrace();
         } */
 
-        /*         func2();
-        
-        try {
+        func2();
+
+        /*  try {
             func1();
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -50,7 +50,7 @@ class Foo {
 
         /*         byte[] array = new byte[100];
          */ /*         byte t = array[101];
-                                 */
+                                     */
 
     }
 }

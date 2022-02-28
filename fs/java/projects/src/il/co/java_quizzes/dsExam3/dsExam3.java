@@ -1,7 +1,6 @@
 package il.co.java_quizzes.dsExam3;
 
 import java.util.Arrays;
-
 import java.util.Stack;
 
 class Main {
@@ -58,6 +57,7 @@ class Main {
         efficientNCircularShift(a, 3);
         System.out.println(Arrays.toString(a));
 
+        
     }
 
     private static void mirror(char[] array, int start, int end) {

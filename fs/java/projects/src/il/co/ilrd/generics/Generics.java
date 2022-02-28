@@ -8,7 +8,7 @@ public class Generics {
 
         List<String> v = new ArrayList<>();
         v.add("test");
-        String i = (String) v.get(0);
+        String i = v.get(0);
 
         System.out.println(i);
 
@@ -35,8 +35,8 @@ public class Generics {
         System.out.println(r2.getClass().getName());
         System.out.println(r3.getClass().getName());
 
-        List<String> l = new ArrayList<>();
-        l.add("testy");
+        List<Object> l = new ArrayList<>();
+        /*  l.add("testy"); */
         printHello(l);
 
         /*  List rawList;
@@ -60,18 +60,23 @@ public class Generics {
             System.out.println(item);
         }
         System.out.println();
+
     }
 
-    public static void printHello(List<String> a) {
-        for (String item : a) {
+    public static void printHello(List<Object> a) {
+        for (Object item : a) {
             System.out.println(item);
         }
         System.out.println();
     }
 
+   /*  public static <T> T foo() {
+        return new T();
+    } */
+
 }
 
-class FooRefernce<T> {
+class FooRefernce<T extends Object> {
     private T refernece;
 
     public FooRefernce(T refernece) {
