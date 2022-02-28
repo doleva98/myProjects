@@ -69,14 +69,12 @@ public class TestGenericList {
         }
         GenericList<Integer> list3 = GenericList.merge(list, list2);
 
-        Iterator<Integer> iter = list3.iterator();
-        int counter = 0;
-        while (iter.hasNext()) {
-            if (counter == num_test) {
-                counter = 0;
+        int counter = num_test;
+        for (int i : list3) {
+            if (counter == 0) {
+                counter = num_test;
             }
-            assertEquals(iter.next(), counter);
-            ++counter;
+            assertEquals(i, --counter);
         }
     }
 
@@ -102,12 +100,24 @@ public class TestGenericList {
         }
 
         list2 = GenericList.<Integer>newReverse(list);
-        Iterator<Integer> iter = list2.iterator();
+        int counter = 0;
+        for (int i : list2) {
+            assertEquals(i, counter);
+            ++counter;
+        }
+    }
 
+    @Test
+    public void testForEach() {
+        int num_test = 80;
+
+        for (int i = 0; i < num_test; ++i) {
+            list.pushFront(i);
+        }
         int counter = num_test;
 
-        while (iter.hasNext()) {
-            assertEquals(iter.next(), --counter);
+        for (int i : list) {
+            assertEquals(i, --counter);
         }
     }
 
