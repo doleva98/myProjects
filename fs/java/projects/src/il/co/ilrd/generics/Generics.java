@@ -8,7 +8,7 @@ public class Generics {
 
         List<String> v = new ArrayList<>();
         v.add("test");
-        String i = v.get(0);
+        String i = (String) v.get(0);
 
         System.out.println(i);
 
@@ -78,7 +78,7 @@ public class Generics {
 
 }
 
-class FooRefernce<T> {
+class FooRefernce<T extends Object> {
     private T refernece;
 
     public FooRefernce(T refernece) {
