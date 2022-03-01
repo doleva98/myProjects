@@ -66,7 +66,7 @@ public class GenericList<E> implements Iterable<E> {
     }
 
     public static <E> GenericList<E> merge(GenericList<E> l1, GenericList<E> l2) {
-        GenericList<E> ret_list = new GenericList<>();
+
         /* Iterator<E> iter = l1.iterator();
         while (iter.hasNext()) {
             ret_list.pushFront(iter.next());
@@ -76,25 +76,27 @@ public class GenericList<E> implements Iterable<E> {
             ret_list.pushFront(iter.next());
         }
         return newReverse(ret_list); */
+        GenericList<E> ret_list = new GenericList<>();
+        Iterator<E> iter;
+        Snode<E> ret_list_node = ret_list.head;
+
         if (!l1.isEmpty()) {
             ret_list.pushFront(l1.head.data);
-
+            iter = l1.iterator();
+            iter.next();
+            while (iter.hasNext()) {
+                ret_list.pushBack(iter.next(), ret_list_node);
+                ret_list_node = ret_list_node.next;
+            }
         } else if (!l2.isEmpty()) {
             ret_list.pushFront(l2.head.data);
+            iter = l2.iterator();
+            while (iter.hasNext()) {
+                ret_list.pushBack(iter.next(), ret_list_node);
+                ret_list_node = ret_list_node.next;
+            }
+        }
 
-        }
-        Snode<E> ret_list_node = ret_list.head;
-        Iterator<E> iter = l1.iterator();
-        iter.next();
-        while (iter.hasNext()) {
-            ret_list.pushBack(iter.next(), ret_list_node);
-            ret_list_node = ret_list_node.next;
-        }
-        iter = l2.iterator();
-        while (iter.hasNext()) {
-            ret_list.pushBack(iter.next(), ret_list_node);
-            ret_list_node = ret_list_node.next;
-        }
         return ret_list;
     }
 
