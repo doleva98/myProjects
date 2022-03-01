@@ -45,6 +45,7 @@ public class Generics {
         List<Object> l1 = new ArrayList<Object>();
         List<String> l2 = new ArrayList<String>();
         List<Integer> l3 = new ArrayList<Integer>();
+        List<? extends String> l4 = new ArrayList<>();
         
         rawList = listOfAnyType;
         
@@ -53,8 +54,9 @@ public class Generics {
         listOfAnyType = l2;
         listOfAnyType = l3;
         listOfAnyType = l1;
-        l1 = (List<Object>) l2;
-        l2 = (List<String>) l1;*/
+        l2 = rawList;
+        l1 = (List) l2;
+        l4 = l2;*/
     }
 
     public static <T extends Number> void printArray(T[] a) {

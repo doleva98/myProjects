@@ -66,8 +66,8 @@ public class GenericList<E> implements Iterable<E> {
     }
 
     public static <E> GenericList<E> merge(GenericList<E> l1, GenericList<E> l2) {
-
-        /* Iterator<E> iter = l1.iterator();
+        /*  GenericList<E> ret_list = new GenericList<>();
+        Iterator<E> iter = l1.iterator();
         while (iter.hasNext()) {
             ret_list.pushFront(iter.next());
         }
@@ -78,10 +78,11 @@ public class GenericList<E> implements Iterable<E> {
         return newReverse(ret_list); */
         GenericList<E> ret_list = new GenericList<>();
         Iterator<E> iter;
-        Snode<E> ret_list_node = ret_list.head;
+        Snode<E> ret_list_node;
 
         if (!l1.isEmpty()) {
             ret_list.pushFront(l1.head.data);
+            ret_list_node = ret_list.head;
             iter = l1.iterator();
             iter.next();
             while (iter.hasNext()) {
@@ -89,14 +90,17 @@ public class GenericList<E> implements Iterable<E> {
                 ret_list_node = ret_list_node.next;
             }
         } else if (!l2.isEmpty()) {
-            ret_list.pushFront(l2.head.data);
             iter = l2.iterator();
+            if (l1.isEmpty()) {
+                ret_list.pushFront(l2.head.data);
+                iter.next();
+            }
+            ret_list_node = ret_list.head;
             while (iter.hasNext()) {
                 ret_list.pushBack(iter.next(), ret_list_node);
                 ret_list_node = ret_list_node.next;
             }
         }
-
         return ret_list;
     }
 
@@ -105,9 +109,9 @@ public class GenericList<E> implements Iterable<E> {
         return new ListIterator(head, versionNum);
     }
 
-    private Snode<E> pushBack(E data, Snode<E> node) {
+    private void pushBack(E data, Snode<E> node) {
         ++versionNum;
-        return node.next = new Snode<>(data, null);
+        node.next = new Snode<>(data, null);
     }
 
     private class ListIterator implements Iterator<E> {
