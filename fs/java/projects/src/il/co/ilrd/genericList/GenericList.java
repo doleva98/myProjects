@@ -1,3 +1,4 @@
+/* maor */
 package il.co.ilrd.genericList;
 
 import java.util.ConcurrentModificationException;
@@ -24,17 +25,13 @@ public class GenericList<E> implements Iterable<E> {
 
     public int size() {
 
-        if (isEmpty()) {
-            return 0;
-        }
-
-        Iterator<E> iter = iterator();
         int count = 0;
 
-        while (iter.hasNext()) {
+        for (E i : this) {
             ++count;
-            iter.next();
+            i.toString();
         }
+
         return count;
     }
 
