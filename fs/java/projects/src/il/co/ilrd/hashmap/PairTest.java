@@ -62,7 +62,6 @@ public class PairTest {
         Integer[] array = new Integer[] { 77, 3, 5, 11, 0, 63 };
 
         assertEquals(Pair.minMax(array, new PairTestComparator<Integer>()), Pair.of(0, 77));
-
     }
 
     @Test

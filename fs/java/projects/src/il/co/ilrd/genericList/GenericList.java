@@ -79,6 +79,7 @@ public class GenericList<E> implements Iterable<E> {
         GenericList<E> ret_list = new GenericList<>();
         Iterator<E> iter;
         Snode<E> ret_list_node;
+        ret_list_node = ret_list.head;
 
         if (!l1.isEmpty()) {
             ret_list.pushFront(l1.head.data);
@@ -89,13 +90,14 @@ public class GenericList<E> implements Iterable<E> {
                 ret_list.pushBack(iter.next(), ret_list_node);
                 ret_list_node = ret_list_node.next;
             }
-        } else if (!l2.isEmpty()) {
+        }
+        if (!l2.isEmpty()) {
             iter = l2.iterator();
             if (l1.isEmpty()) {
                 ret_list.pushFront(l2.head.data);
+                ret_list_node = ret_list.head;
                 iter.next();
             }
-            ret_list_node = ret_list.head;
             while (iter.hasNext()) {
                 ret_list.pushBack(iter.next(), ret_list_node);
                 ret_list_node = ret_list_node.next;
