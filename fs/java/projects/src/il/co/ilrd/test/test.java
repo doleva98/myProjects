@@ -22,7 +22,7 @@ class Test {
         rawList.addAll(intList);
 
         List<String> strList = new ArrayList<>();
-        
+
         strList.addAll(rawList);
 
         strList.addAll(mainList);
@@ -36,7 +36,7 @@ class Test {
                 ++res;
             }
         }
-        s1.add("Dumbelroe");
+        s1.add("Dumbelroe");/* ffdd */
         s2.add(23);
         return res;
     }
