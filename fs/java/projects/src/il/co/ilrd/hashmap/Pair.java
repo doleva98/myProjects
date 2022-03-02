@@ -1,3 +1,4 @@
+/* roy CR */
 package il.co.ilrd.hashmap;
 
 import java.util.Comparator;
@@ -45,9 +46,7 @@ class Pair<K, V> implements Map.Entry<K, V> {
 
     public static <T extends Comparable<T>> Pair<T, T> minMax(T[] array) {
         return minMax(array, (o1, o2) -> o1.compareTo(o2));
-        /* if (array.length <= 2) {
-            return null;
-        }
+        /* 
         
         Pair<T, T> pair = new Pair<>(array[0], array[0]);
         int i = 1;
