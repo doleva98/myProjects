@@ -44,13 +44,14 @@ class Pair<K, V> implements Map.Entry<K, V> {
     }
 
     public static <T extends Comparable<T>> Pair<T, T> minMax(T[] array) {
-        if (array.length <= 2) {
+        return minMax(array, (o1, o2) -> o1.compareTo(o2));
+        /* if (array.length <= 2) {
             return null;
         }
-
+        
         Pair<T, T> pair = new Pair<>(array[0], array[0]);
         int i = 1;
-
+        
         if (array.length % 2 == 0) {
             if (array[0].compareTo(array[1]) < 0) {
                 pair.setValue(array[1]);
@@ -77,13 +78,10 @@ class Pair<K, V> implements Map.Entry<K, V> {
             }
             i += 2;
         }
-        return pair;
+        return pair; */
     }/* create new Pair */
 
     public static <T> Pair<T, T> minMax(T[] array, Comparator<T> comp) {
-        if (array.length <= 2) {
-            return null;
-        }
 
         Pair<T, T> pair = new Pair<>(array[0], array[0]);
         int i = 1;
@@ -115,7 +113,7 @@ class Pair<K, V> implements Map.Entry<K, V> {
             i += 2;
         }
         return pair;
-    }/* create new Pair */
+    }
 
     @Override
     public int hashCode() {
