@@ -275,7 +275,6 @@ class MainShape {
     }
 }
 
-
 class he {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
@@ -314,4 +313,3 @@ class CheckClass {
         }
     }
 }
-

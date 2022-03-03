@@ -27,16 +27,15 @@ class Hashmap<K, V> implements Map<K, V> {
     @Override
     public void clear() {
         newVersion();
-        for (int i = 0; i < size(); ++i) {
-            list.get(i).clear();
+        for (List<Pair<K, V>> l : list) {
+            l.clear();
         }
     }
 
     @Override
     public boolean containsKey(Object key) {
         int index = key.hashCode() % list.size();
-        List<Pair<K, V>> curr_list = list.get(index);
-        for (Pair<K, V> p : curr_list) {
+        for (Pair<K, V> p : list.get(index)) {
             if (p.getKey().equals(key)) {
                 return true;
             }
@@ -46,15 +45,13 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
-        for (int i = 0; i < size(); ++i) {
-            List<Pair<K, V>> curr_list = list.get(i);
+        for (List<Pair<K, V>> curr_list : list) {
             for (Pair<K, V> p : curr_list) {
                 if (p.getValue().equals(value)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
 
@@ -68,13 +65,9 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public Iterator<Entry<K, V>> iterator() {
-            int i;
-            for (i = 0; i < list.size(); ++i) {
-                if (list.get(i) != null && !list.get(i).isEmpty()) {
-                    break;
-                }
-            }
-            return new SetOfPairsIterator(i);
+            Iterator<List<Pair<K, V>>> outerIter = list.iterator();
+
+            return new SetOfPairsIterator(outerIter.next().iterator(), outerIter);
 
         }
 
@@ -84,13 +77,14 @@ class Hashmap<K, V> implements Map<K, V> {
         }
 
         private class SetOfPairsIterator implements Iterator<Entry<K, V>> {
-            private int current_item_in_list;
-            private int current_list;
+            private Iterator<Pair<K, V>> innerIter;
+            private Iterator<List<Pair<K, V>>> outerIter;
             private final int VERSIONNUMITERATOR;
 
-            public SetOfPairsIterator(int current_list) {
-                this.current_list = current_list;
-                current_item_in_list = 0;
+            public SetOfPairsIterator(Iterator<Pair<K, V>> innerIter,
+                    Iterator<List<Pair<K, V>>> outerIter) {
+                this.innerIter = innerIter;
+                this.outerIter = outerIter;
                 VERSIONNUMITERATOR = versionNum;
             }
 
@@ -118,14 +112,19 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
-        // TODO Auto-generated method stub
+        int index = key.hashCode() % list.size();
+        List<Pair<K, V>> curr_list = list.get(index);
+        for (Pair<K, V> p : curr_list) {
+            if (p.getKey().equals(key)) {
+                return p.getValue();
+            }
+        }
         return null;
     }
 
     @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        return false;
+        return size() == 0;
     }
 
     @Override
@@ -224,6 +223,7 @@ class Hashmap<K, V> implements Map<K, V> {
         @Override
         public int size() {
             // TODO Auto-generated method stub
+
             return 0;
         }
 
