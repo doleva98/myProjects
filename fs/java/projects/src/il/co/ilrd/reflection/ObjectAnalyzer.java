@@ -6,8 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 public class ObjectAnalyzer {
     public static void main(String[] args) {
 
-
-
         Class<?> myClass = Foo.class;
         System.out.println("******************************");
         System.out.println(myClass.getSuperclass().getName());
@@ -29,30 +27,24 @@ public class ObjectAnalyzer {
         /*  try {
             f = myClass.newInstance();
         } catch (InstantiationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } */
         Object o[] = new Object[0];
-      
-            try {
-                myClass.getMethods()[0].invoke(f, o);
-            } catch (IllegalAccessException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (SecurityException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-       
+
+        try {
+            myClass.getMethods()[0].invoke(f, o);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 

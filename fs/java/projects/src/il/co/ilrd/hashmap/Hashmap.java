@@ -13,7 +13,7 @@ import java.util.Set;
 
 class Hashmap<K, V> implements Map<K, V> {
 
-    private List<List<Pair<K, V>>> list;
+    private List<List<Entry<K, V>>> list;
     private int versionNum;
 
     public Hashmap() {
@@ -22,12 +22,18 @@ class Hashmap<K, V> implements Map<K, V> {
 
     public Hashmap(int capacity) {
         list = new ArrayList<>(capacity);
+        versionNum = 0;
+
+        /* eager */
+        for (int i = 0; i < capacity; ++i) {
+            list.add(new LinkedList<>());
+        }
     }
 
     @Override
     public void clear() {
         newVersion();
-        for (List<Pair<K, V>> l : list) {
+        for (List<Entry<K, V>> l : list) {
             l.clear();
         }
     }
@@ -35,7 +41,10 @@ class Hashmap<K, V> implements Map<K, V> {
     @Override
     public boolean containsKey(Object key) {
         int index = key.hashCode() % list.size();
-        for (Pair<K, V> p : list.get(index)) {
+        if (list.get(index) == null) {
+            return false;
+        }
+        for (Entry<K, V> p : list.get(index)) {
             if (p.getKey().equals(key)) {
                 return true;
             }
@@ -45,8 +54,8 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
-        for (List<Pair<K, V>> curr_list : list) {
-            for (Pair<K, V> p : curr_list) {
+        for (List<Entry<K, V>> curr_list : list) {
+            for (Entry<K, V> p : curr_list) {
                 if (p.getValue().equals(value)) {
                     return true;
                 }
@@ -57,15 +66,14 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        Set<Entry<K, V>> = H
-        return null;
+        return new SetOfPairs();
     }
 
     private class SetOfPairs extends AbstractSet<Entry<K, V>> {
 
         @Override
         public Iterator<Entry<K, V>> iterator() {
-            Iterator<List<Pair<K, V>>> outerIter = list.iterator();
+            Iterator<List<Entry<K, V>>> outerIter = list.iterator();
 
             return new SetOfPairsIterator(outerIter.next().iterator(), outerIter);
 
@@ -77,12 +85,12 @@ class Hashmap<K, V> implements Map<K, V> {
         }
 
         private class SetOfPairsIterator implements Iterator<Entry<K, V>> {
-            private Iterator<Pair<K, V>> innerIter;
-            private Iterator<List<Pair<K, V>>> outerIter;
+            private Iterator<Entry<K, V>> innerIter;
+            private Iterator<List<Entry<K, V>>> outerIter;
             private final int VERSIONNUMITERATOR;
 
-            public SetOfPairsIterator(Iterator<Pair<K, V>> innerIter,
-                    Iterator<List<Pair<K, V>>> outerIter) {
+            public SetOfPairsIterator(Iterator<Entry<K, V>> innerIter,
+                    Iterator<List<Entry<K, V>>> outerIter) {
                 this.innerIter = innerIter;
                 this.outerIter = outerIter;
                 VERSIONNUMITERATOR = versionNum;
@@ -91,10 +99,7 @@ class Hashmap<K, V> implements Map<K, V> {
             @Override
             public boolean hasNext() {
 
-                while (current_item_in_list < list.get(current_list).size() && current_list > )
-                    if (current_list >= list.size()) {
-                        return false;
-                    }
+                return innerIter.hasNext() || outerIter.hasNext();
             }
 
             @Override
@@ -102,10 +107,11 @@ class Hashmap<K, V> implements Map<K, V> {
                 if (VERSIONNUMITERATOR != versionNum) {
                     throw new ConcurrentModificationException();
                 }
-                Entry<K, V> val = pair;
-
+                if (!innerIter.hasNext()) {/* current list is over, need to change to next list */
+                    innerIter = outerIter.next().iterator();
+                }
+                return innerIter.next();
             }
-
         }
 
     }
@@ -113,8 +119,7 @@ class Hashmap<K, V> implements Map<K, V> {
     @Override
     public V get(Object key) {
         int index = key.hashCode() % list.size();
-        List<Pair<K, V>> curr_list = list.get(index);
-        for (Pair<K, V> p : curr_list) {
+        for (Entry<K, V> p : list.get(index)) {
             if (p.getKey().equals(key)) {
                 return p.getValue();
             }
@@ -124,44 +129,62 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean isEmpty() {
-        return size() == 0;
+        for (List<Entry<K, V>> l : list) {
+            if (!l.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public Set<K> keySet() {
-        // TODO Auto-generated method stub
-        return null;
+        return new SetOfKeys();
     }
 
     private class SetOfKeys extends AbstractSet<K> {
-        private List<List<Pair<K, V>>> list;
 
         @Override
         public Iterator<K> iterator() {
-            // TODO Auto-generated method stub
-            return null;
+            Iterator<List<Entry<K, V>>> outerIter = list.iterator();
+
+            return new SetOfKeysIterator(outerIter.next().iterator(), outerIter);
+
         }
 
         @Override
         public int size() {
-            // TODO Auto-generated method stub
-            return 0;
+            return list.size();
         }
 
-        private class SetOfPairsIterator implements Iterator<K> {
+        private class SetOfKeysIterator implements Iterator<K> {
+            private Iterator<Entry<K, V>> innerIter;
+            private Iterator<List<Entry<K, V>>> outerIter;
+            private final int VERSIONNUMITERATOR;
+
+            public SetOfKeysIterator(Iterator<Entry<K, V>> innerIter,
+                    Iterator<List<Entry<K, V>>> outerIter) {
+                this.innerIter = innerIter;
+                this.outerIter = outerIter;
+                VERSIONNUMITERATOR = versionNum;
+            }
 
             @Override
             public boolean hasNext() {
-                // TODO Auto-generated method stub
-                return false;
+
+                return innerIter.hasNext() || outerIter.hasNext();
             }
 
             @Override
             public K next() {
-                // TODO Auto-generated method stub
-                return null;
+                if (VERSIONNUMITERATOR != versionNum) {
+                    throw new ConcurrentModificationException();
+                }
+                if (!innerIter.hasNext()) {/* current list is over, need to change to next list */
+                    innerIter = outerIter.next().iterator();
+                }
+                return innerIter.next().getKey();
             }
-
         }
 
     }
@@ -175,11 +198,7 @@ class Hashmap<K, V> implements Map<K, V> {
             remove(key);
         }
         int index = key.hashCode() % list.size();
-        List<Pair<K, V>> curr_list = list.get(index);
-        if (curr_list == null) {
-            curr_list = new LinkedList<>();
-        }
-        curr_list.add(Pair.of(key, value));
+        list.get(index).add(Pair.of(key, value));
         return old_value;
     }
 
@@ -193,7 +212,12 @@ class Hashmap<K, V> implements Map<K, V> {
     @Override
     public V remove(Object key) {
         newVersion();
-        // TODO Auto-generated method stub
+        int index = key.hashCode() % list.size();
+        for (Entry<K, V> p : list.get(index)) {
+            if (p.getKey().equals(key)) {
+                return p.getValue();
+            }
+        }
         return null;
     }
 
@@ -208,39 +232,52 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public Collection<V> values() {
-        Collection<V> collection 
+        return new CollectionOfValues();
     }
 
     private class CollectionOfValues extends AbstractCollection<V> {
-        private List<List<Pair<K, V>>> list;
 
         @Override
         public Iterator<V> iterator() {
-            // TODO Auto-generated method stub
-            return null;
+            Iterator<List<Entry<K, V>>> outerIter = list.iterator();
+
+            return new CollectionOfValuesIterator(outerIter.next().iterator(), outerIter);
+
         }
 
         @Override
         public int size() {
-            // TODO Auto-generated method stub
-
-            return 0;
+            return list.size();
         }
 
-        private class SetOfPairsIterator implements Iterator<V> {
+        private class CollectionOfValuesIterator implements Iterator<V> {
+            private Iterator<Entry<K, V>> innerIter;
+            private Iterator<List<Entry<K, V>>> outerIter;
+            private final int VERSIONNUMITERATOR;
+
+            public CollectionOfValuesIterator(Iterator<Entry<K, V>> innerIter,
+                    Iterator<List<Entry<K, V>>> outerIter) {
+                this.innerIter = innerIter;
+                this.outerIter = outerIter;
+                VERSIONNUMITERATOR = versionNum;
+            }
 
             @Override
             public boolean hasNext() {
-                // TODO Auto-generated method stub
-                return false;
+
+                return innerIter.hasNext() || outerIter.hasNext();
             }
 
             @Override
             public V next() {
-                // TODO Auto-generated method stub
-                return null;
+                if (VERSIONNUMITERATOR != versionNum) {
+                    throw new ConcurrentModificationException();
+                }
+                if (!innerIter.hasNext()) {/* current list is over, need to change to next list */
+                    innerIter = outerIter.next().iterator();
+                }
+                return innerIter.next().getValue();
             }
-
         }
 
     }

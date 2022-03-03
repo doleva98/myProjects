@@ -26,7 +26,6 @@ class Foo {
         /*   try {
             Class<?> hello = Class.forName("hello");
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } */
 
@@ -35,7 +34,6 @@ class Foo {
         /*  try {
             func1();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } 
         
@@ -44,13 +42,12 @@ class Foo {
         try {
             func4();
         } catch (MyException2 e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }*/
 
         /*         byte[] array = new byte[100];
          */ /*         byte t = array[101];
-                                     */
+                                      */
 
     }
 }

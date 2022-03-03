@@ -5,8 +5,8 @@ import java.util.Comparator;
 import java.util.Map;
 
 class Pair<K, V> implements Map.Entry<K, V> {
-    K key;
-    V value;
+    private K key;
+    private V value;
 
     private Pair(K key, V value) {
         this.key = key;
@@ -121,8 +121,6 @@ class Pair<K, V> implements Map.Entry<K, V> {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this)
-            return true;
         if (!(o instanceof Pair)) {
             return false;
         }
