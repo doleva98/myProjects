@@ -21,6 +21,9 @@ class Hashmap<K, V> implements Map<K, V> {
     }
 
     public Hashmap(int capacity) {
+        if (capacity < 0) {
+            throw new IllegalArgumentException();
+        }
         table_of_buckets = new ArrayList<>(capacity);
         versionNum = 0;
 
