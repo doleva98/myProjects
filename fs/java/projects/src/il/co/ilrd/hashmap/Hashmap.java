@@ -13,7 +13,7 @@ import java.util.Set;
 
 class Hashmap<K, V> implements Map<K, V> {
 
-    private List<List<Entry<K, V>>> list;
+    private List<List<Entry<K, V>>> table_of_buckets;
     private int versionNum;
 
     public Hashmap() {
@@ -21,30 +21,30 @@ class Hashmap<K, V> implements Map<K, V> {
     }
 
     public Hashmap(int capacity) {
-        list = new ArrayList<>(capacity);
+        table_of_buckets = new ArrayList<>(capacity);
         versionNum = 0;
 
         /* eager */
         for (int i = 0; i < capacity; ++i) {
-            list.add(new LinkedList<>());
+            table_of_buckets.add(new LinkedList<>());
         }
     }
 
     @Override
     public void clear() {
         newVersion();
-        for (List<Entry<K, V>> l : list) {
+        for (List<Entry<K, V>> l : table_of_buckets) {
             l.clear();
         }
     }
 
     @Override
     public boolean containsKey(Object key) {
-        int index = key.hashCode() % list.size();
-        if (list.get(index) == null) {
+        int index = key.hashCode() % table_of_buckets.size();
+        if (table_of_buckets.get(index) == null) {
             return false;
         }
-        for (Entry<K, V> p : list.get(index)) {
+        for (Entry<K, V> p : table_of_buckets.get(index)) {
             if (p.getKey().equals(key)) {
                 return true;
             }
@@ -54,7 +54,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
-        for (List<Entry<K, V>> curr_list : list) {
+        for (List<Entry<K, V>> curr_list : table_of_buckets) {
             for (Entry<K, V> p : curr_list) {
                 if (p.getValue().equals(value)) {
                     return true;
@@ -71,8 +71,8 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
-        int index = key.hashCode() % list.size();
-        for (Entry<K, V> p : list.get(index)) {
+        int index = key.hashCode() % table_of_buckets.size();
+        for (Entry<K, V> p : table_of_buckets.get(index)) {
             if (p.getKey().equals(key)) {
                 return p.getValue();
             }
@@ -82,7 +82,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean isEmpty() {
-        for (List<Entry<K, V>> l : list) {
+        for (List<Entry<K, V>> l : table_of_buckets) {
             if (!l.isEmpty()) {
                 return false;
             }
@@ -103,8 +103,8 @@ class Hashmap<K, V> implements Map<K, V> {
             old_value = this.get(key);
             remove(key);
         }
-        int index = key.hashCode() % list.size();
-        list.get(index).add(Pair.of(key, value));
+        int index = key.hashCode() % table_of_buckets.size();
+        table_of_buckets.get(index).add(Pair.of(key, value));
         return old_value;
     }
 
@@ -122,11 +122,11 @@ class Hashmap<K, V> implements Map<K, V> {
     public V remove(Object key) {
         newVersion();
         V value = null;
-        int index = key.hashCode() % list.size();
-        for (Entry<K, V> p : list.get(index)) {
+        int index = key.hashCode() % table_of_buckets.size();
+        for (Entry<K, V> p : table_of_buckets.get(index)) {
             if (p.getKey().equals(key)) {
                 value = p.getValue();
-                list.get(index).remove(p);
+                table_of_buckets.get(index).remove(p);
                 break;
             }
         }
@@ -147,7 +147,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public Iterator<Entry<K, V>> iterator() {
-            Iterator<List<Entry<K, V>>> outerIter = list.iterator();
+            Iterator<List<Entry<K, V>>> outerIter = table_of_buckets.iterator();
 
             return new SetOfPairsIterator(outerIter.next().iterator(), outerIter);
 
@@ -163,7 +163,7 @@ class Hashmap<K, V> implements Map<K, V> {
             private Iterator<List<Entry<K, V>>> outerIter;
             private final int VERSIONNUMITERATOR;
 
-            public SetOfPairsIterator(Iterator<Entry<K, V>> innerIter,
+            private SetOfPairsIterator(Iterator<Entry<K, V>> innerIter,
                     Iterator<List<Entry<K, V>>> outerIter) {
                 this.innerIter = innerIter;
                 this.outerIter = outerIter;
@@ -194,7 +194,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public Iterator<K> iterator() {
-            Iterator<List<Entry<K, V>>> outerIter = list.iterator();
+            Iterator<List<Entry<K, V>>> outerIter = table_of_buckets.iterator();
 
             return new SetOfKeysIterator(outerIter.next().iterator(), outerIter);
 
@@ -210,7 +210,7 @@ class Hashmap<K, V> implements Map<K, V> {
             private Iterator<List<Entry<K, V>>> outerIter;
             private final int VERSIONNUMITERATOR;
 
-            public SetOfKeysIterator(Iterator<Entry<K, V>> innerIter,
+            private SetOfKeysIterator(Iterator<Entry<K, V>> innerIter,
                     Iterator<List<Entry<K, V>>> outerIter) {
                 this.innerIter = innerIter;
                 this.outerIter = outerIter;
@@ -241,7 +241,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public Iterator<V> iterator() {
-            Iterator<List<Entry<K, V>>> outerIter = list.iterator();
+            Iterator<List<Entry<K, V>>> outerIter = table_of_buckets.iterator();
 
             return new CollectionOfValuesIterator(outerIter.next().iterator(), outerIter);
 
@@ -257,7 +257,7 @@ class Hashmap<K, V> implements Map<K, V> {
             private Iterator<List<Entry<K, V>>> outerIter;
             private final int VERSIONNUMITERATOR;
 
-            public CollectionOfValuesIterator(Iterator<Entry<K, V>> innerIter,
+            private CollectionOfValuesIterator(Iterator<Entry<K, V>> innerIter,
                     Iterator<List<Entry<K, V>>> outerIter) {
                 this.innerIter = innerIter;
                 this.outerIter = outerIter;
@@ -287,7 +287,7 @@ class Hashmap<K, V> implements Map<K, V> {
     private int getThisSize() {
         int counter = 0;
 
-        for (List<Entry<K, V>> l : list) {
+        for (List<Entry<K, V>> l : table_of_buckets) {
             counter += l.size();
         }
         return counter;

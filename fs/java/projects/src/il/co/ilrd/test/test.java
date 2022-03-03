@@ -7,15 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.sound.sampled.SourceDataLine;
 
 class Test<T extends Comparable<T>> {
     public static void main(String[] args) {
-        Test<String> t = new Test<>(String.valueOf(4));
-        System.out.println(t.de.getClass().getName());
-        List<String> d = new ArrayList<>(15);
-        
+
     }
 
     public T de;

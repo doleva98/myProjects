@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import javax.swing.text.html.parser.Entity;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -144,12 +146,12 @@ public class HashmapTest {
 
         Iterator<Entry<Integer, Integer>> iter = entry.iterator();
 
-        for (int i = 0; i < numTest / 2; ++i) {
+         for (int i = 0; i < numTest / 2; ++i) {
             iter.next();
-        }
+        } 
         hm.put(numTest + 421, 45342);
 
-        iter.next();
+         iter.next(); 
 
     }
 }
