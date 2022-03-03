@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -84,6 +85,7 @@ public class HashmapTest {
         for (int i = 0; i < numTest; ++i) {
             assertFalse(hm.containsKey(i));
             assertFalse(hm.containsValue(i));
+            System.out.println(i);
         }
     }
 
@@ -146,12 +148,12 @@ public class HashmapTest {
 
         Iterator<Entry<Integer, Integer>> iter = entry.iterator();
 
-         for (int i = 0; i < numTest / 2; ++i) {
+        for (int i = 0; i < numTest / 2; ++i) {
             iter.next();
-        } 
+        }
         hm.put(numTest + 421, 45342);
 
-         iter.next(); 
+        iter.next();
 
     }
 }

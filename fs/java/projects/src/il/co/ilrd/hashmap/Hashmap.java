@@ -54,11 +54,9 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
-        for (List<Entry<K, V>> curr_list : table_of_buckets) {
-            for (Entry<K, V> p : curr_list) {
-                if (p.getValue().equals(value)) {
-                    return true;
-                }
+        for (V val : values()) {
+            if (val.equals(value)) {
+                return true;
             }
         }
         return false;
@@ -173,7 +171,7 @@ class Hashmap<K, V> implements Map<K, V> {
             @Override
             public boolean hasNext() {
 
-                return innerIter.hasNext() || outerIter.hasNext();
+                return (innerIter.hasNext() || outerIter.hasNext()) && getThisSize() != 0;
             }
 
             @Override
@@ -220,7 +218,8 @@ class Hashmap<K, V> implements Map<K, V> {
             @Override
             public boolean hasNext() {
 
-                return innerIter.hasNext() || outerIter.hasNext();
+                return (innerIter.hasNext() || outerIter.hasNext()) && getThisSize() != 0;
+
             }
 
             @Override
@@ -267,7 +266,8 @@ class Hashmap<K, V> implements Map<K, V> {
             @Override
             public boolean hasNext() {
 
-                return innerIter.hasNext() || outerIter.hasNext();
+                return (innerIter.hasNext() || outerIter.hasNext()) && getThisSize() != 0;
+
             }
 
             @Override
