@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 class Hashmap<K, V> implements Map<K, V> {
@@ -43,6 +44,8 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(Object key) {
+        Objects.requireNonNull(key);
+
         int index = key.hashCode() % table_of_buckets.size();
         if (table_of_buckets.get(index) == null) {
             return false;
@@ -98,6 +101,8 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public V put(K key, V value) {
+        Objects.requireNonNull(key);
+
         newVersion();
         V old_value = null;
         if (containsKey(key)) {
@@ -111,6 +116,8 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
+        Objects.requireNonNull(m);
+
         newVersion();
 
         for (Entry<? extends K, ? extends V> p : m.entrySet()) {
@@ -121,6 +128,8 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public V remove(Object key) {
+        Objects.requireNonNull(key);
+
         newVersion();
         V value = null;
         int index = key.hashCode() % table_of_buckets.size();

@@ -14,6 +14,7 @@ import javax.sound.sampled.SourceDataLine;
 class Test<T extends Comparable<T>> {
     public static void main(String[] args) {
         List<Integer> i = new ArrayList<>(-3);
+        
     }
 
     public T de;
