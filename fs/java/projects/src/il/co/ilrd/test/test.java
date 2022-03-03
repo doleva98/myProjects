@@ -14,9 +14,8 @@ class Test<T extends Comparable<T>> {
     public static void main(String[] args) {
         Test<String> t = new Test<>(String.valueOf(4));
         System.out.println(t.de.getClass().getName());
-        List<String> d = new ArrayList<>();
-
-        foo(d);
+        List<String> d = new ArrayList<>(15);
+        
     }
 
     public T de;

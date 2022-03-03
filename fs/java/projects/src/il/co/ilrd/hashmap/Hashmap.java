@@ -69,6 +69,80 @@ class Hashmap<K, V> implements Map<K, V> {
         return new SetOfPairs();
     }
 
+    @Override
+    public V get(Object key) {
+        int index = key.hashCode() % list.size();
+        for (Entry<K, V> p : list.get(index)) {
+            if (p.getKey().equals(key)) {
+                return p.getValue();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (List<Entry<K, V>> l : list) {
+            if (!l.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Set<K> keySet() {
+        return new SetOfKeys();
+    }
+
+    @Override
+    public V put(K key, V value) {
+        newVersion();
+        V old_value = null;
+        if (containsKey(key)) {
+            old_value = this.get(key);
+            remove(key);
+        }
+        int index = key.hashCode() % list.size();
+        list.get(index).add(Pair.of(key, value));
+        return old_value;
+    }
+
+    @Override
+    public void putAll(Map<? extends K, ? extends V> m) {
+        newVersion();
+
+        for (Entry<? extends K, ? extends V> p : m.entrySet()) {
+            put(p.getKey(), p.getValue());
+        }
+
+    }
+
+    @Override
+    public V remove(Object key) {
+        newVersion();
+        V value = null;
+        int index = key.hashCode() % list.size();
+        for (Entry<K, V> p : list.get(index)) {
+            if (p.getKey().equals(key)) {
+                value = p.getValue();
+                list.get(index).remove(p);
+                break;
+            }
+        }
+        return value;
+    }
+
+    @Override
+    public int size() {
+        return getThisSize();
+    }
+
+    @Override
+    public Collection<V> values() {
+        return new CollectionOfValues();
+    }
+
     private class SetOfPairs extends AbstractSet<Entry<K, V>> {
 
         @Override
@@ -81,7 +155,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public int size() {
-            return list.size();
+            return getThisSize();
         }
 
         private class SetOfPairsIterator implements Iterator<Entry<K, V>> {
@@ -116,32 +190,6 @@ class Hashmap<K, V> implements Map<K, V> {
 
     }
 
-    @Override
-    public V get(Object key) {
-        int index = key.hashCode() % list.size();
-        for (Entry<K, V> p : list.get(index)) {
-            if (p.getKey().equals(key)) {
-                return p.getValue();
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        for (List<Entry<K, V>> l : list) {
-            if (!l.isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public Set<K> keySet() {
-        return new SetOfKeys();
-    }
-
     private class SetOfKeys extends AbstractSet<K> {
 
         @Override
@@ -154,7 +202,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public int size() {
-            return list.size();
+            return getThisSize();
         }
 
         private class SetOfKeysIterator implements Iterator<K> {
@@ -189,52 +237,6 @@ class Hashmap<K, V> implements Map<K, V> {
 
     }
 
-    @Override
-    public V put(K key, V value) {
-        newVersion();
-        V old_value = null;
-        if (containsKey(key)) {
-            old_value = this.get(key);
-            remove(key);
-        }
-        int index = key.hashCode() % list.size();
-        list.get(index).add(Pair.of(key, value));
-        return old_value;
-    }
-
-    @Override
-    public void putAll(Map<? extends K, ? extends V> m) {
-        newVersion();
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public V remove(Object key) {
-        newVersion();
-        int index = key.hashCode() % list.size();
-        for (Entry<K, V> p : list.get(index)) {
-            if (p.getKey().equals(key)) {
-                return p.getValue();
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public int size() {
-        int counter = 0;
-        for (int i = 0; i < list.size(); ++i) {
-            counter += list.get(i).size();
-        }
-        return counter;
-    }
-
-    @Override
-    public Collection<V> values() {
-        return new CollectionOfValues();
-    }
-
     private class CollectionOfValues extends AbstractCollection<V> {
 
         @Override
@@ -247,7 +249,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public int size() {
-            return list.size();
+            return getThisSize();
         }
 
         private class CollectionOfValuesIterator implements Iterator<V> {
@@ -280,6 +282,15 @@ class Hashmap<K, V> implements Map<K, V> {
             }
         }
 
+    }
+
+    private int getThisSize() {
+        int counter = 0;
+
+        for (List<Entry<K, V>> l : list) {
+            counter += l.size();
+        }
+        return counter;
     }
 
     private void newVersion() {
