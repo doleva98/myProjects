@@ -1,3 +1,4 @@
+/* Naama code reviewd */
 package il.co.ilrd.hashmap;
 
 import java.util.AbstractCollection;
@@ -47,9 +48,6 @@ class Hashmap<K, V> implements Map<K, V> {
         Objects.requireNonNull(key);
 
         int index = key.hashCode() % table_of_buckets.size();
-        /* if (table_of_buckets.get(index) == null) {
-            return false;
-        } */
         for (Entry<K, V> p : table_of_buckets.get(index)) {
             if (p.getKey().equals(key)) {
                 return true;
@@ -75,6 +73,8 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public V get(Object key) {
+        Objects.requireNonNull(key);
+
         int index = key.hashCode() % table_of_buckets.size();
         for (Entry<K, V> p : table_of_buckets.get(index)) {
             if (p.getKey().equals(key)) {
