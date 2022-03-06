@@ -7,13 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.ConcurrentModificationException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map.Entry;
-
-import javax.swing.text.html.parser.Entity;
-
 import org.junit.Before;
 import org.junit.Test;
 

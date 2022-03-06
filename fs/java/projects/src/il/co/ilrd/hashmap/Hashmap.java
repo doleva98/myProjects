@@ -47,9 +47,9 @@ class Hashmap<K, V> implements Map<K, V> {
         Objects.requireNonNull(key);
 
         int index = key.hashCode() % table_of_buckets.size();
-        if (table_of_buckets.get(index) == null) {
+        /* if (table_of_buckets.get(index) == null) {
             return false;
-        }
+        } */
         for (Entry<K, V> p : table_of_buckets.get(index)) {
             if (p.getKey().equals(key)) {
                 return true;
@@ -106,7 +106,7 @@ class Hashmap<K, V> implements Map<K, V> {
         newVersion();
         V old_value = null;
         if (containsKey(key)) {
-            old_value = this.get(key);
+            old_value = get(key);
             remove(key);
         }
         int index = key.hashCode() % table_of_buckets.size();
