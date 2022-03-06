@@ -152,4 +152,15 @@ public class HashmapTest {
         iter.next();
 
     }
+
+    @Test
+    public void testValues2() {
+        int numTest = 80;
+        for (int i = 0; i < numTest; ++i) {
+            hm.put(Integer.valueOf(i), Integer.valueOf(0));
+        }
+        Collection<Integer> valueSet = hm.values();
+        assertEquals(valueSet.size(), 80);
+    }
+
 }
