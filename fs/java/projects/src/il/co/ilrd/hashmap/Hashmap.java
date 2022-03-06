@@ -145,7 +145,12 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public int size() {
-        return getThisSize();
+        int counter = 0;
+
+        for (List<Entry<K, V>> l : table_of_buckets) {
+            counter += l.size();
+        }
+        return counter;
     }
 
     @Override
@@ -154,6 +159,9 @@ class Hashmap<K, V> implements Map<K, V> {
     }
 
     private class SetOfPairs extends AbstractSet<Entry<K, V>> {
+
+        private SetOfPairs() {
+        }
 
         @Override
         public Iterator<Entry<K, V>> iterator() {
@@ -165,25 +173,28 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public int size() {
-            return getThisSize();
+            return Hashmap.this.size();
         }
 
         private class SetOfPairsIterator implements Iterator<Entry<K, V>> {
             private Iterator<Entry<K, V>> innerIter;
             private Iterator<List<Entry<K, V>>> outerIter;
             private final int VERSIONNUMITERATOR;
+            private int curr_pos;
 
             private SetOfPairsIterator(Iterator<Entry<K, V>> innerIter,
                     Iterator<List<Entry<K, V>>> outerIter) {
                 this.innerIter = innerIter;
                 this.outerIter = outerIter;
                 VERSIONNUMITERATOR = versionNum;
+                curr_pos = 0;
             }
 
             @Override
             public boolean hasNext() {
 
-                return (innerIter.hasNext() || outerIter.hasNext()) && getThisSize() != 0;
+                return curr_pos < Hashmap.this.size();
+
             }
 
             @Override
@@ -191,8 +202,16 @@ class Hashmap<K, V> implements Map<K, V> {
                 if (VERSIONNUMITERATOR != versionNum) {
                     throw new ConcurrentModificationException();
                 }
+                ++curr_pos;
                 if (!innerIter.hasNext()) {/* current list is over, need to change to next list */
-                    innerIter = outerIter.next().iterator();
+                    while (outerIter.hasNext()) {
+                        List<Entry<K, V>> curr_list = outerIter.next();
+                        if (!curr_list.isEmpty()) {
+                            innerIter = curr_list.iterator();
+                            break;
+                        }
+
+                    }
                 }
                 return innerIter.next();
             }
@@ -201,6 +220,9 @@ class Hashmap<K, V> implements Map<K, V> {
     }
 
     private class SetOfKeys extends AbstractSet<K> {
+
+        private SetOfKeys() {
+        }
 
         @Override
         public Iterator<K> iterator() {
@@ -212,25 +234,28 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public int size() {
-            return getThisSize();
+            return Hashmap.this.size();
         }
 
         private class SetOfKeysIterator implements Iterator<K> {
             private Iterator<Entry<K, V>> innerIter;
             private Iterator<List<Entry<K, V>>> outerIter;
             private final int VERSIONNUMITERATOR;
+            private int curr_pos;
 
             private SetOfKeysIterator(Iterator<Entry<K, V>> innerIter,
                     Iterator<List<Entry<K, V>>> outerIter) {
                 this.innerIter = innerIter;
                 this.outerIter = outerIter;
                 VERSIONNUMITERATOR = versionNum;
+                curr_pos = 0;
+
             }
 
             @Override
             public boolean hasNext() {
 
-                return (innerIter.hasNext() || outerIter.hasNext()) && getThisSize() != 0;
+                return curr_pos < size();
 
             }
 
@@ -239,8 +264,16 @@ class Hashmap<K, V> implements Map<K, V> {
                 if (VERSIONNUMITERATOR != versionNum) {
                     throw new ConcurrentModificationException();
                 }
+                ++curr_pos;
                 if (!innerIter.hasNext()) {/* current list is over, need to change to next list */
-                    innerIter = outerIter.next().iterator();
+                    while (outerIter.hasNext()) {
+                        List<Entry<K, V>> curr_list = outerIter.next();
+                        if (!curr_list.isEmpty()) {
+                            innerIter = curr_list.iterator();
+                            break;
+                        }
+
+                    }
                 }
                 return innerIter.next().getKey();
             }
@@ -249,6 +282,9 @@ class Hashmap<K, V> implements Map<K, V> {
     }
 
     private class CollectionOfValues extends AbstractCollection<V> {
+
+        private CollectionOfValues() {
+        }
 
         @Override
         public Iterator<V> iterator() {
@@ -260,25 +296,27 @@ class Hashmap<K, V> implements Map<K, V> {
 
         @Override
         public int size() {
-            return getThisSize();
+            return Hashmap.this.size();
         }
 
         private class CollectionOfValuesIterator implements Iterator<V> {
             private Iterator<Entry<K, V>> innerIter;
             private Iterator<List<Entry<K, V>>> outerIter;
             private final int VERSIONNUMITERATOR;
+            private int curr_pos;
 
             private CollectionOfValuesIterator(Iterator<Entry<K, V>> innerIter,
                     Iterator<List<Entry<K, V>>> outerIter) {
                 this.innerIter = innerIter;
                 this.outerIter = outerIter;
                 VERSIONNUMITERATOR = versionNum;
+                curr_pos = 0;
             }
 
             @Override
             public boolean hasNext() {
 
-                return (innerIter.hasNext() || outerIter.hasNext()) && getThisSize() != 0;
+                return curr_pos < size();
 
             }
 
@@ -287,22 +325,21 @@ class Hashmap<K, V> implements Map<K, V> {
                 if (VERSIONNUMITERATOR != versionNum) {
                     throw new ConcurrentModificationException();
                 }
+                ++curr_pos;
                 if (!innerIter.hasNext()) {/* current list is over, need to change to next list */
-                    innerIter = outerIter.next().iterator();
+                    while (outerIter.hasNext()) {
+                        List<Entry<K, V>> curr_list = outerIter.next();
+                        if (!curr_list.isEmpty()) {
+                            innerIter = curr_list.iterator();
+                            break;
+                        }
+
+                    }
                 }
                 return innerIter.next().getValue();
             }
         }
 
-    }
-
-    private int getThisSize() {
-        int counter = 0;
-
-        for (List<Entry<K, V>> l : table_of_buckets) {
-            counter += l.size();
-        }
-        return counter;
     }
 
     private void newVersion() {
