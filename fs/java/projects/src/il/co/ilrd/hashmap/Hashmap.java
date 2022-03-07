@@ -17,9 +17,13 @@ class Hashmap<K, V> implements Map<K, V> {
 
     private List<List<Entry<K, V>>> table_of_buckets;
     private int versionNum;
+    private Set<Entry<K, V>> tablePairSet;
+    private Set<K> tableKeySet;
+    private Collection<V> tableValueCollection;
+    private static int DEFAULTCAPACITY = 16;
 
     public Hashmap() {
-        this(16);
+        this(DEFAULTCAPACITY);
     }
 
     public Hashmap(int capacity) {
@@ -58,12 +62,17 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
+        Objects.requireNonNull(value);
+
         return values().contains(value);
     }
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return new SetOfPairs();
+        if (tablePairSet == null) {
+            tablePairSet = new SetOfPairs();
+        }
+        return tablePairSet;
     }
 
     @Override
@@ -91,12 +100,16 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public Set<K> keySet() {
-        return new SetOfKeys();
+        if (tableKeySet == null) {
+            tableKeySet = new SetOfKeys();
+        }
+        return tableKeySet;
     }
 
     @Override
     public V put(K key, V value) {
         Objects.requireNonNull(key);
+        Objects.requireNonNull(value);
 
         newVersion();
         V old_value = null;
@@ -150,7 +163,10 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public Collection<V> values() {
-        return new CollectionOfValues();
+        if (tableValueCollection == null) {
+            tableValueCollection = new CollectionOfValues();
+        }
+        return tableValueCollection;
     }
 
     private class SetOfPairs extends AbstractSet<Entry<K, V>> {
@@ -200,14 +216,8 @@ class Hashmap<K, V> implements Map<K, V> {
             }
 
             private void findNextValid() {
-                if (!innerIter.hasNext()) {
-                    while (outerIter.hasNext()) {
-                        List<Entry<K, V>> list = outerIter.next();
-                        if (!list.isEmpty()) {
-                            innerIter = list.iterator();
-                            break;
-                        }
-                    }
+                while (!innerIter.hasNext() && outerIter.hasNext()) {
+                    innerIter = outerIter.next().iterator();
                 }
             }
         }
