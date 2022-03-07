@@ -58,12 +58,7 @@ class Hashmap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsValue(Object value) {
-        for (V val : values()) {
-            if (val.equals(value)) {
-                return true;
-            }
-        }
-        return false;
+        return values().contains(value);
     }
 
     @Override
