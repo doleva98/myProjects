@@ -36,9 +36,9 @@ public class CostOfLocking extends Thread {
 
     public void run() {
         syncBlockIncrement();
-        /*atomicIncrement(); 
-        syncMethodIncrement();*/
-        /* reentrentLockIncrement(); */
+        atomicIncrement();
+        syncMethodIncrement();
+        reentrantLockIncrement();
     }
 
     private void syncBlockIncrement() {
@@ -64,16 +64,14 @@ public class CostOfLocking extends Thread {
         }
     }
 
-    private void reentrentLockIncrement() {
+    private void reentrantLockIncrement() {
         for (int i = 0; i < 10000000; ++i) {
 
-            try {
-                re.lock();
+            re.lock();
 
-                ++globalCounter;
-            } finally {
-                re.unlock();
-            }
+            ++globalCounter;
+
+            re.unlock();
 
         }
 
