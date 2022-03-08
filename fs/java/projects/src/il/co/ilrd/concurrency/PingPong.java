@@ -21,7 +21,6 @@ public class PingPong {
             producer.join();
             consumer.join();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
@@ -35,7 +34,6 @@ class Producer extends Thread {
                 System.out.println("Ping!");
                 PingPong.pongSema.release();
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
@@ -52,7 +50,6 @@ class Consumer extends Thread {
                 System.out.println("Pong!");
                 PingPong.pingSema.release();
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

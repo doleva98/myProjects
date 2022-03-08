@@ -24,7 +24,6 @@ class MyRunnable implements Runnable {
             pro.wait();
             System.out.println("ds");
         } catch (IOException | InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -41,7 +40,6 @@ class MyThread extends Thread {
             pro.wait();
             System.out.println("ds");
         } catch (IOException | InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

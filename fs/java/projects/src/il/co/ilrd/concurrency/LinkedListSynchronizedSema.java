@@ -2,18 +2,21 @@ package il.co.ilrd.concurrency;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
-public class LinkedListSynchronized {
+public class LinkedListSynchronizedSema {
     public static final Object o = new Object();
     public static List<Integer> list = new ArrayList<>();
+    private static final int SEMASIZE = 0;
+    public static Semaphore sema = new Semaphore(SEMASIZE);
 
     public static void main(String[] args) {
         final int SIZE = 50;
-        Producer1[] producer = new Producer1[SIZE];
-        Consumer1[] consumer = new Consumer1[SIZE];
+        Producer2[] producer = new Producer2[SIZE];
+        Consumer2[] consumer = new Consumer2[SIZE];
         for (int i = 0; i < SIZE; ++i) {
-            producer[i] = new Producer1();
-            consumer[i] = new Consumer1();
+            producer[i] = new Producer2();
+            consumer[i] = new Consumer2();
 
             producer[i].start();
             consumer[i].start();
@@ -31,24 +34,30 @@ public class LinkedListSynchronized {
 
 }
 
-class Producer1 extends Thread {
+class Producer2 extends Thread {
     public void run() {
         while (true) {
-            synchronized (LinkedListSynchronized.o) {
+            LinkedListSynchronizedSema.sema.release();
+            synchronized (LinkedListSynchronizedSema.o) {
                 System.out.println("adding 1 to list");
-                LinkedListSynchronized.list.add(1);
+                LinkedListSynchronizedSema.list.add(1);
             }
         }
     }
 }
 
-class Consumer1 extends Thread {
+class Consumer2 extends Thread {
 
     public void run() {
         while (true) {
-            synchronized (LinkedListSynchronized.o) {
+            try {
+                LinkedListSynchronizedSema.sema.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            synchronized (LinkedListSynchronizedSema.o) {
                 System.out.println("removing 1 to list");
-                LinkedListSynchronized.list.remove(0);
+                LinkedListSynchronizedSema.list.remove(0);
             }
         }
     }
