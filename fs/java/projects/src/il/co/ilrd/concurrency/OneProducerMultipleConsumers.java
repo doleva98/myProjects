@@ -1,31 +1,26 @@
 package il.co.ilrd.concurrency;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 class OneProducerMultipleConsumers {
-    public static final Object o = new Object();
-    public static List<Integer> list = new ArrayList<>();
+    final static int SIZE = 5;
     private static final int SEMASIZE = 0;
     public static Semaphore sema = new Semaphore(SEMASIZE);
-    public static String buffer;
+    public static int counter = 0;
     final static Lock lock = new ReentrantLock();
-    final static Condition notFull = lock.newCondition();
-    final static Condition notEmpty = lock.newCondition();
-    final static int SIZE = 50;
+    static Condition wasProduced;
 
     public static void main(String[] args) {
         Producer3 producer = new Producer3();
-        Consumer2[] consumer = new Consumer2[SIZE];
-
+        Consumer3[] consumer = new Consumer3[SIZE];
+        wasProduced = lock.newCondition();
         producer.start();
 
         for (int i = 0; i < SIZE; ++i) {
-            consumer[i] = new Consumer2();
+            consumer[i] = new Consumer3();
 
             consumer[i].start();
         }
@@ -48,25 +43,42 @@ class OneProducerMultipleConsumers {
 
 class Producer3 extends Thread {
     public void run() {
-        OneProducerMultipleConsumers.lock.lock();
+        while (true) {
+            try {
+                OneProducerMultipleConsumers.sema.acquire(OneProducerMultipleConsumers.SIZE);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            OneProducerMultipleConsumers.lock.lock();
+            try {
+                ++OneProducerMultipleConsumers.counter;
 
-        OneProducerMultipleConsumers.buffer = "hello world";
-        OneProducerMultipleConsumers.sema.release(OneProducerMultipleConsumers.SIZE);
-        OneProducerMultipleConsumers.lock.unlock();
+            } finally {
+                OneProducerMultipleConsumers.lock.unlock();
+            }
+            OneProducerMultipleConsumers.wasProduced.signalAll();
+
+        }
     }
 }
 
 class Consumer3 extends Thread {
 
     public void run() {
-        OneProducerMultipleConsumers.lock.lock();
-        System.out.println(OneProducerMultipleConsumers.buffer);
-        try {
-            OneProducerMultipleConsumers.sema.acquire();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        while (true) {
+
+            OneProducerMultipleConsumers.lock.lock();
+            try {
+
+                OneProducerMultipleConsumers.wasProduced.wait();
+
+                OneProducerMultipleConsumers.sema.release();
+                System.out.println(OneProducerMultipleConsumers.counter);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                OneProducerMultipleConsumers.lock.unlock();
+            }
         }
-        OneProducerMultipleConsumers.lock.unlock();
     }
 }
