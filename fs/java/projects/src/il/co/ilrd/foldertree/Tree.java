@@ -1,3 +1,4 @@
+/* maor cr */
 package il.co.ilrd.foldertree;
 
 import java.io.File;
@@ -7,13 +8,21 @@ import java.util.List;
 
 public class Tree {
     private Folder rootFolder;
+    public int numFolders = 0;
+    private int numFiles = 0;
 
     public Tree(String name) {
-        rootFolder = new Folder(new File(name));
+        File f = new File(name);
+        if (!f.isDirectory()) {
+            System.out.println("ERROR, not directory");
+            return;
+        }
+        rootFolder = new Folder(f);
     }
 
     public void print() {
         rootFolder.print(0);
+        System.out.println("directories " + numFolders + " files " + numFiles);
     }
 
     private class Folder implements AbstractFile {
@@ -21,6 +30,7 @@ public class Tree {
         private List<AbstractFile> listOfFiles;
 
         public Folder(File folder) {
+            ++numFolders;
             this.folder = folder;
             listOfFiles = new ArrayList<>();
 
@@ -31,8 +41,10 @@ public class Tree {
             }
             for (File f : fArray) {
                 if (f.isDirectory()) {
+
                     listOfFiles.add(new Folder(f));
                 } else {
+
                     listOfFiles.add(new LeafFile(f));
                 }
             }
@@ -61,6 +73,7 @@ public class Tree {
         private final File file;
 
         public LeafFile(File file) {
+            ++numFiles;
             this.file = file;
         }
 
