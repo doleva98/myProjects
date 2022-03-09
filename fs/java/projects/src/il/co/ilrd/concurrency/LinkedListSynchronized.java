@@ -48,7 +48,10 @@ class Consumer1 extends Thread {
         while (true) {
             synchronized (LinkedListSynchronized.o) {
                 System.out.println("removing 1 to list");
-                LinkedListSynchronized.list.remove(0);
+                if(!LinkedListSynchronized.list.isEmpty())
+                {
+                    LinkedListSynchronized.list.remove(0);
+                }
             }
         }
     }

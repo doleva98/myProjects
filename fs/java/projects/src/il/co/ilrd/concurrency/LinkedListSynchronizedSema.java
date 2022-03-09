@@ -37,11 +37,11 @@ public class LinkedListSynchronizedSema {
 class Producer2 extends Thread {
     public void run() {
         while (true) {
-            LinkedListSynchronizedSema.sema.release();
             synchronized (LinkedListSynchronizedSema.o) {
                 System.out.println("adding 1 to list");
                 LinkedListSynchronizedSema.list.add(1);
             }
+            LinkedListSynchronizedSema.sema.release();
         }
     }
 }

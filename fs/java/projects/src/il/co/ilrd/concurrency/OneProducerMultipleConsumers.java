@@ -10,13 +10,12 @@ class OneProducerMultipleConsumers {
     private static final int SEMASIZE = 0;
     public static Semaphore sema = new Semaphore(SEMASIZE);
     public static int counter = 0;
-    final static Lock lock = new ReentrantLock();
-    static Condition wasProduced;
+    public static int i;
 
     public static void main(String[] args) {
         Producer3 producer = new Producer3();
         Consumer3[] consumer = new Consumer3[SIZE];
-        wasProduced = lock.newCondition();
+
         producer.start();
 
         for (int i = 0; i < SIZE; ++i) {
@@ -44,19 +43,19 @@ class OneProducerMultipleConsumers {
 class Producer3 extends Thread {
     public void run() {
         while (true) {
-            try {
-                OneProducerMultipleConsumers.sema.acquire(OneProducerMultipleConsumers.SIZE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            OneProducerMultipleConsumers.lock.lock();
-            try {
-                ++OneProducerMultipleConsumers.counter;
 
-            } finally {
-                OneProducerMultipleConsumers.lock.unlock();
+            for (int OneProducerMultipleConsumers.i = 0; OneProducerMultipleConsumers.i < OneProducerMultipleConsumers.SIZE; ++OneProducerMultipleConsumers.i) {
+                try {
+                    OneProducerMultipleConsumers.sema.acquire();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-            OneProducerMultipleConsumers.wasProduced.signalAll();
+            ++OneProducerMultipleConsumers.counter;
+            synchronized (OneProducerMultipleConsumers.class) {
+
+                OneProducerMultipleConsumers.class.notifyAll();
+            }
 
         }
     }
@@ -66,18 +65,18 @@ class Consumer3 extends Thread {
 
     public void run() {
         while (true) {
-
-            OneProducerMultipleConsumers.lock.lock();
-            try {
-
-                OneProducerMultipleConsumers.wasProduced.wait();
+            synchronized (OneProducerMultipleConsumers.class) {
 
                 OneProducerMultipleConsumers.sema.release();
+
+                try {
+                    while
+                    OneProducerMultipleConsumers.class.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 System.out.println(OneProducerMultipleConsumers.counter);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                OneProducerMultipleConsumers.lock.unlock();
             }
         }
     }
