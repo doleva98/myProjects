@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class Tree {
     private Folder rootFolder;
@@ -12,10 +13,11 @@ public class Tree {
     private int numFiles = 0;
 
     public Tree(String name) {
+        Objects.requireNonNull(name);
+
         File f = new File(name);
-        if (!f.isDirectory()) {
-            System.out.println("ERROR, not directory");
-            return;
+        if (!f.exists() || !f.isDirectory()) {
+            throw new IllegalArgumentException();
         }
         rootFolder = new Folder(f);
     }

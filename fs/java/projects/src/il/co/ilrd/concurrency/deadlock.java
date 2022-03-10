@@ -9,6 +9,13 @@ class Test extends Thread {
         Test.TestInner t2 = t.new TestInner();
         t2.start();
         t.start();
+
+        try {
+            t.join();
+            t2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void run() {
