@@ -8,6 +8,7 @@ public class CostOfLocking extends Thread {
     private static AtomicLong al;
     private static Counter counter;
     private static ReentrantLock re;
+    private static final long SIZE = 10000000;
 
     public static void main(String[] args) {
         CostOfLocking t1 = new CostOfLocking();
@@ -41,7 +42,7 @@ public class CostOfLocking extends Thread {
     }
 
     private void syncBlockIncrement() {
-        for (int i = 0; i < 10000000; ++i) {
+        for (int i = 0; i < SIZE; ++i) {
             synchronized (CostOfLocking.class) {
                 ++globalCounter;
             }
@@ -50,27 +51,29 @@ public class CostOfLocking extends Thread {
     }
 
     private void atomicIncrement() {
-        for (int i = 0; i < 10000000; ++i) {
+        for (int i = 0; i < SIZE; ++i) {
             al.incrementAndGet();
 
         }
     }
 
     private void syncMethodIncrement() {
-        for (int i = 0; i < 10000000; ++i) {
+        for (int i = 0; i < SIZE; ++i) {
             counter.increment();
 
         }
     }
 
     private void reentrantLockIncrement() {
-        for (int i = 0; i < 10000000; ++i) {
+        for (int i = 0; i < SIZE; ++i) {
 
             re.lock();
+            try {
 
-            ++globalCounter;
-
-            re.unlock();
+                ++globalCounter;
+            } finally {
+                re.unlock();
+            }
 
         }
 
