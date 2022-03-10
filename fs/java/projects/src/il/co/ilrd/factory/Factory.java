@@ -1,25 +1,29 @@
 package il.co.ilrd.factory;
 
+import java.util.function.Function;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-interface Animal {
+public class Factory<T, D, K> {
+    private Map<K, Function<D, ? extends T>> factoryImpl = new HashMap<>();
 
-}
+    // Function<T, R>
+    // T – Type of the input to the function.
+    // R – Type of the result of the function.
 
-public class Factory<K, V> {
-    Map<K, Class<?>> hm = new HashMap<>();
-
-    public void add(K key, Class<?> ctor) {
-        hm.put(key, ctor);
+    public void add(K key, Function<D, ? extends T> func) {
+        Objects.requireNonNull(key);
+        Objects.requireNonNull(func);
+        factoryImpl.put(key, func);
     }
 
-    public Object create(K key) {
-        return hm.get(key);
+    public T create(K key) {
+        return create(key, null);
     }
 
-    public void create(K key, V additionalData) {
-
+    public T create(K key, D data) {
+        Objects.requireNonNull(key);
+        return factoryImpl.get(key).apply(data);
     }
-
 }
