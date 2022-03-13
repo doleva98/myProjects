@@ -6,24 +6,23 @@ import java.util.function.Consumer;
 public class Callback<T> {
 
     private Dispatcher<T> dispatcher;
-    @SuppressWarnings("unused")
-    private Consumer<T> update;
-    @SuppressWarnings("unused")
-    private Runnable stopService;
+    private Consumer<T> updateService;
+    private Runnable stopFunction;
 
-    public Callback(Consumer<T> update, Runnable stopService) {
-        Objects.requireNonNull(update);
-        Objects.requireNonNull(stopService);
-        this.update = update;
-        this.stopService = stopService;
+    public Callback(Consumer<T> updateService, Runnable stopFunction) {
+        Objects.requireNonNull(updateService);
+        Objects.requireNonNull(stopFunction);
+        this.updateService = updateService;
+        this.stopFunction = stopFunction;
     }
 
     public void update(T data) {
-        update(data);
+
+        updateService.accept(data);
     }
 
     public void stopService() {
-        stopService();
+        stopFunction.run();
     }
 
     public void setDispatcher(Dispatcher<T> dispatcher) {
@@ -38,13 +37,13 @@ public class Callback<T> {
         dispatcher.unregister(this);
     }
 
-    public void setUpdate(Consumer<T> update) {
-        Objects.requireNonNull(update);
-        this.update = update;
+    public void setUpdate(Consumer<T> updateService) {
+        Objects.requireNonNull(updateService);
+        this.updateService = updateService;
     }
 
-    public void setStopService(Runnable stopService) {
-        Objects.requireNonNull(stopService);
-        this.stopService = stopService;
+    public void setStopService(Runnable stopFunction) {
+        Objects.requireNonNull(stopFunction);
+        this.stopFunction = stopFunction;
     }
 }
