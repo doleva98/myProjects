@@ -1,3 +1,4 @@
+/* Yoni */
 package il.co.ilrd.factory;
 
 import java.util.function.Function;
@@ -45,10 +46,17 @@ class Cat implements Animal {
         return new Cat(height);
     }
 
+    public Cat CreateInstance(Data d) {
+        return new Cat();
+    }
+
 }
 
 class FactoryTest {
     public static void main(String[] args) {
+
+        /* lambda */
+
         Factory<Animal, Integer, String> factory = new Factory<>();
         factory.add("Cat", (data) -> (new Cat()));
         Animal c1 = factory.create("Cat");
@@ -59,6 +67,8 @@ class FactoryTest {
         factory.add("Cat with height", (data) -> (new Cat(data)));
         Animal c2 = factory.create("Cat with height", 55);
         c2.speak();
+
+        /* anonymous class */
 
         System.out.println("***********2***********");
 
@@ -83,58 +93,48 @@ class FactoryTest {
             }
 
         });
+
+        /* static method */
+        System.out.println("******3*****");
+
         Animal c4 = factory.create("Cat anonymous with height", 100);
         c4.speak();
 
-        System.out.println("***********3***********");
-
-        factory.add("Cat synthetic sugar", Cat::CreateWithHeight);
-        Animal c5 = factory.create("Cat synthetic sugar");
-        c5.speak();
-
-        System.out.println("***********");
-
+        
+        
         factory.add("Cat synthetic sugar with height", Cat::CreateWithHeight);
-        Animal c6 = factory.create("Cat synthetic sugar with height");
+        Animal c6 = factory.create("Cat synthetic sugar with height", 5000);
         c6.speak();
-
+        
+        /* instance method */
         System.out.println("***********4***********");
 
-        factory.add("Cat synthetic sugar", new Cat()::CreateInstanceWithHeight);
-        Animal c7 = factory.create("Cat synthetic sugar");
-        c7.speak();
-
-        System.out.println("***********");
-
         factory.add("Cat synthetic sugar with height", new Cat()::CreateInstanceWithHeight);
-        Animal c8 = factory.create("Cat synthetic sugar with height");
+        Animal c8 = factory.create("Cat synthetic sugar with height", 600);
         c8.speak();
 
-        System.out.println("***********5***********");
+        /* sugar method */
 
-        factory.add("Cat synthetic sugar", data::foo);
-        Animal c9 = factory.create("Cat synthetic sugar");
+        System.out.println("***********5***********");
+        Factory<Animal, Data, String> factory2 = new Factory<>();
+
+        factory2.add("Cat synthetic sugar", Data::foo);
+        Data d = new Data(485);
+        Animal c9 = factory2.create("Cat synthetic sugar", d);
         c9.speak();
 
-        System.out.println("***********");
-
-        factory.add("Cat synthetic sugar with height", data::foo);
-        Animal c10 = factory.create("Cat synthetic sugar with height");
-        c10.speak();
-
     }
+
 }
 
-class data {
-    public static Animal foo(int a) {
-        return new Cat().CreateInstanceWithHeight(a);
-    }
-}
+class Data {
+    private int d;
 
-class syntheticSugar {
-
-    public static Animal applyStatic(Integer r) {
-        return Cat.Create();
+    public Data(int d) {
+        this.d = d;
     }
 
+    public Animal foo() {
+        return new Cat(d);
+    }
 }
