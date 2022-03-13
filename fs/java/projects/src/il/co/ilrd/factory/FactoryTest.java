@@ -60,7 +60,7 @@ class FactoryTest {
         Animal c2 = factory.create("Cat with height", 55);
         c2.speak();
 
-        System.out.println("***********");
+        System.out.println("***********2***********");
 
         factory.add("Cat anonymous", new Function<Integer, Animal>() {
 
@@ -86,20 +86,48 @@ class FactoryTest {
         Animal c4 = factory.create("Cat anonymous with height", 100);
         c4.speak();
 
-        System.out.println("***********5");
+        System.out.println("***********3***********");
 
-        factory.add("Cat synthetic sugar",));
+        factory.add("Cat synthetic sugar", Cat::CreateWithHeight);
         Animal c5 = factory.create("Cat synthetic sugar");
         c5.speak();
 
-        System.out.println("***********6");
+        System.out.println("***********");
 
-        factory.add("Cat synthetic sugar with height", (data) -> (Cat.CreateWithHeight(543)));
+        factory.add("Cat synthetic sugar with height", Cat::CreateWithHeight);
         Animal c6 = factory.create("Cat synthetic sugar with height");
         c6.speak();
 
-        System.out.println("***********7");
+        System.out.println("***********4***********");
 
+        factory.add("Cat synthetic sugar", new Cat()::CreateInstanceWithHeight);
+        Animal c7 = factory.create("Cat synthetic sugar");
+        c7.speak();
+
+        System.out.println("***********");
+
+        factory.add("Cat synthetic sugar with height", new Cat()::CreateInstanceWithHeight);
+        Animal c8 = factory.create("Cat synthetic sugar with height");
+        c8.speak();
+
+        System.out.println("***********5***********");
+
+        factory.add("Cat synthetic sugar", data::foo);
+        Animal c9 = factory.create("Cat synthetic sugar");
+        c9.speak();
+
+        System.out.println("***********");
+
+        factory.add("Cat synthetic sugar with height", data::foo);
+        Animal c10 = factory.create("Cat synthetic sugar with height");
+        c10.speak();
+
+    }
+}
+
+class data {
+    public static Animal foo(int a) {
+        return new Cat().CreateInstanceWithHeight(a);
     }
 }
 
