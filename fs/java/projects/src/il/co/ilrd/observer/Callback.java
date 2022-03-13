@@ -1,3 +1,4 @@
+/* yoni */
 package il.co.ilrd.observer;
 
 import java.util.Objects;
@@ -17,7 +18,6 @@ public class Callback<T> {
     }
 
     public void update(T data) {
-
         updateService.accept(data);
     }
 

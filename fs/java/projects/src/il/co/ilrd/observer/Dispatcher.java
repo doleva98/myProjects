@@ -2,6 +2,7 @@ package il.co.ilrd.observer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class Dispatcher<T> {
 
@@ -16,10 +17,13 @@ public class Dispatcher<T> {
     }
 
     public void register(Callback<T> callback) {
+        Objects.requireNonNull(callback);
         callbackList.add(callback);
+        callback.setDispatcher(this);
     }
 
     public void unregister(Callback<T> callback) {
+        Objects.requireNonNull(callback);
         callbackList.remove(callback);
     }
 }
