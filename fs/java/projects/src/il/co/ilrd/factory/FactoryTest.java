@@ -94,23 +94,21 @@ class FactoryTest {
 
         });
 
-        /* static method */
-        System.out.println("******3*****");
-
         Animal c4 = factory.create("Cat anonymous with height", 100);
         c4.speak();
 
-        
-        
-        factory.add("Cat synthetic sugar with height", Cat::CreateWithHeight);
-        Animal c6 = factory.create("Cat synthetic sugar with height", 5000);
+        /* static method */
+        System.out.println("******3*****");
+
+        factory.add("Cat syntactic sugar sugar with height", Cat::CreateWithHeight);
+        Animal c6 = factory.create("Cat syntactic sugar sugar with height", 5000);
         c6.speak();
-        
+
         /* instance method */
         System.out.println("***********4***********");
 
-        factory.add("Cat synthetic sugar with height", new Cat()::CreateInstanceWithHeight);
-        Animal c8 = factory.create("Cat synthetic sugar with height", 600);
+        factory.add("Cat syntactic sugar sugar with height", new Cat()::CreateInstanceWithHeight);
+        Animal c8 = factory.create("Cat syntactic sugar sugar with height", 600);
         c8.speak();
 
         /* sugar method */
@@ -118,9 +116,9 @@ class FactoryTest {
         System.out.println("***********5***********");
         Factory<Animal, Data, String> factory2 = new Factory<>();
 
-        factory2.add("Cat synthetic sugar", Data::foo);
+        factory2.add("Cat syntactic sugar sugar", Data::foo);
         Data d = new Data(485);
-        Animal c9 = factory2.create("Cat synthetic sugar", d);
+        Animal c9 = factory2.create("Cat syntactic sugar sugar", d);
         c9.speak();
 
     }
