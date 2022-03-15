@@ -1,3 +1,4 @@
+/* yoni */
 package il.co.ilrd.factory;
 
 import java.util.function.Function;
@@ -13,7 +14,7 @@ public class Factory<T, D, K> {
     // R – Type of the result of the function.
 
     public void add(K key, Function<D, ? extends T> func) {
-        Objects.requireNonNull(key);
+        Objects.requireNonNull(key);/* null is not a valid key */
         Objects.requireNonNull(func);
         factoryImpl.put(key, func);
     }
@@ -24,6 +25,10 @@ public class Factory<T, D, K> {
 
     public T create(K key, D data) {
         Objects.requireNonNull(key);
-        return factoryImpl.get(key).apply(data);
+        Function<D, ? extends T> func = factoryImpl.get(key);
+        if (func == null) {
+            throw new IllegalArgumentException();
+        }
+        return func.apply(data);
     }
 }

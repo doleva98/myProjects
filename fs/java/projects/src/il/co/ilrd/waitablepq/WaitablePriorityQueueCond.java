@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.concurrent.locks.Condition;
 
 public class WaitablePriorityQueueCond<T> {
     private volatile Queue<T> queue;/* needs to be PriorityQueue */
@@ -40,7 +41,7 @@ public class WaitablePriorityQueueCond<T> {
                     e.printStackTrace();
                 }
             }
-            queue.offer(data);
+            queue.add(data);
             this.notifyAll();
         }
     }

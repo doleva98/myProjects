@@ -13,7 +13,6 @@ public class WaitablePriorityQueueTest {
                 while (true) {
                     pqsem.enqueue(5);
                     System.out.println("adding");
-                    System.out.println("size is" + pqsem.size());
                 }
             }
         };
@@ -22,7 +21,7 @@ public class WaitablePriorityQueueTest {
             @Override
             public void run() {
                 while (true) {
-                    System.out.println("removing from top" + pqsem.dequeue() + " size " + pqsem.size());
+                    System.out.println("removing from top" + pqsem.dequeue());
                     /* change to remove if wanna check this */
                 }
             }
