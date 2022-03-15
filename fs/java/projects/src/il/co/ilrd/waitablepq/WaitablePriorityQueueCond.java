@@ -4,12 +4,15 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.locks.Condition;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WaitablePriorityQueueCond<T> {
+    private AtomicReference
     private volatile Queue<T> queue;/* needs to be PriorityQueue */
     private final int CAPACITY;
-    private static int INITIALIZECAPACITY = 11;
+    private final static int INITIALIZECAPACITY = 11;
+    private AtomicInteger size = new AtomicInteger(0);
 
     public WaitablePriorityQueueCond() {
         this(INITIALIZECAPACITY);
@@ -34,7 +37,7 @@ public class WaitablePriorityQueueCond<T> {
 
     public void enqueue(T data) {
         synchronized (this) {
-            while (queue.size() == CAPACITY) {
+            while (size.get() == CAPACITY) {
                 try {
                     this.wait();
                 } catch (InterruptedException e) {
@@ -42,6 +45,7 @@ public class WaitablePriorityQueueCond<T> {
                 }
             }
             queue.add(data);
+            size.incrementAndGet();
             this.notifyAll();
         }
     }
@@ -49,7 +53,7 @@ public class WaitablePriorityQueueCond<T> {
     public T dequeue() {
         T ret = null;
         synchronized (this) {
-            while (queue.size() == 0) {
+            while (isEmpty()) {
                 try {
                     this.wait();
                 } catch (InterruptedException e) {
@@ -57,6 +61,7 @@ public class WaitablePriorityQueueCond<T> {
                 }
             }
             ret = queue.poll();
+            size.decrementAndGet();
             this.notifyAll();
         }
         return ret;
@@ -65,7 +70,7 @@ public class WaitablePriorityQueueCond<T> {
     public boolean remove(T data) {
         boolean ret;
         synchronized (this) {
-            while (queue.size() == 0) {
+            while (isEmpty()) {
                 try {
                     this.wait();
                 } catch (InterruptedException e) {
@@ -73,20 +78,17 @@ public class WaitablePriorityQueueCond<T> {
                 }
             }
             ret = queue.remove(data);
+            size.decrementAndGet();
             this.notifyAll();
         }
         return ret;
     }
 
     public int size() {
-        synchronized (this) {
-            return queue.size();
-        }
+        return size.get();
     }
 
     public boolean isEmpty() {
-        synchronized (this) {
-            return queue.isEmpty();
-        }
+        return size.get() == 0;
     }
 }

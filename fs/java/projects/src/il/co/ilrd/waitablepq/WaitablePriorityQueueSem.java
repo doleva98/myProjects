@@ -10,7 +10,7 @@ public class WaitablePriorityQueueSem<T> {
     private Queue<T> queue;/* needs to be PriorityQueue */
     private Semaphore semaphoreFreeSize;
     private Semaphore semaphoreCurrSize = new Semaphore(0);
-    private static int INITIALIZECAPACITY = 11;
+    private final static int INITIALIZECAPACITY = 11;
 
     public WaitablePriorityQueueSem() {
         this(INITIALIZECAPACITY);
@@ -40,7 +40,7 @@ public class WaitablePriorityQueueSem<T> {
             e.printStackTrace();
         }
         synchronized (this) {
-            queue.offer(data);
+            queue.add(data);
             semaphoreCurrSize.release();
         }
     }
@@ -74,14 +74,18 @@ public class WaitablePriorityQueueSem<T> {
     }
 
     public int size() {
+        int sizeOfElements = 0;
         synchronized (this) {
-            return queue.size();
+            sizeOfElements = queue.size();
         }
+        return sizeOfElements;
     }
 
     public boolean isEmpty() {
+        boolean bool = false;
         synchronized (this) {
-            return queue.isEmpty();
+            bool = queue.isEmpty();
         }
+        return bool;
     }
 }

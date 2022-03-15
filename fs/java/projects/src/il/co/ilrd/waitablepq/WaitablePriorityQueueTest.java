@@ -2,7 +2,7 @@ package il.co.ilrd.waitablepq;
 
 public class WaitablePriorityQueueTest {
     public static void main(String[] args) {
-        WaitablePriorityQueueSem<Integer> pqsem = new WaitablePriorityQueueSem<>();
+        WaitablePriorityQueueCond<Integer> pqsem = new WaitablePriorityQueueCond<>();
         pqsem.enqueue(1);
         pqsem.dequeue();
         pqsem.enqueue(1);
@@ -13,6 +13,7 @@ public class WaitablePriorityQueueTest {
                 while (true) {
                     pqsem.enqueue(5);
                     System.out.println("adding");
+                    System.out.println("size is" + pqsem.size());
                 }
             }
         };
@@ -21,7 +22,7 @@ public class WaitablePriorityQueueTest {
             @Override
             public void run() {
                 while (true) {
-                    System.out.println("removing from top" + pqsem.dequeue());
+                    System.out.println("removing from top" + pqsem.dequeue() + " size " + pqsem.size());
                     /* change to remove if wanna check this */
                 }
             }
