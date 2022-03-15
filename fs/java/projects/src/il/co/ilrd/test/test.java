@@ -15,8 +15,6 @@ import java.util.TreeMap;
 import java.util.concurrent.PriorityBlockingQueue;
 
 class A {
-
-    
     public static void main(String[] args) {
         Queue<Integer> q = new PriorityQueue<>();
         Queue<Integer> bq = new PriorityBlockingQueue<>(4);
