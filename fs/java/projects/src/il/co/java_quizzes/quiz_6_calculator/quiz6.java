@@ -20,7 +20,7 @@ class Calculator {
     HashMap<String, Operator> mapOperator = new HashMap<>();
 
     public Calculator() {
-        addOperator("Addition", ((a, b) -> a + b));
+        addOperator("Addition", (a, b) -> a + b);
         addOperator("Subtraction", new Operator() {
             @Override
             public int operate(int a, int b) {

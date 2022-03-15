@@ -24,6 +24,7 @@ public class Dispatcher<T> {
 
     public void unregister(Callback<T> callback) {
         Objects.requireNonNull(callback);
+        callback.stopService();
         callbackList.remove(callback);
     }
 }
