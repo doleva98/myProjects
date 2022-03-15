@@ -28,8 +28,8 @@ public class WaitablePriorityQueueTest {
             }
         };
         final int SIZE = 40;
-        Thread[] adders = new Thread[40];
-        Thread[] removers = new Thread[40];
+        Thread[] adders = new Thread[SIZE];
+        Thread[] removers = new Thread[SIZE];
 
         for (Thread adder : adders) {
             adder = new Thread(adderRunnable);

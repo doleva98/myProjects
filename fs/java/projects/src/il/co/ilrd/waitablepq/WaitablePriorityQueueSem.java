@@ -5,12 +5,14 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class WaitablePriorityQueueSem<T> {
     private Queue<T> queue;/* needs to be PriorityQueue */
     private Semaphore semaphoreFreeSize;
     private Semaphore semaphoreCurrSize = new Semaphore(0);
     private final static int INITIALIZECAPACITY = 11;
+    private AtomicReference<Queue<T>> cache = new AtomicReference<>();
 
     public WaitablePriorityQueueSem() {
         this(INITIALIZECAPACITY);
@@ -22,6 +24,7 @@ public class WaitablePriorityQueueSem<T> {
         }
         queue = new PriorityQueue<>(capacity);
         semaphoreFreeSize = new Semaphore(capacity);
+        cache.set(queue);
     }
 
     public WaitablePriorityQueueSem(int capacity, Comparator<? super T> comp) {
@@ -31,6 +34,7 @@ public class WaitablePriorityQueueSem<T> {
         }
         queue = new PriorityQueue<>(capacity, comp);
         semaphoreFreeSize = new Semaphore(capacity);
+        cache.set(queue);
     }
 
     public void enqueue(T data) {
@@ -40,7 +44,11 @@ public class WaitablePriorityQueueSem<T> {
             e.printStackTrace();
         }
         synchronized (this) {
-            queue.add(data);
+            Queue<T> tempQueue = cache.get();
+            tempQueue.add(data);
+            if (!cache.compareAndSet(queue, tempQueue)) {
+                throw new CompareAndSetException("bad in compare and set");
+            }
             semaphoreCurrSize.release();
         }
     }
@@ -53,7 +61,11 @@ public class WaitablePriorityQueueSem<T> {
         }
         T ret;
         synchronized (this) {
+            Queue<T> tempQueue = cache.get();
             ret = queue.poll();
+            if (!cache.compareAndSet(queue, tempQueue)) {
+                throw new CompareAndSetException("bad in compare and set");
+            }
             semaphoreFreeSize.release();
         }
         return ret;
@@ -65,18 +77,26 @@ public class WaitablePriorityQueueSem<T> {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        T ret;
+        boolean ret;
         synchronized (this) {
-            ret = queue.poll();
+            Queue<T> tempQueue = cache.get();
+            ret = queue.remove(data);
+            if (!cache.compareAndSet(queue, tempQueue)) {
+                throw new CompareAndSetException("bad in compare and set");
+            }
             semaphoreFreeSize.release();
         }
-        return ret != null;
+        return ret;
     }
 
     public int size() {
         int sizeOfElements = 0;
         synchronized (this) {
+            Queue<T> tempQueue = cache.get();
             sizeOfElements = queue.size();
+            if (!cache.compareAndSet(queue, tempQueue)) {
+                throw new CompareAndSetException("bad in compare and set");
+            }
         }
         return sizeOfElements;
     }
@@ -84,7 +104,11 @@ public class WaitablePriorityQueueSem<T> {
     public boolean isEmpty() {
         boolean bool = false;
         synchronized (this) {
+            Queue<T> tempQueue = cache.get();
             bool = queue.isEmpty();
+            if (!cache.compareAndSet(queue, tempQueue)) {
+                throw new CompareAndSetException("bad in compare and set");
+            }
         }
         return bool;
     }

@@ -8,11 +8,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class WaitablePriorityQueueCond<T> {
-    private AtomicReference
     private volatile Queue<T> queue;/* needs to be PriorityQueue */
     private final int CAPACITY;
     private final static int INITIALIZECAPACITY = 11;
     private AtomicInteger size = new AtomicInteger(0);
+    private AtomicReference<Queue<T>> cache = new AtomicReference<>();
 
     public WaitablePriorityQueueCond() {
         this(INITIALIZECAPACITY);
@@ -24,6 +24,7 @@ public class WaitablePriorityQueueCond<T> {
         }
         queue = new PriorityQueue<>(capacity);
         this.CAPACITY = capacity;
+        cache.set(queue);
     }
 
     public WaitablePriorityQueueCond(int capacity, Comparator<? super T> comp) {
@@ -33,6 +34,7 @@ public class WaitablePriorityQueueCond<T> {
         }
         queue = new PriorityQueue<>(capacity, comp);
         this.CAPACITY = capacity;
+        cache.set(queue);
     }
 
     public void enqueue(T data) {
@@ -44,7 +46,11 @@ public class WaitablePriorityQueueCond<T> {
                     e.printStackTrace();
                 }
             }
-            queue.add(data);
+            Queue<T> tempQueue = cache.get();
+            tempQueue.add(data);
+            if (!cache.compareAndSet(queue, tempQueue)) {
+                throw new CompareAndSetException("bad in compare and set");
+            }
             size.incrementAndGet();
             this.notifyAll();
         }
@@ -60,7 +66,11 @@ public class WaitablePriorityQueueCond<T> {
                     e.printStackTrace();
                 }
             }
+            Queue<T> tempQueue = cache.get();
             ret = queue.poll();
+            if (!cache.compareAndSet(queue, tempQueue)) {
+                throw new CompareAndSetException("bad in compare and set");
+            }
             size.decrementAndGet();
             this.notifyAll();
         }
@@ -77,7 +87,11 @@ public class WaitablePriorityQueueCond<T> {
                     e.printStackTrace();
                 }
             }
+            Queue<T> tempQueue = cache.get();
             ret = queue.remove(data);
+            if (!cache.compareAndSet(queue, tempQueue)) {
+                throw new CompareAndSetException("bad in compare and set");
+            }
             size.decrementAndGet();
             this.notifyAll();
         }
