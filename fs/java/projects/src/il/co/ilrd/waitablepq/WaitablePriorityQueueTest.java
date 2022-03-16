@@ -32,14 +32,14 @@ public class WaitablePriorityQueueTest {
         Thread[] adders = new Thread[SIZE];
         Thread[] removers = new Thread[SIZE];
 
-        for (Thread adder : adders) {
-            adder = new Thread(adderRunnable);
-            adder.start();
+        for (int i = 0; i < SIZE; ++i) {
+            adders[i] = new Thread(adderRunnable);
+            adders[i].start();
         }
 
-        for (Thread remover : removers) {
-            remover = new Thread(removerRunnable);
-            remover.start();
+        for (int i = 0; i < SIZE; ++i) {
+            removers[i] = new Thread(removerRunnable);
+            removers[i].start();
         }
 
         for (int i = 0; i < SIZE; ++i) {

@@ -13,7 +13,6 @@ public class WaitablePriorityQueueCond<T> {
     private volatile Queue<T> queue;/* needs to be PriorityQueue */
     private final int CAPACITY;
     private final static int INITIALIZECAPACITY = 11;
-    private final AtomicInteger size = new AtomicInteger(0);
     private final Lock lock = new ReentrantLock();
     private final Condition notFull = lock.newCondition();
     private final Condition notEmpty = lock.newCondition();
@@ -31,13 +30,13 @@ public class WaitablePriorityQueueCond<T> {
             throw new IllegalArgumentException();
         }
         queue = new PriorityQueue<>(capacity, comp);
-        this.CAPACITY = capacity;
+        CAPACITY = capacity;
     }
 
     public void enqueue(T data) {
         lock.lock();
         try {
-            while (size.get() == CAPACITY) {
+            while (size() == CAPACITY) {
                 try {
                     notFull.await();
                 } catch (InterruptedException e) {
@@ -45,7 +44,6 @@ public class WaitablePriorityQueueCond<T> {
                 }
             }
             queue.add(data);
-            size.incrementAndGet();
             notEmpty.signal();
         } finally {
             lock.unlock();
@@ -64,7 +62,6 @@ public class WaitablePriorityQueueCond<T> {
                 }
             }
             ret = queue.poll();
-            size.decrementAndGet();
             notFull.signal();
         } finally {
             lock.unlock();
@@ -84,8 +81,9 @@ public class WaitablePriorityQueueCond<T> {
                 }
             }
             ret = queue.remove(data);
-            size.decrementAndGet();
-            notFull.signal();
+            if (ret) {
+                notFull.signal();
+            }
         } finally {
             lock.unlock();
         }
@@ -93,10 +91,24 @@ public class WaitablePriorityQueueCond<T> {
     }
 
     public int size() {
-        return size.get();
+        int sizeOfElements = 0;
+        lock.lock();
+        try {
+            sizeOfElements = queue.size();
+        } finally {
+            lock.unlock();
+        }
+        return sizeOfElements;
     }
 
     public boolean isEmpty() {
-        return size.get() == 0;
+        boolean bool = false;
+        lock.lock();
+        try {
+            bool = queue.isEmpty();
+        } finally {
+            lock.unlock();
+        }
+        return bool;
     }
 }

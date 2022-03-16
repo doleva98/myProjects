@@ -11,6 +11,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 class B {
     public static void main(String[] args) {
-      
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
     }
 }
