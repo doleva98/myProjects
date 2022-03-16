@@ -76,6 +76,10 @@ public class WaitablePriorityQueueSem<T> {
             if (ret) {
                 semaphoreFreeSize.release();
             }
+            else
+            {
+                semaphoreCurrSize.release();
+            }
         } finally {
             lock.unlock();
         }

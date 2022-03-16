@@ -83,6 +83,10 @@ public class WaitablePriorityQueueCond<T> {
             if (ret) {
                 notFull.signal();
             }
+            else
+            {
+                semaphoreCurrSize.release();
+            }
         } finally {
             lock.unlock();
         }

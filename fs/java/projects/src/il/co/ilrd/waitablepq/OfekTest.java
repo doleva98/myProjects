@@ -2,8 +2,9 @@ package il.co.ilrd.waitablepq;
 
 public class OfekTest {
     private static final int WAITABLE_SIZE = 5;
-    // private static WaitablePriorityQueueCond<Integer> waitableQueue = new WaitablePriorityQueueCond<>(WAITABLE_SIZE);
-    private static WaitablePriorityQueueSem<Integer> waitableQueue = new WaitablePriorityQueueSem<>(WAITABLE_SIZE);
+    private static WaitablePriorityQueueCond<Integer> waitableQueue = new WaitablePriorityQueueCond<>(WAITABLE_SIZE); 	
+    /* private static WaitablePriorityQueueSem<Integer> waitableQueue = new WaitablePriorityQueueSem<>(
+            WAITABLE_SIZE); */
     private static boolean succeeded = true;
     private static int counter_failed = 0;
 
@@ -65,30 +66,24 @@ public class OfekTest {
         Writer[] writers = new Writer[WAITABLE_SIZE * 2];
         int counterReaders = 0;
         int counterWriters = 0;
-        int i = 0;
-        for (Reader reader : readers) {
+        for (int i = 0; i < WAITABLE_SIZE * 2; i++) {
             readers[i] = new Reader();
             readers[i].start();
             counterReaders++;
-            i++;
         }
-        i = 0;
-        for (Writer writer : writers) {
+        for (int i = 0; i < WAITABLE_SIZE * 2; i++) {
             writers[i] = new Writer();
             writers[i].start();
             counterWriters++;
-            i++;
         }
-        i = 0;
-        for (Reader reader : readers) {
+        for (int i = 0; i < WAITABLE_SIZE * 2; i++) {
             try {
                 readers[i].join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        i = 0;
-        for (Writer writer : writers) {
+        for (int i = 0; i < WAITABLE_SIZE * 2; i++) {
             try {
                 writers[i].join();
             } catch (InterruptedException e) {
@@ -108,28 +103,22 @@ public class OfekTest {
         System.out.println("\n\nTest Remove\n\n");
         ReaderSpecific[] readers = new ReaderSpecific[WAITABLE_SIZE];
         Writer[] writers = new Writer[WAITABLE_SIZE];
-        int i = 0;
-        for (Writer writer : writers) {
+        for (int i = 0; i < WAITABLE_SIZE; i++) {
             writers[i] = new Writer();
             writers[i].start();
-            i++;
         }
-        i = 0;
-        for (Writer writer : writers) {
+        for (int i = 0; i < WAITABLE_SIZE; i++) {
             try {
                 writers[i].join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        i = 0;
-        for (ReaderSpecific reader : readers) {
+        for (int i = 0; i < WAITABLE_SIZE; i++) {
             readers[i] = new ReaderSpecific();
             readers[i].start();
-            i++;
         }
-        i = 0;
-        for (ReaderSpecific reader : readers) {
+        for (int i = 0; i < WAITABLE_SIZE; i++) {
             try {
                 readers[i].join();
             } catch (InterruptedException e) {
