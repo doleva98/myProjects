@@ -14,7 +14,7 @@ public class WaitablePriorityQueueCond<T> {
     private volatile Queue<T> queue;/* needs to be PriorityQueue */
     private final int CAPACITY;
     private final static int INITIALIZECAPACITY = 11;
-    private AtomicInteger size = new AtomicInteger(0);
+    private final AtomicInteger size = new AtomicInteger(0);
     private final Lock lock = new ReentrantLock();
     private final Condition notFull = lock.newCondition();
     private final Condition notEmpty = lock.newCondition();
