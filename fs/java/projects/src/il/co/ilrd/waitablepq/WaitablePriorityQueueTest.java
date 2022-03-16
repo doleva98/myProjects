@@ -3,7 +3,7 @@ package il.co.ilrd.waitablepq;
 
 public class WaitablePriorityQueueTest {
     public static void main(String[] args) {
-        WaitablePriorityQueueSem<Integer> pqsem = new WaitablePriorityQueueSem<>();
+        WaitablePriorityQueueCond<Integer> pqsem = new WaitablePriorityQueueCond<>();
         pqsem.enqueue(1);
         pqsem.dequeue();
         pqsem.enqueue(1);

@@ -6,7 +6,6 @@ import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -16,7 +15,6 @@ public class WaitablePriorityQueueCond<T> {
     private final int CAPACITY;
     private final static int INITIALIZECAPACITY = 11;
     private AtomicInteger size = new AtomicInteger(0);
-    private AtomicReference<Queue<T>> cache = new AtomicReference<>();
     private final Lock lock = new ReentrantLock();
     private final Condition notFull = lock.newCondition();
     private final Condition notEmpty = lock.newCondition();
@@ -31,7 +29,6 @@ public class WaitablePriorityQueueCond<T> {
         }
         queue = new PriorityQueue<>(capacity);
         this.CAPACITY = capacity;
-        cache.set(queue);
     }
 
     public WaitablePriorityQueueCond(int capacity, Comparator<? super T> comp) {
@@ -41,7 +38,6 @@ public class WaitablePriorityQueueCond<T> {
         }
         queue = new PriorityQueue<>(capacity, comp);
         this.CAPACITY = capacity;
-        cache.set(queue);
     }
 
     public void enqueue(T data) {
@@ -54,11 +50,7 @@ public class WaitablePriorityQueueCond<T> {
                     e.printStackTrace();
                 }
             }
-            Queue<T> tempQueue = cache.get();
-            tempQueue.add(data);
-            if (!cache.compareAndSet(queue, tempQueue)) {
-                throw new CompareAndSetException("bad in compare and set");
-            }
+            queue.add(data);
             size.incrementAndGet();
             notEmpty.signal();
         } finally {
@@ -77,11 +69,7 @@ public class WaitablePriorityQueueCond<T> {
                     e.printStackTrace();
                 }
             }
-            Queue<T> tempQueue = cache.get();
             ret = queue.poll();
-            if (!cache.compareAndSet(queue, tempQueue)) {
-                throw new CompareAndSetException("bad in compare and set");
-            }
             size.decrementAndGet();
             notFull.signal();
         } finally {
@@ -101,11 +89,7 @@ public class WaitablePriorityQueueCond<T> {
                     e.printStackTrace();
                 }
             }
-            Queue<T> tempQueue = cache.get();
             ret = queue.remove(data);
-            if (!cache.compareAndSet(queue, tempQueue)) {
-                throw new CompareAndSetException("bad in compare and set");
-            }
             size.decrementAndGet();
             notFull.signal();
         } finally {
