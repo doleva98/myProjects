@@ -1,8 +1,9 @@
+/* ofek */
 package il.co.ilrd.waitablepq;
 
 public class WaitablePriorityQueueTest {
     public static void main(String[] args) {
-        WaitablePriorityQueueCond<Integer> pqsem = new WaitablePriorityQueueCond<>();
+        WaitablePriorityQueueSem<Integer> pqsem = new WaitablePriorityQueueSem<>();
         pqsem.enqueue(1);
         pqsem.dequeue();
         pqsem.enqueue(1);

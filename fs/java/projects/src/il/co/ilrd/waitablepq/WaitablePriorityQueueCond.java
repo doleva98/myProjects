@@ -1,3 +1,4 @@
+/* ofek */
 package il.co.ilrd.waitablepq;
 
 import java.util.Comparator;
@@ -6,6 +7,9 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class WaitablePriorityQueueCond<T> {
     private volatile Queue<T> queue;/* needs to be PriorityQueue */
@@ -13,6 +17,9 @@ public class WaitablePriorityQueueCond<T> {
     private final static int INITIALIZECAPACITY = 11;
     private AtomicInteger size = new AtomicInteger(0);
     private AtomicReference<Queue<T>> cache = new AtomicReference<>();
+    private final Lock lock = new ReentrantLock();
+    private final Condition notFull = lock.newCondition();
+    private final Condition notEmpty = lock.newCondition();
 
     public WaitablePriorityQueueCond() {
         this(INITIALIZECAPACITY);
@@ -38,10 +45,11 @@ public class WaitablePriorityQueueCond<T> {
     }
 
     public void enqueue(T data) {
-        synchronized (this) {
+        lock.lock();
+        try {
             while (size.get() == CAPACITY) {
                 try {
-                    this.wait();
+                    notFull.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -52,16 +60,19 @@ public class WaitablePriorityQueueCond<T> {
                 throw new CompareAndSetException("bad in compare and set");
             }
             size.incrementAndGet();
-            this.notifyAll();
+            notEmpty.signal();
+        } finally {
+            lock.unlock();
         }
     }
 
     public T dequeue() {
         T ret = null;
-        synchronized (this) {
+        lock.lock();
+        try {
             while (isEmpty()) {
                 try {
-                    this.wait();
+                    notEmpty.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -72,17 +83,20 @@ public class WaitablePriorityQueueCond<T> {
                 throw new CompareAndSetException("bad in compare and set");
             }
             size.decrementAndGet();
-            this.notifyAll();
+            notFull.signal();
+        } finally {
+            lock.unlock();
         }
         return ret;
     }
 
     public boolean remove(T data) {
         boolean ret;
-        synchronized (this) {
+        lock.lock();
+        try {
             while (isEmpty()) {
                 try {
-                    this.wait();
+                    notEmpty.await();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -93,7 +107,9 @@ public class WaitablePriorityQueueCond<T> {
                 throw new CompareAndSetException("bad in compare and set");
             }
             size.decrementAndGet();
-            this.notifyAll();
+            notFull.signal();
+        } finally {
+            lock.unlock();
         }
         return ret;
     }

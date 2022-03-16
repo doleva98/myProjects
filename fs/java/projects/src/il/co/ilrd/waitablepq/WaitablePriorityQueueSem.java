@@ -6,6 +6,8 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class WaitablePriorityQueueSem<T> {
     private Queue<T> queue;/* needs to be PriorityQueue */
@@ -13,6 +15,7 @@ public class WaitablePriorityQueueSem<T> {
     private Semaphore semaphoreCurrSize = new Semaphore(0);
     private final static int INITIALIZECAPACITY = 11;
     private AtomicReference<Queue<T>> cache = new AtomicReference<>();
+    private final Lock lock = new ReentrantLock();
 
     public WaitablePriorityQueueSem() {
         this(INITIALIZECAPACITY);
@@ -43,13 +46,16 @@ public class WaitablePriorityQueueSem<T> {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        synchronized (this) {
+        lock.lock();
+        try {
             Queue<T> tempQueue = cache.get();
             tempQueue.add(data);
             if (!cache.compareAndSet(queue, tempQueue)) {
                 throw new CompareAndSetException("bad in compare and set");
             }
             semaphoreCurrSize.release();
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -60,13 +66,16 @@ public class WaitablePriorityQueueSem<T> {
             e.printStackTrace();
         }
         T ret;
-        synchronized (this) {
+        lock.lock();
+        try {
             Queue<T> tempQueue = cache.get();
             ret = queue.poll();
             if (!cache.compareAndSet(queue, tempQueue)) {
                 throw new CompareAndSetException("bad in compare and set");
             }
             semaphoreFreeSize.release();
+        } finally {
+            lock.unlock();
         }
         return ret;
     }
@@ -78,37 +87,46 @@ public class WaitablePriorityQueueSem<T> {
             e.printStackTrace();
         }
         boolean ret;
-        synchronized (this) {
+        lock.lock();
+        try {
             Queue<T> tempQueue = cache.get();
             ret = queue.remove(data);
             if (!cache.compareAndSet(queue, tempQueue)) {
                 throw new CompareAndSetException("bad in compare and set");
             }
             semaphoreFreeSize.release();
+        } finally {
+            lock.unlock();
         }
         return ret;
     }
 
     public int size() {
         int sizeOfElements = 0;
-        synchronized (this) {
+        lock.lock();
+        try {
             Queue<T> tempQueue = cache.get();
             sizeOfElements = queue.size();
             if (!cache.compareAndSet(queue, tempQueue)) {
                 throw new CompareAndSetException("bad in compare and set");
             }
+        } finally {
+            lock.unlock();
         }
         return sizeOfElements;
     }
 
     public boolean isEmpty() {
         boolean bool = false;
-        synchronized (this) {
+        lock.lock();
+        try {
             Queue<T> tempQueue = cache.get();
             bool = queue.isEmpty();
             if (!cache.compareAndSet(queue, tempQueue)) {
                 throw new CompareAndSetException("bad in compare and set");
             }
+        } finally {
+            lock.unlock();
         }
         return bool;
     }
