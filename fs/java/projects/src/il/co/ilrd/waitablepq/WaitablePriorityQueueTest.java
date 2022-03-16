@@ -3,7 +3,7 @@ package il.co.ilrd.waitablepq;
 
 public class WaitablePriorityQueueTest {
     public static void main(String[] args) {
-        WaitablePriorityQueueCond<Integer> pqsem = new WaitablePriorityQueueCond<>();
+        WaitablePriorityQueueSem<Integer> pqsem = new WaitablePriorityQueueSem<>();
         pqsem.enqueue(1);
         pqsem.dequeue();
         pqsem.enqueue(1);
@@ -13,8 +13,7 @@ public class WaitablePriorityQueueTest {
             public void run() {
                 while (true) {
                     pqsem.enqueue(5);
-                    System.out.println("adding");
-                    System.out.println("size is" + pqsem.size());
+                    System.out.println("adding" + "size is" + pqsem.size());
                 }
             }
         };
@@ -24,12 +23,21 @@ public class WaitablePriorityQueueTest {
             public void run() {
                 while (true) {
                     System.out.println("removing from top" + pqsem.dequeue() + " size " + pqsem.size());
-                    /* change to remove if wanna check this */
                 }
             }
         };
+        Runnable dequeuerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    System.out.println("removing from top" + pqsem.dequeue() + " size " + pqsem.size());
+                }
+            }
+        };
+
         final int SIZE = 40;
         Thread[] adders = new Thread[SIZE];
+        Thread[] deququers = new Thread[SIZE];
         Thread[] removers = new Thread[SIZE];
 
         for (int i = 0; i < SIZE; ++i) {
@@ -43,9 +51,15 @@ public class WaitablePriorityQueueTest {
         }
 
         for (int i = 0; i < SIZE; ++i) {
+            deququers[i] = new Thread(dequeuerRunnable);
+            deququers[i].start();
+        }
+
+        for (int i = 0; i < SIZE; ++i) {
             try {
                 adders[i].join();
                 removers[i].join();
+                deququers[i].join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
