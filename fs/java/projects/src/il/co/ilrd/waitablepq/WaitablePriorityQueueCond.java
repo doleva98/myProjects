@@ -2,7 +2,6 @@
 package il.co.ilrd.waitablepq;
 
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,19 +19,14 @@ public class WaitablePriorityQueueCond<T> {
     private final Condition notEmpty = lock.newCondition();
 
     public WaitablePriorityQueueCond() {
-        this(INITIALIZECAPACITY);
+        this(INITIALIZECAPACITY, null);
     }
 
     public WaitablePriorityQueueCond(int capacity) {
-        if (capacity <= 0) {
-            throw new IllegalArgumentException();
-        }
-        queue = new PriorityQueue<>(capacity);
-        this.CAPACITY = capacity;
+        this(capacity, null);
     }
 
     public WaitablePriorityQueueCond(int capacity, Comparator<? super T> comp) {
-        Objects.requireNonNull(comp);
         if (capacity <= 0) {
             throw new IllegalArgumentException();
         }

@@ -1,7 +1,6 @@
 package il.co.ilrd.waitablepq;
 
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.Semaphore;
@@ -16,19 +15,15 @@ public class WaitablePriorityQueueSem<T> {
     private final Lock lock = new ReentrantLock();
 
     public WaitablePriorityQueueSem() {
-        this(INITIALIZECAPACITY);
+        this(INITIALIZECAPACITY, null);
     }
 
     public WaitablePriorityQueueSem(int capacity) {
-        if (capacity <= 0) {
-            throw new IllegalArgumentException();
-        }
-        queue = new PriorityQueue<>(capacity);
-        semaphoreFreeSize = new Semaphore(capacity);
+        this(capacity, null);
+
     }
 
     public WaitablePriorityQueueSem(int capacity, Comparator<? super T> comp) {
-        Objects.requireNonNull(comp);
         if (capacity <= 0) {
             throw new IllegalArgumentException();
         }
