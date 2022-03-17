@@ -8,13 +8,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class ExecutorExercise {
     public static void ex1() {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Callable<String> callableTask = new Callable<String>() {
-
             @Override
             public String call() throws Exception {
                 return "hello world";
@@ -47,7 +47,6 @@ public class ExecutorExercise {
         for (int i = 0; i < 5; ++i) {
             list_future.add(executor.submit(callableTask));
         }
-
         list_future.forEach(future -> {
             try {
                 System.out.println(future.get());
@@ -152,11 +151,38 @@ public class ExecutorExercise {
         }
     }
 
+    public static void scheduledTestThreadPool() {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        Runnable runnableTask = () -> System.out.println("hello world");
+        List<ScheduledFuture<?>> list_future = new ArrayList<>();
+        for (int i = 0; i < 5; ++i) {
+            list_future.add(executor.scheduleAtFixedRate(runnableTask, 1, 3, TimeUnit.SECONDS));
+        }
+        try {
+            Thread.sleep(9000);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
+        list_future.forEach(future -> {
+            future.cancel(true);
+        });
+
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
     public static void main(String[] args) {
         /* ex1();
         singleThreadPool(); */
         // fixedSizedPool3Threads();
         // cachedThreadPool();
         scheduledThreadPool();
+        // scheduledTestThreadPool();
     }
 }
