@@ -1,0 +1,163 @@
+package il.co.ilrd.executor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+public class ExecutorExercise {
+    public static void ex1() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<String> callableTask = new Callable<String>() {
+
+            @Override
+            public String call() throws Exception {
+                return "hello world";
+            }
+
+        };
+
+        Future<String> future = executor.submit(callableTask);
+        try {
+            System.out.println(future.get());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
+    public static void singleThreadPool() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<String> callableTask = () -> "hello world";
+        List<Future<String>> list_future = new ArrayList<>();
+        for (int i = 0; i < 5; ++i) {
+            list_future.add(executor.submit(callableTask));
+        }
+
+        for (Future<String> future : list_future) {
+            try {
+                System.out.println(future.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
+    public static void fixedSizedPool3Threads() {
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+        Callable<String> callableTask = () -> "hello world";
+        List<Future<String>> list_future = new ArrayList<>();
+        for (int i = 0; i < 5; ++i) {
+            list_future.add(executor.submit(callableTask));
+        }
+
+        for (Future<String> future : list_future) {
+            try {
+                System.out.println(future.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
+    public static void cachedThreadPool() {
+        ExecutorService executor = Executors.newCachedThreadPool();
+        Callable<String> callableTask = () -> "hello world";
+        List<Future<String>> list_future = new ArrayList<>();
+        for (int i = 0; i < 5; ++i) {
+            list_future.add(executor.submit(callableTask));
+        }
+
+        for (Future<String> future : list_future) {
+            try {
+                System.out.println(future.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
+    public static void scheduledThreadPool() {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        Callable<String> callableTask = () -> "hello world";
+        List<Future<String>> list_future = new ArrayList<>();
+        for (int i = 0; i < 5; ++i) {
+            list_future.add(executor.schedule(callableTask, 3, TimeUnit.SECONDS));
+        }
+
+        for (Future<String> future : list_future) {
+            try {
+                System.out.println(future.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(800, TimeUnit.MILLISECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executor.shutdownNow();
+        }
+    }
+
+    public static void main(String[] args) {
+        /* ex1();
+        singleThreadPool(); */
+        // fixedSizedPool3Threads();
+        // cachedThreadPool();
+        scheduledThreadPool();
+    }
+}
