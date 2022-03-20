@@ -20,7 +20,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 class B {
-    public static void main(String[] args) {]
+    public static void main(String[] args) {
+       
     }
 
 }
