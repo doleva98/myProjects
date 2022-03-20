@@ -136,8 +136,9 @@ public class ThreadPoolIMP implements Executor {
             @Override
             public E get(long timeout, TimeUnit unit)
                     throws InterruptedException, ExecutionException, TimeoutException {
-                // TODO Auto-generated method stub
-                return null;
+                if (isCancelled()) {
+                    throw new CancellationException();
+                }
             }
 
         }
