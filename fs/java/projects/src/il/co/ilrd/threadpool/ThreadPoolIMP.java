@@ -13,6 +13,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.xml.bind.annotation.XmlElement.DEFAULT;
+
 import il.co.ilrd.waitablepq.WaitablePriorityQueueCond;
 
 public class ThreadPoolIMP implements Executor {
@@ -24,6 +26,8 @@ public class ThreadPoolIMP implements Executor {
 
     private WaitablePriorityQueueCond<Task<?>> tasks;
     private List<Thread> threads;
+
+    private final static int DEFAULTPRIORITY = Priority.MEDIUM.ordinal();
 
     public ThreadPoolIMP(int numOfThreads) {
         tasks = new WaitablePriorityQueueCond<>();
@@ -41,7 +45,7 @@ public class ThreadPoolIMP implements Executor {
         submitImp(() -> {
             command.run();
             return null;
-        }, 1);
+        }, DEFAULTPRIORITY);
     }
 
     public <T> Future<T> submit(Callable<T> callable, Priority priority) {
@@ -49,7 +53,7 @@ public class ThreadPoolIMP implements Executor {
     }
 
     public <T> Future<T> submit(Callable<T> callable) {
-        return submitImp(callable, 1);
+        return submitImp(callable, DEFAULTPRIORITY);
     }
 
     public Future<Void> submit(Runnable runnable, Priority priority) {
@@ -64,7 +68,7 @@ public class ThreadPoolIMP implements Executor {
         return submitImp(() -> {
             runnable.run();
             return null;
-        }, 1);
+        }, DEFAULTPRIORITY);
 
     }
 
