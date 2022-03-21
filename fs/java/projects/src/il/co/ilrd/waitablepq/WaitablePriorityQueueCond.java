@@ -69,7 +69,7 @@ public class WaitablePriorityQueueCond<T> {
     }
 
     public boolean remove(T data) {
-        boolean ret;
+        boolean ret = false;
         lock.lock();
         try {
             ret = queue.remove(data);

@@ -1,5 +1,6 @@
 package il.co.ilrd.threadpool;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -20,7 +21,7 @@ public class MaorTest {
         assert (taskFuture.isDone());
     }
 
-    @Test
+    @Test(expected = CancellationException.class)
     public void cancelInterruptTest() {
         ThreadPoolIMP poolThread = new ThreadPoolIMP(2);
         Future<Long> taskFuture = poolThread.submit(() -> {
@@ -38,9 +39,7 @@ public class MaorTest {
         try {
             taskFuture.get();
             taskFuture.get(1, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
             e.printStackTrace();
         }
 

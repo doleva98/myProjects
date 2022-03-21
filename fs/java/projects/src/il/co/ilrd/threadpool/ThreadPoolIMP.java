@@ -185,13 +185,16 @@ public class ThreadPoolIMP implements Executor {
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
-                if (!isDone() && !isCancelled() && mayInterruptIfRunning && currentThread != null) {
-                    currentThread.interrupt();
-                    isCancelled = true;
+                if (isDone() || isCancelled()) {
+                    return false;
                 }
-                isCancelled = removeTask(Task.this);
+                if (mayInterruptIfRunning && currentThread != null) {
+                    currentThread.interrupt();
+                }
+                isCancelled = true;
+                removeTask(Task.this);
                 isDone = true;
-                return isCancelled;
+                return isCancelled();
             }
 
             @Override
@@ -218,9 +221,6 @@ public class ThreadPoolIMP implements Executor {
             @Override
             public E get(long timeout, TimeUnit unit)
                     throws InterruptedException, ExecutionException, TimeoutException {
-                if (isCancelled) {
-                    throw new CancellationException();
-                }
                 lock.lock();
                 try {
                     if (!isDone()) {

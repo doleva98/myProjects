@@ -110,6 +110,12 @@ public class ThreadPoolIMPTest {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         assertFalse(f.cancel(false));
         assertFalse(f.cancel(true));
     }
