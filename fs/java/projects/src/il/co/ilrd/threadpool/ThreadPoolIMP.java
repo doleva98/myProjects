@@ -133,6 +133,7 @@ public class ThreadPoolIMP implements Executor {
 
         @Override
         public int compareTo(Task<T> other) {
+            Objects.requireNonNull(other);
             return priority - other.priority;
         }
 
