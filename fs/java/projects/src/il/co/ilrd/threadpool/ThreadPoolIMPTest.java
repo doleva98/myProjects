@@ -39,5 +39,18 @@ public class ThreadPoolIMPTest {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             e.printStackTrace();
         }
+
+        Future<Void> f3 = threadPool.submit(() -> {
+            for (int i = 0; i < 3; ++i) {
+                sysou   
+            }
+        });
+
+        try {
+            System.out.println(f3.get(16, TimeUnit.SECONDS));
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+        }
+
     }
 }

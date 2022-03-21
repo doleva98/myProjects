@@ -13,8 +13,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.xml.bind.annotation.XmlElement.DEFAULT;
-
 import il.co.ilrd.waitablepq.WaitablePriorityQueueCond;
 
 public class ThreadPoolIMP implements Executor {
@@ -153,8 +151,7 @@ public class ThreadPoolIMP implements Executor {
                 isCancelled = ThreadPoolIMP.this.tasks.remove(Task.this);
                 if (!isDone() && !isCancelled() && mayInterruptIfRunning && currentThread.isAlive()) {
                     currentThread.interrupt();
-                    isDone = true;
-                    return true;
+                    isCancelled = true;
                 }
                 isDone = true;
                 return isCancelled;
@@ -191,6 +188,9 @@ public class ThreadPoolIMP implements Executor {
                 try {
                     if (!isDone) {
                         cond.await(timeout, unit);
+                    }
+                    if (isCancelled) {
+                        throw new CancellationException();
                     }
                     if (!isDone) {
                         throw new TimeoutException();
