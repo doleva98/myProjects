@@ -150,11 +150,12 @@ public class ThreadPoolIMP implements Executor {
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
-                if (mayInterruptIfRunning && currentThread.isAlive()) {
+                isCancelled = ThreadPoolIMP.this.tasks.remove(Task.this);
+                if (!isDone() && !isCancelled() && mayInterruptIfRunning && currentThread.isAlive()) {
                     currentThread.interrupt();
+                    isDone = true;
                     return true;
                 }
-                isCancelled = ThreadPoolIMP.this.tasks.remove(Task.this);
                 isDone = true;
                 return isCancelled;
             }
