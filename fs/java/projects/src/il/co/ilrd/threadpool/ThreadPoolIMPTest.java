@@ -1,15 +1,20 @@
 package il.co.ilrd.threadpool;
 
-import java.util.concurrent.Callable;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.jupiter.api.Test;
+
 import il.co.ilrd.threadpool.ThreadPoolIMP.Priority;
 
 public class ThreadPoolIMPTest {
-    public static void main(String[] args) {
+    @Test
+    public void basicTest() {
         ThreadPoolIMP threadPool = new ThreadPoolIMP(3);
 
         Future<Integer> f1 = threadPool.submit(() -> {
@@ -21,7 +26,7 @@ public class ThreadPoolIMPTest {
         }, Priority.LOW);
 
         try {
-            System.out.println(f1.get());
+            assertEquals(f1.get(), 100);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -35,22 +40,42 @@ public class ThreadPoolIMPTest {
         });
 
         try {
-            System.out.println(f2.get(6, TimeUnit.SECONDS));
+            assertEquals(f2.get(6, TimeUnit.SECONDS), 150);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             e.printStackTrace();
         }
 
         Future<Void> f3 = threadPool.submit(() -> {
             for (int i = 0; i < 3; ++i) {
-                sysou   
             }
         });
 
         try {
-            System.out.println(f3.get(16, TimeUnit.SECONDS));
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            assertNull(f3.get());
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
+        Future<Void> f4 = threadPool.submit(() -> {
+            for (int i = 0; i < 3; ++i) {
+            }
+        }, Priority.HIGH);
+
+        try {
+            assertNull(f4.get());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        Future<String> f5 = threadPool.submit(() -> {
+            for (int i = 0; i < 3; ++i) {
+            }
+        }, Priority.HIGH, "hello world");
+
+        try {
+            assertEquals(f5.get(61, TimeUnit.SECONDS), "hello world");
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+        }
     }
 }
