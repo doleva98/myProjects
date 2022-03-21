@@ -88,7 +88,9 @@ public class ThreadPoolIMP implements Executor {
         @Override
         public void run() {
             while (true) {
-                tasks.dequeue().runTask();
+                Task<?> currTask = tasks.dequeue();
+                currTask.runTask();
+                currTask.setThread(Thread.currentThread());
             }
         }
     }
@@ -103,6 +105,7 @@ public class ThreadPoolIMP implements Executor {
 
         private ReentrantLock lock = new ReentrantLock();
         private Condition cond = lock.newCondition();
+        private Thread currentThread = null;
 
         public Task(Callable<T> callable, int priority) {
             task = callable;
@@ -135,11 +138,20 @@ public class ThreadPoolIMP implements Executor {
             lock.unlock();
         }
 
+        public void setThread(Thread currentThread) {
+            this.currentThread = currentThread;
+        }
+
         private class TaskFuture<E> implements Future<E> {
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
+                if (mayInterruptIfRunning && currentThread.isAlive()) {
+                    currentThread.interrupt();
+                    return true;
+                }
                 isCancelled = ThreadPoolIMP.this.tasks.remove(Task.this);
+                isDone = true;
                 return isCancelled;
             }
 
@@ -185,6 +197,7 @@ public class ThreadPoolIMP implements Executor {
                 E res = (E) result;
                 return res;
             }
+
         }
     }
 
