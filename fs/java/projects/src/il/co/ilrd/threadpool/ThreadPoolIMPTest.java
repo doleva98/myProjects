@@ -115,7 +115,7 @@ public class ThreadPoolIMPTest {
     }
 
     @Test
-    public void hardCheck(){
+    public void hardCheck() {
         ThreadPoolIMP threadPool = new ThreadPoolIMP(10);
         List<Future<Integer>> listFuture = new ArrayList<>();
         final int SIZE = 50;

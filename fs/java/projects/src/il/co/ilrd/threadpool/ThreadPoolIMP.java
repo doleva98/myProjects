@@ -23,17 +23,20 @@ public class ThreadPoolIMP implements Executor {
     }
 
     private WaitablePriorityQueueCond<Task<?>> tasks;
-    private List<Thread> threads;
+    private List<ThreadImp> threads;
 
     private final static int DEFAULTPRIORITY = Priority.MEDIUM.ordinal();
 
     public ThreadPoolIMP(int numOfThreads) {
+        if (numOfThreads <= 0) {
+            throw new IllegalArgumentException();
+        }
         tasks = new WaitablePriorityQueueCond<>();
         threads = new ArrayList<>(numOfThreads);
         for (int i = 0; i < numOfThreads; ++i) {
-            Thread t = new Thread(new ThreadImp());
+            ThreadImp t = new ThreadImp();
             threads.add(t);
-            t.start();
+            t.thread.start();
         }
     }
 
@@ -78,6 +81,29 @@ public class ThreadPoolIMP implements Executor {
         }, priority.ordinal());
     }
 
+    public void setNumberOfThreads(int numOfThreads) {
+
+    }
+
+    public void resume() {
+    }
+
+    public void pause() {
+    }
+
+    public void awaitTermination() throws InterruptedException {
+
+    }
+
+    public boolean awaitTermination(long timeout,
+            TimeUnit unit)
+            throws InterruptedException {
+        return true;
+    }
+
+    public void shutdown() {
+    }
+
     private <T> Future<T> submitImp(Callable<T> callable, int priority) {
         Objects.requireNonNull(callable);
         Task<T> tempTask = new Task<>(callable, priority);
@@ -85,14 +111,19 @@ public class ThreadPoolIMP implements Executor {
         return tempTask.getFuture();
     }
 
+    private <T> boolean removeTask(Task<T> task) {
+        return tasks.remove(task);
+    }
+
     private class ThreadImp implements Runnable {
+        private Thread thread = new Thread(this);
 
         @Override
         public void run() {
             while (true) {
                 Task<?> currTask = tasks.dequeue();
                 currTask.runTask();
-                currTask.setThread(Thread.currentThread());
+                currTask.setThread();
             }
         }
     }
@@ -139,25 +170,26 @@ public class ThreadPoolIMP implements Executor {
 
         private void futureUnlock() {
             lock.lock();
-            cond.signal();
-            lock.unlock();
+            try {
+                cond.signal();
+            } finally {
+                lock.unlock();
+            }
         }
 
-        public void setThread(Thread currentThread) {
-            this.currentThread = currentThread;
+        public void setThread() {
+            this.currentThread = Thread.currentThread();
         }
 
         private class TaskFuture<E> implements Future<E> {
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
-                if (!isDone() && !isCancelled() && mayInterruptIfRunning && currentThread.isAlive()) {
+                if (!isDone() && !isCancelled() && mayInterruptIfRunning && currentThread != null) {
                     currentThread.interrupt();
+                    isCancelled = true;
                 }
-                isCancelled = true;
-                if (isDone) {
-                    isCancelled = false;
-                }
+                isCancelled = removeTask(Task.this);
                 isDone = true;
                 return isCancelled;
             }
@@ -191,13 +223,13 @@ public class ThreadPoolIMP implements Executor {
                 }
                 lock.lock();
                 try {
-                    if (!isDone) {
+                    if (!isDone()) {
                         cond.await(timeout, unit);
                     }
-                    if (isCancelled) {
+                    if (isCancelled()) {
                         throw new CancellationException();
                     }
-                    if (!isDone) {
+                    if (!isDone()) {
                         throw new TimeoutException();
                     }
                 } finally {
