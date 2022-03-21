@@ -1,8 +1,12 @@
 package il.co.ilrd.threadpool;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -77,5 +81,37 @@ public class ThreadPoolIMPTest {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void cancelCheck() {
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(10);
+        Future<Integer> f = threadPool.submit(() -> {
+            int j = 0;
+            for (int i = 0; i < 50; ++i) {
+                j += 3;
+            }
+            return j;
+        });
+
+        try {
+            assertEquals(f.get(), 150);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        assertFalse(f.cancel(false));
+        assertFalse(f.cancel(true));
+    }
+
+    public static void main(String[] args) {
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(10);
+        List<Future<Integer>> listFuture = new ArrayList<>();
+        Callable<Integer> callable = ()-> { int j = 0;
+            for (int i = 0; i < 50; ++i) {
+                j += 3;
+            }
+            return j;
+        };
+         
     }
 }

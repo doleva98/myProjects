@@ -116,13 +116,15 @@ public class ThreadPoolIMP implements Executor {
         }
 
         public void runTask() {
-            try {
-                result = task.call();
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (!isCancelled) {
+                try {
+                    result = task.call();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                futureUnlock();
+                isDone = true;
             }
-            futureUnlock();
-            isDone = true;
         }
 
         public Future<T> getFuture() {
@@ -148,10 +150,12 @@ public class ThreadPoolIMP implements Executor {
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
-                isCancelled = ThreadPoolIMP.this.tasks.remove(Task.this);
                 if (!isDone() && !isCancelled() && mayInterruptIfRunning && currentThread.isAlive()) {
                     currentThread.interrupt();
-                    isCancelled = true;
+                }
+                isCancelled = true;
+                if (isDone) {
+                    isCancelled = false;
                 }
                 isDone = true;
                 return isCancelled;

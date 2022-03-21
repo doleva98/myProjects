@@ -64,21 +64,12 @@ public class WaitablePriorityQueueSem<T> {
     }
 
     public boolean remove(T data) {
-        try {
-            semaphoreCurrSize.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         boolean ret;
         lock.lock();
         try {
             ret = queue.remove(data);
             if (ret) {
                 semaphoreFreeSize.release();
-            }
-            else
-            {
-                semaphoreCurrSize.release();
             }
         } finally {
             lock.unlock();

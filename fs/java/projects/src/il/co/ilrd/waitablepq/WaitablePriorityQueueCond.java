@@ -72,20 +72,9 @@ public class WaitablePriorityQueueCond<T> {
         boolean ret;
         lock.lock();
         try {
-            while (isEmpty()) {
-                try {
-                    notEmpty.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
             ret = queue.remove(data);
             if (ret) {
                 notFull.signal();
-            }
-            else
-            {
-                notEmpty.signal();
             }
         } finally {
             lock.unlock();
