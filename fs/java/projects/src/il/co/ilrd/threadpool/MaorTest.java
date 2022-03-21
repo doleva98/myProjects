@@ -1,8 +1,5 @@
 package il.co.ilrd.threadpool;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
