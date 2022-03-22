@@ -98,12 +98,7 @@ public class ThreadPoolIMP implements Executor {
             } else {
                 for (int i = 0; i < startSize - numOfThreads; ++i) {
                     submitImp(() -> {
-                        ThreadImp currThreadImp = null;
-                        for (ThreadImp thread : threads) {
-                            if (thread.equals(Thread.currentThread())) {
-                                currThreadImp = thread;
-                            }
-                        }
+                        ThreadImp currThreadImp = (ThreadImp) Thread.currentThread();
                         if (currThreadImp != null) {
                             currThreadImp.isRunning = false;
                         }
@@ -120,7 +115,6 @@ public class ThreadPoolIMP implements Executor {
     public void resume() {
         threadPoolLock.lock();
         try {
-            isPaused = false;
             threadPoolCond.signalAll();
         } finally {
             threadPoolLock.unlock();
@@ -129,7 +123,6 @@ public class ThreadPoolIMP implements Executor {
 
     public void pause() {
         threadPoolLock.lock();
-        isPaused = true;
         try {
             for (int i = 0; i < threads.size(); ++i) {
                 submitImp(() -> {
@@ -241,7 +234,7 @@ public class ThreadPoolIMP implements Executor {
         @Override
         public int compareTo(Task<T> other) {
             Objects.requireNonNull(other);
-            return priority - other.priority;
+            return other.priority - priority;
         }
 
         private void futureUnlock() {

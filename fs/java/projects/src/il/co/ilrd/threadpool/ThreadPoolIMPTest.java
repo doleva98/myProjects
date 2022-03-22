@@ -325,4 +325,41 @@ public class ThreadPoolIMPTest {
         });
     }
 
+    @Test
+    public void checkSetNumber4() {
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(10);
+        List<Future<Void>> listFuture = new ArrayList<>();
+        final int SIZE = 10;
+        Callable<Void> callable = () -> {
+            while (true) {
+                System.out.println("fd");
+            }
+        };
+        threadPool.pause();
+        for (int i = 0; i < SIZE; ++i) {
+            listFuture.add(threadPool.submit(callable));
+        }
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadPool.resume();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        listFuture.forEach((future) -> {
+            assertNull(future);
+        });
+
+        threadPool.shutdown();
+        try {
+            assertTrue(threadPool.awaitTermination(80, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

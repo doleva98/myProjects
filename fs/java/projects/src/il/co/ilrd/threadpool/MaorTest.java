@@ -44,4 +44,50 @@ public class MaorTest {
         }
 
     }
+
+    @Test
+    public void testPauseAndResume() {
+        final int NUM_OF_THREADS = 2;
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(NUM_OF_THREADS);
+
+        Runnable taskRunnable = new Runnable() {
+            @Override
+            public void run() {
+                System.err.println("Task " + Thread.currentThread().getName() + " started");
+                for (int i = 0; i < 5; ++i) {
+                    System.err.println("Task " + Thread.currentThread().getName() + ": " + i);
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        System.err.println("before submit");
+        for (int i = 0; i < 10 * NUM_OF_THREADS; i++) {
+            threadPool.submit(taskRunnable);
+        }
+        System.err.println("after submit");
+        threadPool.pause();
+
+        System.err.println("Threadpool paused");
+
+        try {
+            Thread.sleep(5000);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        threadPool.resume();
+
+        try {
+            Thread.sleep(10000);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 }
