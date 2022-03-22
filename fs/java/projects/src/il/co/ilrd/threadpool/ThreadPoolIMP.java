@@ -23,11 +23,12 @@ public class ThreadPoolIMP implements Executor {
         HIGH;
     }
 
-    private WaitablePriorityQueueCond<Task<?>> tasks;
-    private List<ThreadImp> threads;
-    private ReentrantLock threadPoolLock = new ReentrantLock();
-    private Condition threadPoolCond = threadPoolLock.newCondition();
-    private Semaphore sema = new Semaphore(0);
+    private final WaitablePriorityQueueCond<Task<?>> tasks;
+    private final List<ThreadImp> threads;
+    private final ReentrantLock threadPoolLock = new ReentrantLock();
+    private final Condition threadPoolCond = threadPoolLock.newCondition();
+    private final Semaphore sema = new Semaphore(0);
+    private boolean isPaused = false;
 
     private int sizeBeforeShutdown = 0;
     private final static int DEFAULTPRIORITY = Priority.MEDIUM.ordinal();
@@ -120,6 +121,7 @@ public class ThreadPoolIMP implements Executor {
     public void resume() {
         threadPoolLock.lock();
         try {
+            isPaused = false;
             threadPoolCond.signalAll();
         } finally {
             threadPoolLock.unlock();
@@ -128,6 +130,7 @@ public class ThreadPoolIMP implements Executor {
 
     public void pause() {
         threadPoolLock.lock();
+        isPaused = true;
         try {
             for (int i = 0; i < threads.size(); ++i) {
                 submitImp(() -> {
@@ -174,13 +177,17 @@ public class ThreadPoolIMP implements Executor {
                 return null;
             }, LOWESTPRIORITY);
         }
+        isPaused = true;
     }
 
     private <T> Future<T> submitImp(Callable<T> callable, int priority) {
-        Objects.requireNonNull(callable);
-        Task<T> tempTask = new Task<>(callable, priority);
-        tasks.enqueue(tempTask);
-        return tempTask.getFuture();
+        if (!isPaused) {
+            Objects.requireNonNull(callable);
+            Task<T> tempTask = new Task<>(callable, priority);
+            tasks.enqueue(tempTask);
+            return tempTask.getFuture();
+        }
+        return null;
     }
 
     private <T> boolean removeTask(Task<T> task) {

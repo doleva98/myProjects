@@ -41,7 +41,7 @@ public class ThreadPoolIMPTest {
         ThreadPoolIMP threadPool = new ThreadPoolIMP(13);
         threadPool.shutdown();
         try {
-            assertTrue(threadPool.awaitTermination(3, TimeUnit.SECONDS));
+            assertTrue(threadPool.awaitTermination(3, TimeUnit.HOURS));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -49,7 +49,7 @@ public class ThreadPoolIMPTest {
         ThreadPoolIMP threadPool2 = new ThreadPoolIMP(10);
         threadPool2.submit(() -> {
             try {
-                Thread.sleep(5000);
+                Thread.sleep(Integer.MAX_VALUE);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

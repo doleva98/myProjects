@@ -1,8 +1,11 @@
 package il.co.ilrd.test;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -22,8 +25,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 class B {
     public static void main(String[] args) {
-
-        ExecutorService ex = Executors.newSingleThreadExecutor();
+        List<Integer> list = new ArrayList<>();
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        Map<Integer, Integer> hm = new HashMap<>();
+        ExecutorService ex = Executors.newFixedThreadPool(3);
+        ex.shutdown();
 
     }
 

@@ -8,7 +8,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class WaitablePriorityQueueSem<T> {
-    private volatile Queue<T> queue;
+    private final Queue<T> queue;
     private final Semaphore semaphoreFreeSize;
     private final Semaphore semaphoreCurrSize = new Semaphore(0);
     private final static int INITIALIZECAPACITY = 11;
@@ -40,10 +40,10 @@ public class WaitablePriorityQueueSem<T> {
         lock.lock();
         try {
             queue.add(data);
-            semaphoreCurrSize.release();
         } finally {
             lock.unlock();
         }
+        semaphoreCurrSize.release();
     }
 
     public T dequeue() {
@@ -56,23 +56,24 @@ public class WaitablePriorityQueueSem<T> {
         lock.lock();
         try {
             ret = queue.poll();
-            semaphoreFreeSize.release();
         } finally {
             lock.unlock();
         }
+        semaphoreFreeSize.release();
         return ret;
     }
 
     public boolean remove(T data) {
-        boolean ret;
-        lock.lock();
-        try {
+        boolean ret = false;
+        if (semaphoreCurrSize.tryAcquire()) {
+            lock.lock();
             ret = queue.remove(data);
+            lock.unlock();
             if (ret) {
                 semaphoreFreeSize.release();
+            } else {
+                semaphoreCurrSize.release();
             }
-        } finally {
-            lock.unlock();
         }
         return ret;
     }

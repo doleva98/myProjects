@@ -9,7 +9,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class WaitablePriorityQueueCond<T> {
-    private volatile Queue<T> queue;/* needs to be PriorityQueue */
+    private final Queue<T> queue;/* needs to be PriorityQueue */
     private final int CAPACITY;
     private final static int INITIALIZECAPACITY = 11;
     private final Lock lock = new ReentrantLock();
@@ -36,14 +36,12 @@ public class WaitablePriorityQueueCond<T> {
         lock.lock();
         try {
             while (size() == CAPACITY) {
-                try {
-                    notFull.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                notFull.await();
             }
             queue.add(data);
             notEmpty.signal();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
@@ -54,14 +52,12 @@ public class WaitablePriorityQueueCond<T> {
         lock.lock();
         try {
             while (isEmpty()) {
-                try {
-                    notEmpty.await();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                notEmpty.await();
             }
             ret = queue.poll();
             notFull.signal();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }
