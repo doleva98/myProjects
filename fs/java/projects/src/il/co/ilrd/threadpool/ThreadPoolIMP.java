@@ -8,6 +8,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Condition;
@@ -24,20 +25,22 @@ public class ThreadPoolIMP implements Executor {
 
     private WaitablePriorityQueueCond<Task<?>> tasks;
     private List<ThreadImp> threads;
+    private ReentrantLock threadPoolLock = new ReentrantLock();
+    private Condition threadPoolCond = threadPoolLock.newCondition();
+    private Semaphore sema = new Semaphore(0);
 
+    private int sizeBeforeShutdown = 0;
     private final static int DEFAULTPRIORITY = Priority.MEDIUM.ordinal();
+    private final static int SYSTEMPRIORITY = Priority.HIGH.ordinal() + 1;
+    private final static int LOWESTPRIORITY = Priority.LOW.ordinal() - 1;
 
     public ThreadPoolIMP(int numOfThreads) {
-        if (numOfThreads <= 0) {
+        if (numOfThreads < 0) {
             throw new IllegalArgumentException();
         }
         tasks = new WaitablePriorityQueueCond<>();
         threads = new ArrayList<>(numOfThreads);
-        for (int i = 0; i < numOfThreads; ++i) {
-            ThreadImp t = new ThreadImp();
-            threads.add(t);
-            t.thread.start();
-        }
+        setNumberOfThreads(numOfThreads);
     }
 
     @Override
@@ -82,26 +85,97 @@ public class ThreadPoolIMP implements Executor {
     }
 
     public void setNumberOfThreads(int numOfThreads) {
+        threadPoolLock.lock();
+        try {
+            int startSize = threads.size();
+            if (numOfThreads >= startSize) {
+                for (int i = 0; i < numOfThreads - startSize; ++i) {
+                    ThreadImp t = new ThreadImp();
+                    threads.add(t);
+                    t.start();
+                }
+            } else {
+                for (int i = 0; i < startSize - numOfThreads; ++i) {
+                    submitImp(() -> {
+                        ThreadImp currThreadImp = null;
+                        for (ThreadImp thread : threads) {
+                            if (thread.equals(Thread.currentThread())) {
+                                currThreadImp = thread;
+                            }
+                        }
+                        if (currThreadImp != null) {
+                            threads.remove(currThreadImp);
+                            currThreadImp.isRunning = false;
+                        }
+                        return null;
+                    }, LOWESTPRIORITY);
+                }
+            }
+        } finally {
+            threadPoolLock.unlock();
+        }
 
     }
 
     public void resume() {
+        threadPoolLock.lock();
+        try {
+            threadPoolCond.signalAll();
+        } finally {
+            threadPoolLock.unlock();
+        }
     }
 
     public void pause() {
+        threadPoolLock.lock();
+        try {
+            for (int i = 0; i < threads.size(); ++i) {
+                submitImp(() -> {
+                    threadPoolLock.lock();
+                    try {
+                        threadPoolCond.await();
+                    } finally {
+                        threadPoolLock.unlock();
+                    }
+                    return null;
+                }, SYSTEMPRIORITY);
+            }
+        } finally {
+            threadPoolLock.unlock();
+        }
     }
 
     public void awaitTermination() throws InterruptedException {
-
+        awaitTermination(Long.MAX_VALUE, TimeUnit.HOURS);
     }
 
     public boolean awaitTermination(long timeout,
             TimeUnit unit)
             throws InterruptedException {
-        return true;
+        System.out.println(sizeBeforeShutdown);
+        System.out.println(sema.availablePermits());
+        Thread.sleep(5000);
+        return sema.tryAcquire(sizeBeforeShutdown, timeout, unit);
     }
 
     public void shutdown() {
+        sizeBeforeShutdown = threads.size();
+        for (int i = 0; i < sizeBeforeShutdown; ++i) {
+            submitImp(() -> {
+                ThreadImp currThreadImp = null;
+                for (ThreadImp threadImp : threads) {
+                    if (threadImp.equals(Thread.currentThread())) {
+                        currThreadImp = threadImp;
+                    }
+                }
+                if (currThreadImp != null) {
+                    threads.remove(currThreadImp);
+                    currThreadImp.isRunning = false;
+                    sema.release();
+                }
+                return null;
+            }, LOWESTPRIORITY);
+        }
     }
 
     private <T> Future<T> submitImp(Callable<T> callable, int priority) {
@@ -115,12 +189,12 @@ public class ThreadPoolIMP implements Executor {
         return tasks.remove(task);
     }
 
-    private class ThreadImp implements Runnable {
-        private Thread thread = new Thread(this);
+    private class ThreadImp extends Thread {
+        private boolean isRunning = true;
 
         @Override
         public void run() {
-            while (true) {
+            while (isRunning) {
                 Task<?> currTask = tasks.dequeue();
                 currTask.runTask();
                 currTask.setThread();

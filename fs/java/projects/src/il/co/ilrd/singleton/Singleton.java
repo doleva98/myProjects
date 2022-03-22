@@ -52,7 +52,7 @@ class SingletonDoubleLocking {
 enum SingletonEnum {
     INSTANCE;
 
-    public static int doSomthing() {
+    public static int doSomething() {
         return INSTANCE.hashCode();
     }
 }

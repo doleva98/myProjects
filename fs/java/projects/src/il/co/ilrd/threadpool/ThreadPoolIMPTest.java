@@ -18,6 +18,24 @@ import org.junit.jupiter.api.Test;
 import il.co.ilrd.threadpool.ThreadPoolIMP.Priority;
 
 public class ThreadPoolIMPTest {
+
+    public static void main(String[] args) {
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(13);
+        threadPool.shutdown();
+        try {
+            threadPool.awaitTermination();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        /* ThreadPoolIMP threadPool2 = new ThreadPoolIMP(10);
+        threadPool2.shutdown();
+        try {
+            threadPool2.awaitTermination(500, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } */
+    }
+
     @Test
     public void basicTest() {
         ThreadPoolIMP threadPool = new ThreadPoolIMP(3);
@@ -154,4 +172,127 @@ public class ThreadPoolIMPTest {
 
         });
     }
+
+    @Test
+    public void checkSetNumber() {
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(10);
+        List<Future<Integer>> listFuture = new ArrayList<>();
+        final int SIZE = 50;
+        Callable<Integer> callable = () -> {
+            int j = 0;
+            Thread.sleep(50);
+            return j;
+        };
+        for (int i = 0; i < SIZE; ++i) {
+            listFuture.add(threadPool.submit(callable));
+            listFuture.add(threadPool.submit(callable, Priority.LOW));
+            listFuture.add(threadPool.submit(callable, Priority.MEDIUM));
+            listFuture.add(threadPool.submit(callable, Priority.HIGH));
+        }
+        threadPool.setNumberOfThreads(50);
+        for (int i = 0; i < SIZE; ++i) {
+            listFuture.add(threadPool.submit(callable));
+            listFuture.add(threadPool.submit(callable, Priority.LOW));
+            listFuture.add(threadPool.submit(callable, Priority.MEDIUM));
+            listFuture.add(threadPool.submit(callable, Priority.HIGH));
+        }
+        listFuture.forEach((future) -> {
+            try {
+                assertEquals(future.get(), 0);
+                try {
+                    assertEquals(future.get(59, TimeUnit.SECONDS), 0);
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            assertTrue(future.isDone());
+            assertFalse(future.isCancelled());
+
+        });
+    }
+
+    @Test
+    public void checkSetNumber2() {
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(10);
+        List<Future<Integer>> listFuture = new ArrayList<>();
+        final int SIZE = 50;
+        Callable<Integer> callable = () -> {
+            int j = 0;
+            Thread.sleep(50);
+            return j;
+        };
+        for (int i = 0; i < SIZE; ++i) {
+            listFuture.add(threadPool.submit(callable));
+            listFuture.add(threadPool.submit(callable, Priority.LOW));
+            listFuture.add(threadPool.submit(callable, Priority.MEDIUM));
+            listFuture.add(threadPool.submit(callable, Priority.HIGH));
+        }
+        threadPool.setNumberOfThreads(1);
+        for (int i = 0; i < SIZE; ++i) {
+            listFuture.add(threadPool.submit(callable));
+            listFuture.add(threadPool.submit(callable, Priority.LOW));
+            listFuture.add(threadPool.submit(callable, Priority.MEDIUM));
+            listFuture.add(threadPool.submit(callable, Priority.HIGH));
+        }
+        listFuture.forEach((future) -> {
+            try {
+                assertEquals(future.get(), 0);
+                try {
+                    assertEquals(future.get(59, TimeUnit.SECONDS), 0);
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            assertTrue(future.isDone());
+            assertFalse(future.isCancelled());
+
+        });
+    }
+
+    @Test
+    public void checkSetNumber3() {
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(10);
+        List<Future<Integer>> listFuture = new ArrayList<>();
+        final int SIZE = 50;
+        Callable<Integer> callable = () -> {
+            int j = 0;
+            System.out.println("hello world");
+            Thread.sleep(500);
+            return j;
+        };
+        threadPool.pause();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadPool.resume();
+        for (int i = 0; i < SIZE; ++i) {
+            listFuture.add(threadPool.submit(callable));
+            listFuture.add(threadPool.submit(callable, Priority.LOW));
+            listFuture.add(threadPool.submit(callable, Priority.MEDIUM));
+            listFuture.add(threadPool.submit(callable, Priority.HIGH));
+        }
+
+        listFuture.forEach((future) -> {
+            try {
+                assertEquals(future.get(), 0);
+                try {
+                    assertEquals(future.get(59, TimeUnit.SECONDS), 0);
+                } catch (TimeoutException e) {
+                    e.printStackTrace();
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            assertTrue(future.isDone());
+            assertFalse(future.isCancelled());
+
+        });
+    }
+
 }

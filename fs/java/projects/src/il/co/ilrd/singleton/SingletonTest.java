@@ -35,7 +35,7 @@ public class SingletonTest {
     public void t4() {
         assertEquals(SingletonEnum.INSTANCE, SingletonEnum.INSTANCE);
         /* assertTrue(SingletonEnum.INSTANCE == SingletonEnum.INSTANCE); */
-        assertEquals(SingletonEnum.doSomthing(), SingletonEnum.INSTANCE.hashCode());
+        assertEquals(SingletonEnum.doSomething(), SingletonEnum.INSTANCE.hashCode());
     }
 
     @Test
