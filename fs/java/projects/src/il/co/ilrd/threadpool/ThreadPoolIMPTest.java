@@ -52,6 +52,11 @@ public class ThreadPoolIMPTest {
         ThreadPoolIMP threadPool3 = new ThreadPoolIMP(10);
         threadPool3.submit(() -> {
         }, Priority.HIGH);
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
         threadPool3.shutdown();
         try {
             assertTrue(threadPool3.awaitTermination(80, TimeUnit.MILLISECONDS));
