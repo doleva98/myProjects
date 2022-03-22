@@ -19,23 +19,6 @@ import il.co.ilrd.threadpool.ThreadPoolIMP.Priority;
 
 public class ThreadPoolIMPTest {
 
-    public static void main(String[] args) {
-        ThreadPoolIMP threadPool = new ThreadPoolIMP(13);
-        threadPool.shutdown();
-        try {
-            threadPool.awaitTermination();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ThreadPoolIMP threadPool2 = new ThreadPoolIMP(10);
-        threadPool2.shutdown();
-        try {
-            System.out.println(threadPool2.awaitTermination(500, TimeUnit.SECONDS));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Test
     public void awaitTerminationTest() {
         ThreadPoolIMP threadPool = new ThreadPoolIMP(13);
@@ -48,15 +31,30 @@ public class ThreadPoolIMPTest {
 
         ThreadPoolIMP threadPool2 = new ThreadPoolIMP(10);
         threadPool2.submit(() -> {
-            try {
-                Thread.sleep(Integer.MAX_VALUE);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            @SuppressWarnings("unused")
+            int i = 0;
+            while (true) {
+                ++i;
             }
-        });
+        }, Priority.HIGH);
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        }
         threadPool2.shutdown();
         try {
-            assertFalse(threadPool2.awaitTermination(50, TimeUnit.MILLISECONDS));
+            assertFalse(threadPool2.awaitTermination(80, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ThreadPoolIMP threadPool3 = new ThreadPoolIMP(10);
+        threadPool3.submit(() -> {
+        }, Priority.HIGH);
+        threadPool3.shutdown();
+        try {
+            assertTrue(threadPool3.awaitTermination(80, TimeUnit.MILLISECONDS));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
