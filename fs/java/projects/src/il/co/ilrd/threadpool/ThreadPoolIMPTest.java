@@ -350,16 +350,8 @@ public class ThreadPoolIMPTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        listFuture.forEach((future) -> {
-            assertNull(future);
-        });
 
         threadPool.shutdown();
-        try {
-            assertTrue(threadPool.awaitTermination(80, TimeUnit.MILLISECONDS));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
 }
