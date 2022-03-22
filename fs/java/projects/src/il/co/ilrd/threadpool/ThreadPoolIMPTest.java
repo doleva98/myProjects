@@ -27,13 +27,40 @@ public class ThreadPoolIMPTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        /* ThreadPoolIMP threadPool2 = new ThreadPoolIMP(10);
+        ThreadPoolIMP threadPool2 = new ThreadPoolIMP(10);
         threadPool2.shutdown();
         try {
-            threadPool2.awaitTermination(500, TimeUnit.SECONDS);
+            System.out.println(threadPool2.awaitTermination(500, TimeUnit.SECONDS));
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } */
+        }
+    }
+
+    @Test
+    public void awaitTerminationTest() {
+        ThreadPoolIMP threadPool = new ThreadPoolIMP(13);
+        threadPool.shutdown();
+        try {
+            assertTrue(threadPool.awaitTermination(3, TimeUnit.SECONDS));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ThreadPoolIMP threadPool2 = new ThreadPoolIMP(10);
+        threadPool2.submit(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        threadPool2.shutdown();
+        try {
+            assertFalse(threadPool2.awaitTermination(50, TimeUnit.MILLISECONDS));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test

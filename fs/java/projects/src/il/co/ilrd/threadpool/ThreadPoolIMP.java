@@ -154,7 +154,6 @@ public class ThreadPoolIMP implements Executor {
             throws InterruptedException {
         System.out.println(sizeBeforeShutdown);
         System.out.println(sema.availablePermits());
-        Thread.sleep(5000);
         return sema.tryAcquire(sizeBeforeShutdown, timeout, unit);
     }
 
@@ -169,7 +168,6 @@ public class ThreadPoolIMP implements Executor {
                     }
                 }
                 if (currThreadImp != null) {
-                    threads.remove(currThreadImp);
                     currThreadImp.isRunning = false;
                     sema.release();
                 }
