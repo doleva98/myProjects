@@ -11,6 +11,7 @@ class ServerTCPPingPong {
     private Socket socket = null;
     private ServerSocket server = null;
     private DataInputStream in = null;
+    private DataOutputStream out = null;
 
     public ServerTCPPingPong(int port) {
         try {
@@ -20,16 +21,21 @@ class ServerTCPPingPong {
 
             socket = server.accept();
             System.out.println("client accepted");
-            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            String line = in.readUTF();
-            if (line.equals("ping")) {
-                System.out.println("got ping");
+            while (true) {
+                in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                if (in.readUTF().equals("ping")) {
+                    System.out.println("server got ping");
+                    out = new DataOutputStream(socket.getOutputStream());
+                    System.out.println("server sends pong");
+                    out.writeUTF("pong");
+                }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
+                out.close();
                 in.close();
                 socket.close();
                 server.close();
@@ -40,6 +46,7 @@ class ServerTCPPingPong {
     }
 
     public static void main(String[] args) {
+        @SuppressWarnings("unused")
         ServerTCPPingPong server = new ServerTCPPingPong(5000);
     }
 }
