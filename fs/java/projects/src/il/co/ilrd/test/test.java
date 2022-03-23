@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -35,8 +36,9 @@ public class Test {
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         Map<Integer, Integer> hm = new HashMap<>();
         ExecutorService ex = Executors.newFixedThreadPool(3);
-        System.out.println("fdfdassdadsdsadd");
-        System.out.println();
+        try (Scanner scan = new Scanner(System.in)) {
+        }
+        
     }
 
 }

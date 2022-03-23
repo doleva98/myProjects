@@ -9,27 +9,19 @@ import java.util.Scanner;
 import il.co.ilrd.utility.ColorsFont;
 
 class ClientTCPPingPong {
-    private Socket socket = null;
-    private DataInputStream in = null;
-    private DataOutputStream out = null;
-    private DataInputStream keyboardInput = null;
 
     ClientTCPPingPong(String address, int port) {
-        Scanner scan = new Scanner(System.in);
-        try {
-            socket = new Socket(address, port);
+        try (Scanner scan = new Scanner(System.in);
+                Socket socket = new Socket(address, port);
+                DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                DataOutputStream out = new DataOutputStream(socket.getOutputStream());) {
             System.out.println("connected");
-
-            out = new DataOutputStream(socket.getOutputStream());
-
-            out = new DataOutputStream(socket.getOutputStream());
             System.out.println(ColorsFont.ANSI_CYAN + "********" + ColorsFont.ANSI_RESET);
             System.out.println("client send ping or pong");
             String line = scan.nextLine();
 
             out.writeUTF(line);
             String inputFromServer = "";
-            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             while (!line.equals("exit")) {
                 System.out.println(ColorsFont.ANSI_CYAN + "********" + ColorsFont.ANSI_RESET);
                 inputFromServer = in.readUTF();
@@ -50,15 +42,6 @@ class ClientTCPPingPong {
 
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-                in.close();
-                socket.close();
-                scan.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
     }
