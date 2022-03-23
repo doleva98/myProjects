@@ -1,3 +1,4 @@
+/* shani */
 package il.co.ilrd.networking;
 
 import java.io.BufferedReader;
@@ -18,8 +19,7 @@ public class DownloladWebPage {
 
     public static void download(String urlString) throws IOException {
         URL url = new URL(urlString);
-        try (
-                BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
                 BufferedWriter writer = new BufferedWriter(new FileWriter("page.html"));) {
             String line;
             while ((line = reader.readLine()) != null) {

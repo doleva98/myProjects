@@ -29,13 +29,13 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class B {
+public class Test {
     public static void main(String[] args) {
         List<Integer> list = new ArrayList<>();
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         Map<Integer, Integer> hm = new HashMap<>();
         ExecutorService ex = Executors.newFixedThreadPool(3);
-        
+        System.out.println("fdfdassdadsdsadd");
 
     }
 
