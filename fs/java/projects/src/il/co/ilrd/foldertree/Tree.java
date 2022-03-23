@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import il.co.ilrd.utility.ColorsFont;
+
 public class Tree {
     private Folder rootFolder;
     public int numFolders = 0;
@@ -97,41 +99,29 @@ public class Tree {
     private static void colorIt(int offSet) {
         switch (offSet) {
             case 0:
-                System.out.print(Color.ANSI_RED);
+                System.out.print(ColorsFont.ANSI_RED);
                 break;
             case 1:
-                System.out.print(Color.ANSI_GREEN);
+                System.out.print(ColorsFont.ANSI_GREEN);
                 break;
             case 2:
-                System.out.print(Color.ANSI_RESET);
+                System.out.print(ColorsFont.ANSI_RESET);
                 break;
             case 3:
-                System.out.print(Color.ANSI_BLUE);
+                System.out.print(ColorsFont.ANSI_BLUE);
                 break;
             case 4:
-                System.out.print(Color.ANSI_PURPLE);
+                System.out.print(ColorsFont.ANSI_PURPLE);
                 break;
             case 5:
-                System.out.print(Color.ANSI_RED);
+                System.out.print(ColorsFont.ANSI_RED);
                 break;
             case 6:
-                System.out.print(Color.ANSI_CYAN);
+                System.out.print(ColorsFont.ANSI_CYAN);
                 break;
             case 7:
-                System.out.print(Color.ANSI_YELLOW);
+                System.out.print(ColorsFont.ANSI_YELLOW);
                 break;
         }
     }
-}
-
-class Color {
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 }

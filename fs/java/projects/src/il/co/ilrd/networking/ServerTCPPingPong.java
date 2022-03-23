@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import il.co.ilrd.utility.ColorsFont;
+
 class ServerTCPPingPong {
     private Socket socket = null;
     private ServerSocket server = null;
@@ -21,13 +23,24 @@ class ServerTCPPingPong {
 
             socket = server.accept();
             System.out.println("client accepted");
-            while (true) {
-                in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-                if (in.readUTF().equals("ping")) {
+            out = new DataOutputStream(socket.getOutputStream());
+            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            String line = "";
+            while (!line.equals("exit")) {
+                System.out.println(ColorsFont.ANSI_PURPLE + "********" + ColorsFont.ANSI_RESET);
+                line = in.readUTF();
+                if (line.equals("ping")) {
                     System.out.println("server got ping");
-                    out = new DataOutputStream(socket.getOutputStream());
                     System.out.println("server sends pong");
                     out.writeUTF("pong");
+                } else if (line.equals("pong")) {
+                    System.out.println("server got pong");
+                    System.out.println("server sends ping");
+                    out.writeUTF("ping");
+                } else {
+                    System.out.println("exit, didn't got ping or pong");
+                    line = "exit";
+                    out.writeUTF(line);
                 }
             }
 
