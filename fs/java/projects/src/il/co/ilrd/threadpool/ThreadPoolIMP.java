@@ -28,12 +28,12 @@ public class ThreadPoolIMP implements Executor {
     private final ReentrantLock threadPoolLock = new ReentrantLock();
     private final Condition threadPoolCond = threadPoolLock.newCondition();
     private final Semaphore sema = new Semaphore(0);
-    private boolean isPaused = false;
+    private boolean isShutdown = false;
 
-    private int sizeBeforeShutdown = 0;
+    private int sizeBeforeShutdown = 0;/* for the semaphore , size of threads*/
     private final static int DEFAULTPRIORITY = Priority.MEDIUM.ordinal();
-    private final static int SYSTEMPRIORITY = Priority.HIGH.ordinal() + 1;
-    private final static int LOWESTPRIORITY = Priority.LOW.ordinal() - 1;
+    private final static int SYSTEMPRIORITY = Priority.values().length;
+    private final static int LOWESTPRIORITY = -1;
 
     public ThreadPoolIMP(int numOfThreads) {
         if (numOfThreads < 0) {
@@ -63,6 +63,7 @@ public class ThreadPoolIMP implements Executor {
 
     public Future<Void> submit(Runnable runnable, Priority priority) {
         Objects.requireNonNull(priority);
+        Objects.requireNonNull(runnable);
         return submitImp(() -> {
             runnable.run();
             return null;
@@ -70,6 +71,7 @@ public class ThreadPoolIMP implements Executor {
     }
 
     public Future<Void> submit(Runnable runnable) {
+        Objects.requireNonNull(runnable);
         return submitImp(() -> {
             runnable.run();
             return null;
@@ -79,6 +81,7 @@ public class ThreadPoolIMP implements Executor {
 
     public <T> Future<T> submit(Runnable runnable, Priority priority, T result) {
         Objects.requireNonNull(priority);
+        Objects.requireNonNull(runnable);
         return submitImp(() -> {
             runnable.run();
             return result;
@@ -86,57 +89,57 @@ public class ThreadPoolIMP implements Executor {
     }
 
     public void setNumberOfThreads(int numOfThreads) {
-        threadPoolLock.lock();
-        try {
-            int startSize = threads.size();
-            if (numOfThreads >= startSize) {
-                for (int i = 0; i < numOfThreads - startSize; ++i) {
-                    ThreadImp t = new ThreadImp();
-                    threads.add(t);
-                    t.start();
-                }
-            } else {
-                for (int i = 0; i < startSize - numOfThreads; ++i) {
-                    submitImp(() -> {
-                        ThreadImp currThreadImp = (ThreadImp) Thread.currentThread();
-                        if (currThreadImp != null) {
-                            currThreadImp.isRunning = false;
-                        }
-                        return null;
-                    }, LOWESTPRIORITY);
-                }
+        int startSize = threads.size();
+        if (numOfThreads >= startSize) {
+            for (int i = 0; i < numOfThreads - startSize; ++i) {
+                ThreadImp t = new ThreadImp();
+                threads.add(t);
+                t.start();
             }
-        } finally {
-            threadPoolLock.unlock();
+        } else {
+            for (int i = 0; i < startSize - numOfThreads; ++i) {
+                submitImp(() -> {
+                    ThreadImp currThreadImp = (ThreadImp) Thread.currentThread();
+                    currThreadImp.isRunning = false;
+                    threadPoolLock.lock();
+                    try {
+                        threads.remove(currThreadImp);
+                    } finally {
+                        threadPoolLock.unlock();
+                    }
+                    return null;
+                }, SYSTEMPRIORITY);/* lowest to highest */
+            }
         }
-
     }
 
     public void resume() {
         threadPoolLock.lock();
         try {
-            threadPoolCond.signalAll();
+            for (int i = 0; i < threads.size(); ++i) {
+                threadPoolCond.signal();
+                try {
+                    Thread.sleep(80);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         } finally {
             threadPoolLock.unlock();
         }
     }
 
     public void pause() {
-        threadPoolLock.lock();
-        try {
-            for (int i = 0; i < threads.size(); ++i) {
-                submitImp(() -> {
-                    threadPoolLock.lock();
-                    try {
-                        threadPoolCond.await();
-                    } finally {
-                        threadPoolLock.unlock();
-                    }
-                    return null;
-                }, SYSTEMPRIORITY);
-            }
-        } finally {
-            threadPoolLock.unlock();
+        for (int i = 0; i < threads.size(); ++i) {
+            submitImp(() -> {
+                threadPoolLock.lock();
+                try {
+                    threadPoolCond.await();
+                } finally {
+                    threadPoolLock.unlock();
+                }
+                return null;
+            }, SYSTEMPRIORITY);
         }
     }
 
@@ -154,24 +157,23 @@ public class ThreadPoolIMP implements Executor {
         sizeBeforeShutdown = threads.size();
         for (int i = 0; i < sizeBeforeShutdown; ++i) {
             submitImp(() -> {
-                ThreadImp currThreadImp = null;
-                for (ThreadImp threadImp : threads) {
-                    if (threadImp.equals(Thread.currentThread())) {
-                        currThreadImp = threadImp;
-                    }
+                ThreadImp currThreadImp = (ThreadImp) Thread.currentThread();
+                currThreadImp.isRunning = false;
+                threadPoolLock.lock();
+                try {
+                    threads.remove(currThreadImp);
+                } finally {
+                    threadPoolLock.unlock();
                 }
-                if (currThreadImp != null) {
-                    currThreadImp.isRunning = false;
-                    sema.release();
-                }
+                sema.release();
                 return null;
             }, LOWESTPRIORITY);
         }
-        isPaused = true;
+        isShutdown = true;
     }
 
     private <T> Future<T> submitImp(Callable<T> callable, int priority) {
-        if (!isPaused) {
+        if (!isShutdown) {
             Objects.requireNonNull(callable);
             Task<T> tempTask = new Task<>(callable, priority);
             tasks.enqueue(tempTask);
@@ -191,8 +193,8 @@ public class ThreadPoolIMP implements Executor {
         public void run() {
             while (isRunning) {
                 Task<?> currTask = tasks.dequeue();
-                currTask.runTask();
                 currTask.setThread();
+                currTask.runTask();
             }
         }
     }
@@ -246,7 +248,7 @@ public class ThreadPoolIMP implements Executor {
             }
         }
 
-        public void setThread() {
+        private void setThread() {
             this.currentThread = Thread.currentThread();
         }
 
@@ -254,14 +256,12 @@ public class ThreadPoolIMP implements Executor {
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
-                if (isDone() || isCancelled()) {
-                    return false;
-                }
-                if (mayInterruptIfRunning && currentThread != null) {
+                isCancelled = removeTask(Task.this);
+
+                if (!isDone() && !isCancelled() && mayInterruptIfRunning && currentThread != null) {
+                    isCancelled = true;
                     currentThread.interrupt();
                 }
-                isCancelled = true;
-                removeTask(Task.this);
                 isDone = true;
                 return isCancelled();
             }
@@ -292,14 +292,13 @@ public class ThreadPoolIMP implements Executor {
                     throws InterruptedException, ExecutionException, TimeoutException {
                 lock.lock();
                 try {
-                    if (!isDone()) {
-                        cond.await(timeout, unit);
+                    if (!isDone() || (isDone() && !isCancelled())) {
+                        if (!cond.await(timeout, unit)) {
+                            throw new TimeoutException();
+                        }
                     }
                     if (isCancelled()) {
                         throw new CancellationException();
-                    }
-                    if (!isDone()) {
-                        throw new TimeoutException();
                     }
                 } finally {
                     lock.unlock();

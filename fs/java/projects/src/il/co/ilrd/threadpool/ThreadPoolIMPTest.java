@@ -308,6 +308,12 @@ public class ThreadPoolIMPTest {
             listFuture.add(threadPool.submit(callable, Priority.HIGH));
         }
 
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         listFuture.forEach((future) -> {
             try {
                 assertEquals(future.get(), 0);

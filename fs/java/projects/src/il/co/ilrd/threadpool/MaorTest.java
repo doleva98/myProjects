@@ -26,14 +26,18 @@ public class MaorTest {
         ThreadPoolIMP poolThread = new ThreadPoolIMP(2);
         Future<Long> taskFuture = poolThread.submit(() -> {
             System.out.println("hello");
-            Thread.sleep(5000);
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e1) {
+                System.err.println("it is ok");
+            }
             System.out.println("bye");
             return Long.valueOf(3);
         });
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e1) {
-            e1.printStackTrace();
+            System.err.println("it is ok");
         }
         taskFuture.cancel(true);
         try {
