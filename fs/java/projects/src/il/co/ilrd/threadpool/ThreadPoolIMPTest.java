@@ -337,9 +337,10 @@ public class ThreadPoolIMPTest {
         List<Future<Void>> listFuture = new ArrayList<>();
         final int SIZE = 10;
         Callable<Void> callable = () -> {
-            while (true) {
+            for (int i = 0; i < SIZE; ++i) {
                 System.out.println("fd");
             }
+            return null;
         };
         threadPool.pause();
         for (int i = 0; i < SIZE; ++i) {

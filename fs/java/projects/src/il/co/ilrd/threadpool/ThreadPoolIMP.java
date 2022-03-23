@@ -292,7 +292,7 @@ public class ThreadPoolIMP implements Executor {
                     throws InterruptedException, ExecutionException, TimeoutException {
                 lock.lock();
                 try {
-                    if (!isDone() || (isDone() && !isCancelled())) {
+                    if (!isDone()) {
                         if (!cond.await(timeout, unit)) {
                             throw new TimeoutException();
                         }
