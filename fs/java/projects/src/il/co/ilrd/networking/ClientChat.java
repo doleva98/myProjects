@@ -11,25 +11,28 @@ import il.co.ilrd.utility.ColorsFont;
 public class ClientChat {
     private String name;
     Socket socket = null;
+    DataInputStream in = null;
+    DataOutputStream out = null;
+    DataInputStream keyboard = null;
 
     ClientChat(String address, int port) {
         try (Scanner scan = new Scanner(System.in);) {
             socket = new Socket(address, port);
-            DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            out = new DataOutputStream(socket.getOutputStream());
             System.out.println("connected");
             System.out.println(ColorsFont.ANSI_CYAN + "********" + ColorsFont.ANSI_RESET);
             System.out.println("what is your name?");
             name = scan.nextLine();
 
-            InputThreadImp t = new InputThreadImp(in);
-            t.start();
-
+            /*  InputThreadImp t = new InputThreadImp();
+            t.start(); */
             String line = "";
 
             while (!line.equals("exit")) {
                 line = scan.nextLine();
                 out.writeUTF(ColorsFont.ANSI_RED + name + ColorsFont.ANSI_RESET + " " + line);
+                System.out.println(in.readUTF());
             }
             System.out.println("exiting!");
 
@@ -37,14 +40,9 @@ public class ClientChat {
             e.printStackTrace();
         }
     }
-
+    /* 
     private class InputThreadImp extends Thread {
-        DataInputStream in = null;
-
-        public InputThreadImp(DataInputStream in) {
-            this.in = in;
-        }
-
+    
         public void run() {
             while (true) {
                 try {
@@ -54,8 +52,8 @@ public class ClientChat {
                 }
             }
         }
-
-    }
+    
+    } */
 
     public static void main(String[] args) {
         @SuppressWarnings("unused")

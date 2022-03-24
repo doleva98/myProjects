@@ -18,7 +18,7 @@ public class ServerChat {
     private ServerSocket server = null;
 
     private volatile boolean runOutputThread = false;
-    OutputThread outThread = null;
+    // OutputThread outThread = null;
 
     public ServerChat(int port) {
         try {
@@ -27,8 +27,8 @@ public class ServerChat {
             System.out.println("server started");
             System.out.println("waiting for client...");
             socketList = new ArrayList<>();
-            outThread = new OutputThread();
-            outThread.start();
+            /* outThread = new OutputThread();
+            outThread.start(); */
             while (true) {
                 Socket socket = server.accept();
                 socketList.add(socket);
@@ -41,7 +41,9 @@ public class ServerChat {
     }
 
     private class ThreadImp extends Thread {
-        private Socket socket;
+        private Socket socket = null;
+        private DataInputStream in = null;
+        private DataOutputStream out = null;
 
         public ThreadImp(Socket socket) {
             this.socket = socket;
@@ -49,37 +51,44 @@ public class ServerChat {
 
         public void run() {
             System.out.println("client accepted");
-            try (DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));) {
+            try {
+                in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 
                 String line = "";
                 while (true) {
                     System.out.println(ColorsFont.ANSI_PURPLE + "********" + ColorsFont.ANSI_RESET);
                     line = in.readUTF();
-                    writeToAllNow(line, socket);
+                    // writeToAllNow(line, socket);
+                    for (Socket so : socketList) {
+                        if (!so.equals(socket)) {
+                            out = new DataOutputStream(so.getOutputStream());
+                            out.writeUTF(line);
+                        }
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
+    /* 
     private void writeToAllNow(String line, Socket socket) {
         outThread.set(line, socket);
     }
-
+    
     private class OutputThread extends Thread {
         ReentrantLock lock = new ReentrantLock();
         Condition cond = lock.newCondition();
         String line = null;
         Socket socket = null;
-
+    
         private void set(String line, Socket socket) {
             this.line = line;
             this.socket = socket;
             runOutputThread = true;
         }
-
+    
         public void run() {
             while (true) {
                 if (runOutputThread) {
@@ -87,7 +96,7 @@ public class ServerChat {
                 }
             }
         }
-
+    
         private void writeToAll() {
             socketList.forEach((currSocket) -> {
                 try (DataOutputStream out = new DataOutputStream(currSocket.getOutputStream());) {
@@ -101,7 +110,7 @@ public class ServerChat {
             runOutputThread = false;
         }
     }
-
+     */
     public static void main(String[] args) {
         @SuppressWarnings("unused")
         ServerChat server = new ServerChat(5000);
