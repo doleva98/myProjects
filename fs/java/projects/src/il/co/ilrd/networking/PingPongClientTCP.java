@@ -8,9 +8,9 @@ import java.net.Socket;
 import java.util.Scanner;
 import il.co.ilrd.utility.ColorsFont;
 
-class ClientTCPPingPong {
+class PingPongClientTCP {
 
-    ClientTCPPingPong(String address, int port) {
+    PingPongClientTCP(String address, int port) {
         try (Scanner scan = new Scanner(System.in);
                 Socket socket = new Socket(address, port);
                 DataInputStream in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -48,7 +48,7 @@ class ClientTCPPingPong {
 
     public static void main(String[] args) {
         @SuppressWarnings("unused")
-        ClientTCPPingPong client = new ClientTCPPingPong("127.0.0.1", 5000);
+        PingPongClientTCP client = new PingPongClientTCP("127.0.0.1", 5000);
     }
 
 }

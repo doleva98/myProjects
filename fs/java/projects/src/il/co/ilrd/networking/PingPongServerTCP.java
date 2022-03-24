@@ -9,9 +9,9 @@ import java.net.Socket;
 
 import il.co.ilrd.utility.ColorsFont;
 
-class ServerTCPPingPong {
+class PingPongServerTCP {
 
-    public ServerTCPPingPong(int port) {
+    public PingPongServerTCP(int port) {
         try (ServerSocket server = new ServerSocket(port);) {
             System.out.println("server started");
             System.out.println("waiting for client...");
@@ -47,6 +47,6 @@ class ServerTCPPingPong {
 
     public static void main(String[] args) {
         @SuppressWarnings("unused")
-        ServerTCPPingPong server = new ServerTCPPingPong(5000);
+        PingPongServerTCP server = new PingPongServerTCP(5000);
     }
 }
