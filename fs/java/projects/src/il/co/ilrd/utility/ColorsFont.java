@@ -11,5 +11,7 @@ public class ColorsFont {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
-
+    public static final String[] ColorFontsArray = new String[] { ANSI_BLACK, ANSI_RED, ANSI_GREEN, ANSI_YELLOW, ANSI_BLUE,
+            ANSI_PURPLE, ANSI_CYAN, ANSI_WHITE };
+    public static final int numberOfColorFonts = ColorFontsArray.length;
 }

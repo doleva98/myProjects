@@ -5,15 +5,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Random;
 import java.util.Scanner;
 import il.co.ilrd.utility.ColorsFont;
 
 public class ClientChat {
-    private String name;
-    Socket socket = null;
-    DataInputStream in = null;
-    DataOutputStream out = null;
-    DataInputStream keyboard = null;
+    private String name = null;
+    private Socket socket = null;
+    private DataInputStream in = null;
+    private DataOutputStream out = null;
 
     ClientChat(String address, int port) {
         try (Scanner scan = new Scanner(System.in);) {
@@ -21,39 +21,36 @@ public class ClientChat {
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(socket.getOutputStream());
             System.out.println("connected");
-            System.out.println(ColorsFont.ANSI_CYAN + "********" + ColorsFont.ANSI_RESET);
+            Random rnd = new Random();
+            String color = ColorsFont.ColorFontsArray[rnd.nextInt(ColorsFont.numberOfColorFonts)];
+            System.out.println(color + "********" + ColorsFont.ANSI_RESET);
             System.out.println("what is your name?");
             name = scan.nextLine();
 
-            /*  InputThreadImp t = new InputThreadImp();
-            t.start(); */
             String line = "";
+            Thread t = new Thread(() -> {
+                while (true) {
+                    try {
+                        System.out.println(in.readUTF());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            t.start();
 
             while (!line.equals("exit")) {
                 line = scan.nextLine();
-                out.writeUTF(ColorsFont.ANSI_RED + name + ColorsFont.ANSI_RESET + " " + line);
-                System.out.println(in.readUTF());
+                out.writeUTF(color + name + ColorsFont.ANSI_RESET + " " + line);
             }
             System.out.println("exiting!");
-
+            out.close();
+            in.close();
+            socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    /* 
-    private class InputThreadImp extends Thread {
-    
-        public void run() {
-            while (true) {
-                try {
-                    System.out.println(in.readUTF());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    
-    } */
 
     public static void main(String[] args) {
         @SuppressWarnings("unused")
