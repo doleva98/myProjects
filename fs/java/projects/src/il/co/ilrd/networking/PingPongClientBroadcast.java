@@ -10,8 +10,6 @@ import java.util.Scanner;
 import il.co.ilrd.utility.ColorsFont;
 
 public class PingPongClientBroadcast {
-    private static Scanner scan = new Scanner(System.in);
-
     public PingPongClientBroadcast() {
 
         try (Scanner scan = new Scanner(System.in);
