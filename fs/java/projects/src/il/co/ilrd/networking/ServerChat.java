@@ -55,7 +55,6 @@ public class ServerChat {
                     line = in.readUTF();
                     System.out.println(line);
                     for (Socket so : socketList) {
-                        System.out.println(socketList.size());
                         if (!so.equals(socket)) {
                             out = new DataOutputStream(so.getOutputStream());
                             out.writeUTF(line);
