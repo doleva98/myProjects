@@ -6,8 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
@@ -38,16 +42,15 @@ import javax.sound.midi.Sequencer;
 public class Test {
     public static void main(String[] args) {
         List<Integer> list = new ArrayList<>();
+        List<Integer> list1 = Arrays.asList(1, 3, 4, 14, 5, 3, 2);
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         Map<Integer, Integer> hm = new HashMap<>();
         ExecutorService ex = Executors.newFixedThreadPool(3);
         try (Scanner scan = new Scanner(System.in)) {
         }
-        try {
-            Sequence s = new Sequence(478, 5);
-        } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
-        }
+        List<String> list2 = Arrays.asList("hello", "world");
+
+        InputStreamReader ir = new InputStreamReader(System.in);
 
     }
 
