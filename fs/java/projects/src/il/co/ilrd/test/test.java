@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.Sequence;
+import javax.sound.midi.Sequencer;
+
 public class Test {
     public static void main(String[] args) {
         List<Integer> list = new ArrayList<>();
@@ -38,7 +43,12 @@ public class Test {
         ExecutorService ex = Executors.newFixedThreadPool(3);
         try (Scanner scan = new Scanner(System.in)) {
         }
-        
+        try {
+            Sequence s = new Sequence(478, 5);
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }
