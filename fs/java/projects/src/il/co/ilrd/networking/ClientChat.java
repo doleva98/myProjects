@@ -21,9 +21,11 @@ public class ClientChat {
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             out = new DataOutputStream(socket.getOutputStream());
             System.out.println("connected");
-            Random rnd = new Random();
+            
+            Random rnd = new Random(ColorsFont.numberOfColorFonts);
             String color = ColorsFont.ColorFontsArray[rnd.nextInt(ColorsFont.numberOfColorFonts)];
             System.out.println(color + "********" + ColorsFont.ANSI_RESET);
+
             System.out.println("what is your name?");
             name = scan.nextLine();
 
