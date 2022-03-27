@@ -1,3 +1,4 @@
+/* shani */
 package il.co.ilrd.networking;
 
 import java.io.BufferedInputStream;
@@ -31,6 +32,11 @@ public class ServerChat {
             }
 
         } catch (IOException e) {
+            try {
+                server.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
             e.printStackTrace();
         }
     }

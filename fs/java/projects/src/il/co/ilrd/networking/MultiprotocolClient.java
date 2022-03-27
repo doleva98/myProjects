@@ -103,6 +103,6 @@ public class MultiprotocolClient {
     }
 
     public static void main(String[] args) {
-        new MultiprotocolClient("localhost", 5000);
+        new MultiprotocolClient("localhost", 1234);
     }
 }
