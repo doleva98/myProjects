@@ -34,7 +34,6 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
@@ -51,7 +50,7 @@ public class Test {
         List<String> list2 = Arrays.asList("hello", "world");
 
         InputStreamReader ir = new InputStreamReader(System.in);
-
+        System.out.println("dsds");
     }
 
 }
