@@ -23,13 +23,12 @@ public class MultiprotocolServer {
             String line = "";
             DatagramPacket inputDatagramPacket = null;
             DatagramPacket outputDatagramPacket = null;
-
+            server = new ServerSocket(port);
+            System.out.println("server started");
+            System.out.println("waiting for client...");
             String output = "";
             byte[] buf = null;
 
-            System.out.println("server started");
-
-            System.out.println("waiting for a packet");
             System.out.println(ColorsFont.ANSI_PURPLE + "********" + ColorsFont.ANSI_RESET);
 
             inputDatagramPacket = new DatagramPacket(receive, receive.length);
@@ -64,13 +63,8 @@ public class MultiprotocolServer {
                     line = ByteArrayToString.byteArrayToString(receive);
                 }
             } else if (line.equals("chat")) {
-
-            } else {
                 try {
-                    server = new ServerSocket(port);
 
-                    System.out.println("server started");
-                    System.out.println("waiting for client...");
                     socketList = new ArrayList<>();
                     Socket socket = null;
                     while (true) {
@@ -83,6 +77,8 @@ public class MultiprotocolServer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                System.out.println("exiting");
             }
         } catch (IOException e) {
             e.printStackTrace();

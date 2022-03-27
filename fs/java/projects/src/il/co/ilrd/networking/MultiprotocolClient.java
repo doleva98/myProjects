@@ -31,7 +31,7 @@ public class MultiprotocolClient {
             DatagramPacket inputDatagramPacket = null;
 
             System.out.println(ColorsFont.ANSI_CYAN + "********" + ColorsFont.ANSI_RESET);
-            System.out.println("do you want to use char or ping");
+            System.out.println("do you want to use chat or ping");
             String line = scan.nextLine();
 
             if (line.equals("ping")) {
@@ -60,6 +60,9 @@ public class MultiprotocolClient {
                 ds.send(outputDatagramPacket);
 
             } else if (line.equals("chat")) {
+                buf = line.getBytes();
+                outputDatagramPacket = new DatagramPacket(buf, buf.length, ip, toPort);
+                ds.send(outputDatagramPacket);
 
                 socket = new Socket(address, toPort);
                 in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
