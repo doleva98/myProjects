@@ -59,6 +59,6 @@ public class Test {
         List<String> list3 = Arrays.asList("fdfdf", "Fsdsde", "wwiewuiwe", "wwff");
 
         System.out.println(Pattern.matches("g*e*ks$", "ggeeeeeeks"));
-    }
 
+    }
 }
