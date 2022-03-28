@@ -8,121 +8,166 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import il.co.ilrd.utility.ColorsFont;
 
 public class MultiprotocolServer {
-    private List<Socket> socketList = null;
+    private List<Socket> socketList = new ArrayList<>();
     private ServerSocket server = null;
+    private DatagramPacket inputDatagramPacket = null;
+    private DatagramSocket ds = null;
+    private byte[] receive = null;
+    private DataInputStream in = null;
+    private Map<String, Service> mapServices = new HashMap<>();
 
     public MultiprotocolServer(int port) {
-        try (DatagramSocket ds = new DatagramSocket(port);) {
-            byte[] receive = new byte[65535];
-            String line = "";
-            DatagramPacket inputDatagramPacket = null;
-            DatagramPacket outputDatagramPacket = null;
+        try {
+            startMap();
+
+            // mapServices.put("TCPPingPong", new TCPServicePingPong());
+            // mapServices.put("UDPPingPong", new UDPServicePingPong());
+
             server = new ServerSocket(port);
-            System.out.println("server started");
-            System.out.println("waiting for client...");
-            String output = "";
-            byte[] buf = null;
-
-            System.out.println(ColorsFont.ANSI_PURPLE + "********" + ColorsFont.ANSI_RESET);
-
-            inputDatagramPacket = new DatagramPacket(receive, receive.length);
-            ds.receive(inputDatagramPacket);
-
-            System.out.println("server got a packet");
-            line = ByteArrayToString.byteArrayToString(receive);
-            if (line.equals("ping")) {
-
-                while (!line.equals("exit")) {
-                    if (line.equals("ping")) {
-                        System.out.println("server got ping");
-                        System.out.println("sends pong");
-                        output = "pong";
-                    } else if (line.equals("pong")) {
-                        System.out.println("server got pong");
-                        System.out.println("sends ping");
-                        output = "ping";
-                    } else {
-                        System.out.println("exiting");
-                        break;
-                    }
-                    buf = output.getBytes();
-                    outputDatagramPacket = new DatagramPacket(buf, buf.length, inputDatagramPacket.getAddress(),
-                            inputDatagramPacket.getPort());
-                    ds.send(outputDatagramPacket);
-
-                    inputDatagramPacket = new DatagramPacket(receive, receive.length);
-                    ds.receive(inputDatagramPacket);
-
-                    System.out.println("server got a packet");
-                    line = ByteArrayToString.byteArrayToString(receive);
-                }
-            } else if (line.equals("chat")) {
-                try {
-
-                    socketList = new ArrayList<>();
-                    Socket socket = null;
-                    while (true) {
-                        socket = server.accept();
+            ExecutorService executor = Executors.newCachedThreadPool();
+            /* for the TCP clients */
+            executor.submit(() -> {
+                String line = "";
+                while (!server.isClosed()) {
+                    try {
+                        Socket socket = server.accept();
                         socketList.add(socket);
-                        ThreadImp threadImp = new ThreadImp(socket);
-                        threadImp.start();
-                    }
+                        in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                        line = in.readUTF();
+                        String key = line.split(" ")[0];
+                        String valueString = line.split(" ")[1];
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                        mapServices.get(key).startService(new TCPResponder(socket),
+                                valueString);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-            } else {
-                System.out.println("exiting");
-            }
+            });
+
+            /* for the datagram */
+            ds = new DatagramSocket(port);
+            receive = new byte[65535];
+
+            executor.submit(() -> {
+                String line = "";
+                while (ds.isConnected()) {
+                    inputDatagramPacket = new DatagramPacket(receive, receive.length);
+                    try {
+                        ds.receive(inputDatagramPacket);
+                        line = ByteArrayToString.byteArrayToString(receive);
+                        mapServices.get(line).startService(
+                                new UDPResponder(inputDatagramPacket.getAddress(), inputDatagramPacket.getPort()),
+                                line.split(" ")[1]);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mapServices = new HashMap<>();
+
     }
 
-    private class ThreadImp extends Thread {
-        private Socket socket = null;
-        private DataInputStream in = null;
-        private DataOutputStream out = null;
+    private void startMap() {
 
-        public ThreadImp(Socket socket) {
+        mapServices.put("TCPPingPong", new TCPServicePingPong());
+        mapServices.put("UDPPingPong", new UDPServicePingPong());
+
+    }
+
+    private interface Service {
+        public void startService(Responder responder, String message);
+    }
+
+    private class TCPServicePingPong implements Service {
+
+        /* public TCPServicePingPong() {
+        
+        } */
+
+        @Override
+        public void startService(Responder responder, String message) {
+            System.out.println("you are now in TCP ping pong");
+            System.out.println("enter ping or pong");
+            if (message.equals("ping")) {
+                System.out.println("server got ping");
+                System.out.println("server sends pong");
+                responder.respond("pong");
+            } else if (message.equals("pong")) {
+                System.out.println("server got pong");
+                System.out.println("server sends ping");
+                responder.respond("ping");
+            }
+        }
+
+    }
+
+    private class UDPServicePingPong implements Service {
+
+        @Override
+        public void startService(Responder responder, String message) {
+
+        }
+
+    }
+
+    private interface Responder {
+        public void respond(String str);
+    }
+
+    private class TCPResponder implements Responder {
+        private Socket socket = null;
+
+        public TCPResponder(Socket socket) {
             this.socket = socket;
         }
 
         @Override
-        public void run() {
-            System.out.println("client accepted");
+        public void respond(String str) {
             try {
-                in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+                out.writeUTF(str);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-                String line = "";
-                while (!line.equals("exit")) {
-                    System.out.println(ColorsFont.ANSI_PURPLE + "********" + ColorsFont.ANSI_RESET);
-                    line = in.readUTF();
-                    System.out.println(line);
-                    for (Socket so : socketList) {
-                        if (!so.equals(socket)) {
-                            out = new DataOutputStream(so.getOutputStream());
-                            out.writeUTF(line);
-                        }
-                    }
-                }
-                for (Socket so : socketList) {
-                    if (!so.equals(socket)) {
-                        out = new DataOutputStream(so.getOutputStream());
-                        out.writeUTF(line);
-                    }
-                }
-                in.close();
-                out.close();
-                socket.close();
+        }
+    }
+
+    private class UDPResponder implements Responder {
+        private InetAddress ip;
+        private int port;
+
+        public UDPResponder(InetAddress ip, int port) {
+            this.ip = ip;
+            this.port = port;
+        }
+
+        @Override
+        public void respond(String str) {
+            byte[] buf = str.getBytes();
+            DatagramPacket outputDatagramPacket = new DatagramPacket(buf, buf.length, ip,
+                    port);
+            try {
+                ds.send(outputDatagramPacket);
             } catch (IOException e) {
                 e.printStackTrace();
             }

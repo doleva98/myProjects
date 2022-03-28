@@ -55,10 +55,7 @@ public class Test {
         ExecutorService ex = Executors.newFixedThreadPool(3);
         try (Scanner scan = new Scanner(System.in)) {
         }
-
-        List<String> list3 = Arrays.asList("fdfdf", "Fsdsde", "wwiewuiwe", "wwff");
-
-        System.out.println(Pattern.matches("g*e*ks$", "ggeeeeeeks"));
-
+        String s = "fjdkfh fdflkjdf dfd fd ";
+        System.out.println(s.split(" ")[3]);
     }
 }

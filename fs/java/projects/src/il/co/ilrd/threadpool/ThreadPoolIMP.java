@@ -134,13 +134,13 @@ public class ThreadPoolIMP implements Executor {
         isPaused = true;
         for (int i = 0; i < threads.size(); ++i) {
             submitImp(() -> {
-                while (isPaused) {
-                    threadPoolLock.lock();
-                    try {
+                threadPoolLock.lock();
+                try {
+                    while (isPaused) {
                         threadPoolCond.await();
-                    } finally {
-                        threadPoolLock.unlock();
                     }
+                } finally {
+                    threadPoolLock.unlock();
                 }
                 return null;
             }, SYSTEMPRIORITY);
@@ -177,13 +177,14 @@ public class ThreadPoolIMP implements Executor {
     }
 
     private <T> Future<T> submitImp(Callable<T> callable, int priority) {
+        Future<T> future = null;
         if (!isShutdown) {
             Objects.requireNonNull(callable);
             Task<T> tempTask = new Task<>(callable, priority);
             tasks.enqueue(tempTask);
-            return tempTask.getFuture();
+            future = tempTask.getFuture();
         }
-        return null;
+        return future;
     }
 
     private <T> boolean removeTask(Task<T> task) {
