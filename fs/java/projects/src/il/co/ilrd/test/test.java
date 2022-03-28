@@ -2,11 +2,15 @@ package il.co.ilrd.test;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -33,7 +37,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
@@ -47,10 +55,10 @@ public class Test {
         ExecutorService ex = Executors.newFixedThreadPool(3);
         try (Scanner scan = new Scanner(System.in)) {
         }
-        List<String> list2 = Arrays.asList("hello", "world");
 
-        InputStreamReader ir = new InputStreamReader(System.in);
-        System.out.println("dsds");
+        List<String> list3 = Arrays.asList("fdfdf", "Fsdsde", "wwiewuiwe", "wwff");
+
+        System.out.println(Pattern.matches("g*e*ks$", "ggeeeeeeks"));
     }
 
 }

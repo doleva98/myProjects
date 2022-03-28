@@ -29,7 +29,7 @@ public class ThreadPoolIMP implements Executor {
     private final Condition threadPoolCond = threadPoolLock.newCondition();
     private final Semaphore sema = new Semaphore(0);
     private boolean isShutdown = false;
-
+    private boolean isPaused = false;
     private int sizeBeforeShutdown = 0;/* for the semaphore , size of threads*/
     private final static int DEFAULTPRIORITY = Priority.MEDIUM.ordinal();
     private final static int SYSTEMPRIORITY = Priority.values().length;
@@ -114,6 +114,7 @@ public class ThreadPoolIMP implements Executor {
     }
 
     public void resume() {
+        isPaused = false;
         threadPoolLock.lock();
         try {
             for (int i = 0; i < threads.size(); ++i) {
@@ -130,13 +131,16 @@ public class ThreadPoolIMP implements Executor {
     }
 
     public void pause() {
+        isPaused = true;
         for (int i = 0; i < threads.size(); ++i) {
             submitImp(() -> {
-                threadPoolLock.lock();
-                try {
-                    threadPoolCond.await();
-                } finally {
-                    threadPoolLock.unlock();
+                while (isPaused) {
+                    threadPoolLock.lock();
+                    try {
+                        threadPoolCond.await();
+                    } finally {
+                        threadPoolLock.unlock();
+                    }
                 }
                 return null;
             }, SYSTEMPRIORITY);
