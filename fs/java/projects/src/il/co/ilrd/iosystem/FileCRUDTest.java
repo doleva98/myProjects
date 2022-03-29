@@ -6,13 +6,16 @@ public class FileCRUDTest {
             fcrud.create("HELLO WORLD");
             fcrud.create("WOWWWW");
             fcrud.create("HOOO YAYYY");
+            fcrud.create("DOLEVVDSS");
             System.out.println("round 1");
 
-            for (int i = 0; i < 3; ++i) {
+            for (int i = 0; i < 4; ++i) {
                 System.out.println(fcrud.read(i));
             }
-            /*  fcrud.update(1, "DOLEV");
-            System.out.println("round 2");
+            // fcrud.update(1, "DOLEV");
+            // System.out.println(fcrud.read(1));
+
+            /*System.out.println("round 2");
             
             for (int i = 0; i < 3; ++i) {
                 System.out.println(fcrud.read(i));
