@@ -39,7 +39,7 @@ class FileCRUD implements CRUD<Integer, String> {
 
     @Override
     public String read(Integer key) throws IOException {
-        return Files.readAllLines(Paths.get(path)).get(key);
+        return Files.readAllLines(Paths.get(path)).get(key).trim();
     }
 
     @Override
@@ -54,8 +54,8 @@ class FileCRUD implements CRUD<Integer, String> {
         create(data);
         for (int i = key; i < list.size(); ++i) {
             create(list.get(i));
-
         }
+
     }
 
     @Override

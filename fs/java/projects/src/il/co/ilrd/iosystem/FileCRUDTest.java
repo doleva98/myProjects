@@ -11,18 +11,18 @@ public class FileCRUDTest {
         try (FileCRUD fcrud = new FileCRUD("a.txt")) {
             final int SIZE = 10;
             for (int i = 0; i < SIZE; ++i) {
-                assertEquals(fcrud.create(Integer.toString(i)), i);
+                assertEquals(fcrud.create("wow"), i);
             }
 
             for (int i = 0; i < SIZE; ++i) {
-                assertEquals(Integer.parseInt(fcrud.read(i)), i);
+                assertEquals(fcrud.read(i), "wow");
             }
-            for (int i = SIZE / 2; i > 0; --i) {
+            for (int i = 0; i < SIZE / 2; ++i) {
                 fcrud.delete(i);
             }
 
             for (int i = 0; i < SIZE / 2; ++i) {
-                assertEquals(Integer.parseInt(fcrud.read(i)), i);
+                assertEquals(fcrud.read(i), "wow");
             }
             for (int i = 0; i < SIZE / 2; ++i) {
                 fcrud.update(i, "hello world");
