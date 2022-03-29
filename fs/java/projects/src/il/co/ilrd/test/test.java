@@ -3,6 +3,7 @@ package il.co.ilrd.test;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -37,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -53,9 +55,14 @@ public class Test {
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         Map<Integer, Integer> hm = new HashMap<>();
         ExecutorService ex = Executors.newFixedThreadPool(3);
-        try (Scanner scan = new Scanner(System.in)) {
+        BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
+
+        Pattern p = Pattern.compile("[Z*]");
+        Matcher m = p.matcher("ZZZaaaaaaab");
+        while (m.find()) {
+            System.out.println(m.start());
+            System.out.println("we");
+            System.out.println(m.end());
         }
-        String s = "fjdkfh fdflkjdf dfd fd ";
-        System.out.println(s.split(" ")[3]);
     }
 }
