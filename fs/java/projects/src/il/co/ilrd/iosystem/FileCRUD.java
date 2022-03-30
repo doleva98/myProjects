@@ -1,71 +1,60 @@
 package il.co.ilrd.iosystem;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
 class FileCRUD implements CRUD<Integer, String> {
-    private final String path;
-    private final BufferedWriter bw;
+    private final List<String> lines;
+    private final Path path;
 
-    public FileCRUD(String path, boolean cleanFile) throws IOException {
+    public FileCRUD(String path, boolean dontCleanFile) throws IOException, ClassNotFoundException {
         Objects.requireNonNull(path);
-        this.path = path;
-        bw = new BufferedWriter(new FileWriter(path, cleanFile));
+        this.path = Paths.get(path);
+        lines = Files.readAllLines(Paths.get(path));
+        if (!dontCleanFile) {
+            cleanFile();
+        }
     }
 
     @Override
     public void close() throws Exception {
-        bw.close();
     }
 
     @Override
     public Integer create(String data) throws IOException {
-        if (size() != 0) {
-            bw.newLine();
-        }
-        bw.write(data);
-        bw.flush();
+        lines.add(data);
+        Files.write(path, lines);
         return size() - 1;
     }
 
     @Override
     public String read(Integer key) throws IOException {
-        return Files.readAllLines(Paths.get(path)).get(key).trim();
+        return lines.get(key);
     }
 
     @Override
     public void update(Integer key, String data) throws IOException, ClassNotFoundException {
-        List<String> list = Files.readAllLines(Paths.get(path));
-        list.set(key, data);
-        writeToCleanFile(list);
+        lines.set(key, data);
+        Files.write(path, lines);
     }
 
     @Override
     public void delete(Integer key) throws IOException, ClassNotFoundException {
-        List<String> list = Files.readAllLines(Paths.get(path));
-        list.remove((int) key);
-        writeToCleanFile(list);
+        lines.remove((int) key);
+        Files.write(path, lines);
     }
 
     public int size() throws IOException {
-        return Files.readAllLines(Paths.get(path)).size();
-    }
-
-    private void writeToCleanFile(List<String> list) throws IOException, ClassNotFoundException {
-        cleanFile();
-        for (String str : list) {
-            create(str);
-        }
+        return lines.size();
     }
 
     private void cleanFile() throws IOException, ClassNotFoundException {
-        BufferedWriter bw1 = new BufferedWriter(new FileWriter(path));
-        bw1.close();
-        delete(0);
+        while (!lines.isEmpty()) {
+            delete(0);
+        }
     }
 }

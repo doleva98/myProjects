@@ -40,7 +40,9 @@ public class FileCRUDTest {
     }
 
     public static void main(String[] args) {
-        try (FileCRUD fcrud = new FileCRUD("a.txt", false)) {
+        try (FileCRUD fcrud = new FileCRUD(
+                "C:\\Users\\dolev\\Desktop\\git\\dolev-arev\\fs\\java\\projects\\src\\il\\co\\ilrd\\iosystem\\dir\\a.txt",
+                false)) {
             fcrud.create("HELLO WORLD");
             fcrud.create("WOW");
             fcrud.create("dino");
