@@ -46,7 +46,7 @@ public class FolderMonitor {
                         if (!wasEntry) {
                             notifyAllCallback(eventFile + " " + kind.name());
                         }
-                        if (StandardWatchEventKinds.ENTRY_MODIFY == kind) {
+                        if (StandardWatchEventKinds.ENTRY_MODIFY.equals(kind)) {
                             if (!wasEntry) {
                                 wasEntry = true;
                             } else {
@@ -57,7 +57,6 @@ public class FolderMonitor {
                         if (!key.reset()) {
                             break;
                         }
-
                     }
                 }
             } catch (IOException e) {

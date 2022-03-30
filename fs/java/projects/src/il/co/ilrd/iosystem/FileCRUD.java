@@ -61,7 +61,7 @@ class FileCRUD implements CRUD<Integer, String> {
         }
     }
 
-    private void cleanFile() throws IOException {
+    public void cleanFile() throws IOException {
         BufferedWriter bw1 = new BufferedWriter(new FileWriter(path));
         bw1.close();
     }
