@@ -1,5 +1,7 @@
 package il.co.ilrd.iosystem;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,12 +13,17 @@ class FileCRUD implements CRUD<Integer, String> {
     private final List<String> lines;
     private final Path path;
 
-    public FileCRUD(String path, boolean dontCleanFile) throws IOException, ClassNotFoundException {
+    public FileCRUD(String path, boolean cleanFile) throws IOException, ClassNotFoundException {
         Objects.requireNonNull(path);
         this.path = Paths.get(path);
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path.toString()))) {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         lines = Files.readAllLines(Paths.get(path));
-        if (!dontCleanFile) {
-            cleanFile();
+        if (lines.size() != 0 && cleanFile) {
+            lines.clear();
+            Files.write(this.path, lines);
         }
     }
 
@@ -50,11 +57,5 @@ class FileCRUD implements CRUD<Integer, String> {
 
     public int size() throws IOException {
         return lines.size();
-    }
-
-    private void cleanFile() throws IOException, ClassNotFoundException {
-        while (!lines.isEmpty()) {
-            delete(0);
-        }
     }
 }

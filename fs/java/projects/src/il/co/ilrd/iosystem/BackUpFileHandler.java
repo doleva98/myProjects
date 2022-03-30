@@ -1,57 +1,74 @@
 package il.co.ilrd.iosystem;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
+import java.util.List;
 
 import il.co.ilrd.observer.Callback;
 
 public class BackUpFileHandler {
-    private Callback<String> callback = new Callback<>(str -> update(str),
+    private Callback<String> callback = new Callback<>(str -> {
+        try {
+            update(str);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    },
             () -> {
             });
-    private String originalFileName;
-    private FileCRUD originalFileCrud = null;
+    private Path originalFilePath;
     private FileCRUD backUpFileCrud = null;
+    private List<String> lines;
 
-    public BackUpFileHandler(String originalFile, String backUpFile) throws IOException {
-        this.originalFileName = Paths.get(originalFile).getFileName().toString();
-        originalFileCrud = new FileCRUD(originalFile, true);
-        backUpFileCrud = new FileCRUD(backUpFile, false);
-        for (int i = 0; i < originalFileCrud.size(); ++i) {
-            backUpFileCrud.create(originalFileCrud.read(i));
+    public BackUpFileHandler(String originalFile, String backUpFile) throws IOException, ClassNotFoundException {
+        originalFilePath = Paths.get(originalFile);
+        backUpFileCrud = new FileCRUD(backUpFile, true);
+        lines = Files.readAllLines(originalFilePath);
+        for (int i = 0; i < lines.size(); ++i) {
+            backUpFileCrud.create(lines.get(i));
         }
-        System.out.println(originalFileCrud.size());
-        System.out.println(backUpFileCrud.size());
     }
 
-    public void update(String pathAndEntryState) {
-        if (!pathAndEntryState.split(" ")[0].equals(originalFileName)) {
+    public void update(String pathAndEntryState) throws IOException {
+        if (!pathAndEntryState.split(" ")[0].equals(originalFilePath.getFileName().toString())) {
             return;
         }
+        lines = Files.readAllLines(originalFilePath);
+        System.out.println(lines);
         if (StandardWatchEventKinds.ENTRY_MODIFY.name().equals(pathAndEntryState.split(" ")[1])) {
             try {
-                if (originalFileCrud.size() > backUpFileCrud.size()) {
-                    System.out.println("adding entry");
+                System.out.println(lines.size());
+                System.out.println(backUpFileCrud.size());
+                if (lines.size() > backUpFileCrud.size()) {
+
                     for (int i = 0; i < backUpFileCrud.size(); ++i) {
-                        if (!backUpFileCrud.read(i).equals(originalFileCrud.read(i))) {
-                            backUpFileCrud.update(i, originalFileCrud.read(i));
+                        if (!backUpFileCrud.read(i).equals(lines.get(i))) {
+                            backUpFileCrud.update(i, lines.get(i));
                         }
                     }
-                    backUpFileCrud.create(backUpFileCrud.read(backUpFileCrud.size() - 1));
-                } else if (originalFileCrud.size() < backUpFileCrud.size()) {
-                    System.out.println("deleting entry");
-                    for (int i = 0; i < originalFileCrud.size(); ++i) {
-                        if (!backUpFileCrud.read(i).equals(originalFileCrud.read(i))) {
+                    for (int i = backUpFileCrud.size(); i < lines.size(); ++i) {
+                        backUpFileCrud.create(lines.get(i));
+                    }
+
+                } else if (lines.size() < backUpFileCrud.size()) {
+                    for (int i = 0; i < lines.size(); ++i) {
+                        if (!backUpFileCrud.read(i).equals(lines.get(i))) {
                             backUpFileCrud.delete(i);
+                            --i;
                             break;
                         }
                     }
+                    for (int i = lines.size(); i < backUpFileCrud.size(); ++i) {
+                        backUpFileCrud.delete(i);
+                    }
                 } else {
-                    System.out.println("updating entry");
-                    for (int i = 0; i < originalFileCrud.size(); ++i) {
-                        if (!backUpFileCrud.read(i).equals(originalFileCrud.read(i))) {
-                            backUpFileCrud.update(i, originalFileCrud.read(i));
+
+                    for (int i = 0; i < lines.size(); ++i) {
+                        if (!backUpFileCrud.read(i).equals(lines.get(i))) {
+                            backUpFileCrud.update(i, lines.get(i));
                         }
                     }
                 }
@@ -59,9 +76,7 @@ public class BackUpFileHandler {
                 e.printStackTrace();
             }
         } else if (StandardWatchEventKinds.ENTRY_DELETE.name().equals(pathAndEntryState.split(" ")[1])) {
-            System.out.println("entry deleted");
         } else if (StandardWatchEventKinds.ENTRY_CREATE.name().equals(pathAndEntryState.split(" ")[1])) {
-            System.out.println("entry created");
         }
     }
 

@@ -9,8 +9,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.WatchEvent.Kind;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+
 import java.util.concurrent.Future;
 import il.co.ilrd.observer.Callback;
 import il.co.ilrd.observer.Dispatcher;
@@ -25,11 +24,8 @@ public class FolderMonitor {
     }
 
     public void start() {
-        /* ExecutorService Executor = Executors.newSingleThreadExecutor();
-        
-        function = Executor.submit(() -> { */
+
         try (WatchService ws = FileSystems.getDefault().newWatchService()) {
-            boolean wasEntry = false;
             Path dir = Paths.get(path);
             dir.register(ws,
                     StandardWatchEventKinds.ENTRY_CREATE,
@@ -43,20 +39,10 @@ public class FolderMonitor {
                 for (WatchEvent<?> event : key.pollEvents()) {
                     Path eventFile = (Path) event.context();
                     Kind<?> kind = event.kind();
-                    if (!wasEntry) {
-                        notifyAllCallback(eventFile + " " + kind.name());
-                    }
-                    if (StandardWatchEventKinds.ENTRY_MODIFY.equals(kind)) {
-                        if (!wasEntry) {
-                            wasEntry = true;
-                        } else {
-                            wasEntry = false;
-                        }
-                    }
-
-                    if (!key.reset()) {
-                        break;
-                    }
+                    notifyAllCallback(eventFile + " " + kind.name());
+                }
+                if (!key.reset()) {
+                    break;
                 }
             }
         } catch (IOException e) {
@@ -64,7 +50,7 @@ public class FolderMonitor {
         } catch (InterruptedException e) {
             System.out.println("canceled");
         }
-        /*  }); */
+
     }
 
     public void cancelTask() {
