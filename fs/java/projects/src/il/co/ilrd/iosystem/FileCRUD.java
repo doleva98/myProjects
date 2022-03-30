@@ -50,6 +50,10 @@ class FileCRUD implements CRUD<Integer, String> {
         writeToCleanFile(list);
     }
 
+    public int size() throws IOException {
+        return Files.readAllLines(Paths.get(path)).size();
+    }
+
     private void writeToCleanFile(List<String> list) throws IOException {
         cleanFile();
         for (String str : list) {
