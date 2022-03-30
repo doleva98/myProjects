@@ -14,6 +14,7 @@ import java.io.OutputStreamWriter;
 import java.io.PipedInputStream;
 import java.net.URL;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,15 +56,6 @@ public class Test {
         PriorityQueue<Integer> pq = new PriorityQueue<>();
         Map<Integer, Integer> hm = new HashMap<>();
         ExecutorService ex = Executors.newFixedThreadPool(3);
-        BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
-
-        Pattern p = Pattern.compile("[Z*]");
-        Matcher m = p.matcher("ZZZaaaaaaab");
-        while (m.find()) {
-            System.out.println(m.start());
-            System.out.println("we");
-            System.out.println(m.end());
-        }
-
+        System.out.println("hello world");
     }
 }

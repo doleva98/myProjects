@@ -5,21 +5,17 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Random;
 import java.util.Scanner;
 
 import il.co.ilrd.utility.ColorsFont;
 
 public class MultiprotocolClient {
 
-    private String name = null;
+/*     private String name = null;
     private Socket socket = null;
     private DataInputStream in = null;
-    private DataOutputStream out = null;
+    private DataOutputStream out = null; */
 
     public MultiprotocolClient(String address, int toPort) {
         try (Scanner scan = new Scanner(System.in);

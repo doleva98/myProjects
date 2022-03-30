@@ -25,11 +25,10 @@ class Outer implements Serializable {
                 System.out.println("i = " + outer.i);
                 System.out.println("j = " + outer.j);
                 System.out.println("k = " + outer.k);
-                System.out.println("k1 = " + outer.k1);
+                // System.out.println("k1 = " + outer.k1);
                 System.out.println("k2 = " + outer.k2);
 
             } catch (ClassNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 

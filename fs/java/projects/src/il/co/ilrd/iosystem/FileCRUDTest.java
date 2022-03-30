@@ -8,7 +8,7 @@ public class FileCRUDTest {
 
     @Test
     public void test() {
-        try (FileCRUD fcrud = new FileCRUD("/mnt/c/Users/dolev/Desktop/git/dolev-arev/fs/java/projects/a.txt")) {
+        try (FileCRUD fcrud = new FileCRUD("/mnt/c/Users/dolev/Desktop/git/dolev-arev/fs/java/projects/a.txt", false)) {
             final int SIZE = 10;
             for (int i = 0; i < SIZE; ++i) {
                 assertEquals(fcrud.create("wow"), i);
@@ -39,11 +39,11 @@ public class FileCRUDTest {
     }
 
     public static void main(String[] args) {
-        try (FileCRUD fcrud = new FileCRUD("a.txt")) {
+        try (FileCRUD fcrud = new FileCRUD("a.txt",false)) {
             fcrud.create("HELLO WORLD");
-            fcrud.create("WOWWWW");
-            fcrud.create("HOOO YAYYY");
-            fcrud.create("DOLEVVDSS");
+            fcrud.create("WOW");
+            fcrud.create("dino");
+            fcrud.create("DOLEV");
             System.out.println("round 1");
 
             for (int i = 0; i < 4; ++i) {
@@ -59,7 +59,7 @@ public class FileCRUDTest {
             }
             System.out.println("*********");
 
-            fcrud.update(0, "HEloow wrodl");
+            fcrud.update(0, "hello world");
             for (int i = 0; i < 3; ++i) {
                 System.out.println(fcrud.read(i));
             }

@@ -12,10 +12,10 @@ class FileCRUD implements CRUD<Integer, String> {
     private final String path;
     private final BufferedWriter bw;
 
-    public FileCRUD(String path) throws IOException {
+    public FileCRUD(String path, boolean cleanFile) throws IOException {
         Objects.requireNonNull(path);
         this.path = path;
-        bw = new BufferedWriter(new FileWriter(path));
+        bw = new BufferedWriter(new FileWriter(path, cleanFile));
     }
 
     @Override

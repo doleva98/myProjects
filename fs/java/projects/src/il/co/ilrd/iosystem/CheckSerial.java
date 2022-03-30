@@ -29,14 +29,13 @@ public class CheckSerial implements Serializable {
         System.out.println(c1.o.s);
 
         System.out.println("BEFORE");
-        String str = "HELLLOOWO wORLDLDLD";
+        String str = "HELLO WORLD";
         try (FileOutputStream fos = new FileOutputStream("a.txt")) {
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(c1);
             oos.writeObject(c2);
             oos.writeObject(str);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         CheckSerial s1;
@@ -48,12 +47,11 @@ public class CheckSerial implements Serializable {
             s2 = (CheckSerial) oos.readObject();
             System.out.println((String) oos.readObject());
             System.out.println(s1.o.s);
-            s2.o.s = "BEOKE";
+            s2.o.s = "BEFORE";
 
             System.out.println(s1.o.s);
 
         } catch (IOException | ClassNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
