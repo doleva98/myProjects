@@ -28,7 +28,7 @@ public class MultiprotocolClient {
                 DataOutputStream out = new DataOutputStream(socket.getOutputStream());) {
             System.out.println("connected");
             System.out.println(ColorsFont.ANSI_CYAN + "********" + ColorsFont.ANSI_RESET);
-            System.out.println("send ping or pong");
+            System.out.println("send key and value");
             String line = scan.nextLine();
 
             out.writeUTF(line);

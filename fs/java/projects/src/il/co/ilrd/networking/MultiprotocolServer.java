@@ -21,37 +21,35 @@ import java.util.concurrent.Executors;
 import il.co.ilrd.utility.ColorsFont;
 
 public class MultiprotocolServer {
-    private List<Socket> socketList = new ArrayList<>();
     private ServerSocket server = null;
     private DatagramPacket inputDatagramPacket = null;
     private DatagramSocket ds = null;
     private byte[] receive = null;
     private DataInputStream in = null;
     private Map<String, Service> mapServices = new HashMap<>();
+    private ExecutorService executor;
 
     public MultiprotocolServer(int port) {
         try {
             startMap();
 
-            // mapServices.put("TCPPingPong", new TCPServicePingPong());
-            // mapServices.put("UDPPingPong", new UDPServicePingPong());
-
             server = new ServerSocket(port);
-            ExecutorService executor = Executors.newCachedThreadPool();
+            executor = Executors.newCachedThreadPool();
             /* for the TCP clients */
             executor.submit(() -> {
                 String line = "";
                 while (!server.isClosed()) {
                     try {
                         Socket socket = server.accept();
-                        socketList.add(socket);
                         in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                         line = in.readUTF();
                         String key = line.split(" ")[0];
                         String valueString = line.split(" ")[1];
-
-                        mapServices.get(key).startService(new TCPResponder(socket),
-                                valueString);
+                        System.out.println(line);
+                        executor.submit(() -> {
+                            mapServices.get(key).startService(new TCPResponder(socket),
+                                    valueString);
+                        });
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -99,7 +97,7 @@ public class MultiprotocolServer {
 
     private class TCPServicePingPong implements Service {
 
-        /* public TCPServicePingPong() {
+        /*   public TCPServicePingPong() {
         
         } */
 
