@@ -21,7 +21,6 @@ public class FolderMonitor {
 
         function = Executor.submit(() -> {
             try (WatchService ws = FileSystems.getDefault().newWatchService()) {
-
                 Path dir = Paths.get(path);
                 dir.register(ws,
                         StandardWatchEventKinds.ENTRY_CREATE,
@@ -30,7 +29,6 @@ public class FolderMonitor {
                 System.out.println("folder monitor is created");
                 System.out.println(path + " is watched");
                 for (;;) {
-                    System.out.println("fd");
                     WatchKey key = ws.take();
                     for (WatchEvent<?> event : key.pollEvents()) {
                         Kind<?> kind = event.kind();
@@ -41,7 +39,7 @@ public class FolderMonitor {
                         } else if (StandardWatchEventKinds.ENTRY_DELETE == kind) {
                             System.out.println("entry deleted");
                         } else if (StandardWatchEventKinds.ENTRY_MODIFY == kind) {
-                            System.out.println("entry notified");
+                            System.out.println("entry modified");
                         }
                     }
                     if (!key.reset()) {
@@ -54,7 +52,6 @@ public class FolderMonitor {
                 e.printStackTrace();
             }
         });
-
     }
 
     public void cancelTask() {
