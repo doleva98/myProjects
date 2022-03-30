@@ -25,46 +25,46 @@ public class FolderMonitor {
     }
 
     public void start() {
-        ExecutorService Executor = Executors.newSingleThreadExecutor();
+        /* ExecutorService Executor = Executors.newSingleThreadExecutor();
+        
+        function = Executor.submit(() -> { */
+        try (WatchService ws = FileSystems.getDefault().newWatchService()) {
+            boolean wasEntry = false;
+            Path dir = Paths.get(path);
+            dir.register(ws,
+                    StandardWatchEventKinds.ENTRY_CREATE,
+                    StandardWatchEventKinds.ENTRY_DELETE,
+                    StandardWatchEventKinds.ENTRY_MODIFY);
+            System.out.println("folder monitor is created");
+            System.out.println(path + " is watched");
 
-        function = Executor.submit(() -> {
-            try (WatchService ws = FileSystems.getDefault().newWatchService()) {
-                boolean wasEntry = false;
-                Path dir = Paths.get(path);
-                dir.register(ws,
-                        StandardWatchEventKinds.ENTRY_CREATE,
-                        StandardWatchEventKinds.ENTRY_DELETE,
-                        StandardWatchEventKinds.ENTRY_MODIFY);
-                System.out.println("folder monitor is created");
-                System.out.println(path + " is watched");
-
-                for (;;) {
-                    WatchKey key = ws.take();
-                    for (WatchEvent<?> event : key.pollEvents()) {
-                        Path eventFile = (Path) event.context();
-                        Kind<?> kind = event.kind();
+            for (;;) {
+                WatchKey key = ws.take();
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    Path eventFile = (Path) event.context();
+                    Kind<?> kind = event.kind();
+                    if (!wasEntry) {
+                        notifyAllCallback(eventFile + " " + kind.name());
+                    }
+                    if (StandardWatchEventKinds.ENTRY_MODIFY.equals(kind)) {
                         if (!wasEntry) {
-                            notifyAllCallback(eventFile + " " + kind.name());
-                        }
-                        if (StandardWatchEventKinds.ENTRY_MODIFY.equals(kind)) {
-                            if (!wasEntry) {
-                                wasEntry = true;
-                            } else {
-                                wasEntry = false;
-                            }
-                        }
-
-                        if (!key.reset()) {
-                            break;
+                            wasEntry = true;
+                        } else {
+                            wasEntry = false;
                         }
                     }
+
+                    if (!key.reset()) {
+                        break;
+                    }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                System.out.println("canceled");
             }
-        });
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            System.out.println("canceled");
+        }
+        /*  }); */
     }
 
     public void cancelTask() {

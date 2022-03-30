@@ -17,11 +17,12 @@ public class BackUpFileHandler {
     public BackUpFileHandler(String originalFile, String backUpFile) throws IOException {
         this.originalFileName = Paths.get(originalFile).getFileName().toString();
         originalFileCrud = new FileCRUD(originalFile, true);
-        backUpFileCrud = new FileCRUD(backUpFile, true);
-        backUpFileCrud.cleanFile();
+        backUpFileCrud = new FileCRUD(backUpFile, false);
         for (int i = 0; i < originalFileCrud.size(); ++i) {
             backUpFileCrud.create(originalFileCrud.read(i));
         }
+        System.out.println(originalFileCrud.size());
+        System.out.println(backUpFileCrud.size());
     }
 
     public void update(String pathAndEntryState) {
@@ -30,11 +31,16 @@ public class BackUpFileHandler {
         }
         if (StandardWatchEventKinds.ENTRY_MODIFY.name().equals(pathAndEntryState.split(" ")[1])) {
             try {
-                System.out.println("entry modified");
-
                 if (originalFileCrud.size() > backUpFileCrud.size()) {
-                    backUpFileCrud.create(originalFileCrud.read(originalFileCrud.size() - 1));
+                    System.out.println("adding entry");
+                    for (int i = 0; i < backUpFileCrud.size(); ++i) {
+                        if (!backUpFileCrud.read(i).equals(originalFileCrud.read(i))) {
+                            backUpFileCrud.update(i, originalFileCrud.read(i));
+                        }
+                    }
+                    backUpFileCrud.create(backUpFileCrud.read(backUpFileCrud.size() - 1));
                 } else if (originalFileCrud.size() < backUpFileCrud.size()) {
+                    System.out.println("deleting entry");
                     for (int i = 0; i < originalFileCrud.size(); ++i) {
                         if (!backUpFileCrud.read(i).equals(originalFileCrud.read(i))) {
                             backUpFileCrud.delete(i);
@@ -42,6 +48,7 @@ public class BackUpFileHandler {
                         }
                     }
                 } else {
+                    System.out.println("updating entry");
                     for (int i = 0; i < originalFileCrud.size(); ++i) {
                         if (!backUpFileCrud.read(i).equals(originalFileCrud.read(i))) {
                             backUpFileCrud.update(i, originalFileCrud.read(i));

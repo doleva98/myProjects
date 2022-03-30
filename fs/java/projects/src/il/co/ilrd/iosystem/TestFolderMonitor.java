@@ -6,12 +6,12 @@ public class TestFolderMonitor {
     public static void main(String[] args) throws IOException {
         FolderMonitor fm = new FolderMonitor(
                 "C:\\Users\\dolev\\Desktop\\git\\dolev-arev\\fs\\java\\projects\\src\\il\\co\\ilrd\\iosystem\\dir");
-        fm.start();
         String originalFile = "C:\\Users\\dolev\\Desktop\\git\\dolev-arev\\fs\\java\\projects\\src\\il\\co\\ilrd\\iosystem\\dir\\hello1.txt";
         String backUpFile = "C:\\Users\\dolev\\Desktop\\git\\dolev-arev\\fs\\java\\projects\\src\\il\\co\\ilrd\\iosystem\\dir\\bu1.txt";
         BackUpFileHandler backUpFileHandler1 = new BackUpFileHandler(originalFile,
                 backUpFile);
         backUpFileHandler1.register(fm);
+        fm.start();
 
     }
 }

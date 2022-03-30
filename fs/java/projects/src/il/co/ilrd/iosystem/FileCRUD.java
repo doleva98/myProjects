@@ -25,10 +25,12 @@ class FileCRUD implements CRUD<Integer, String> {
 
     @Override
     public Integer create(String data) throws IOException {
+        if (size() != 0) {
+            bw.newLine();
+        }
         bw.write(data);
-        bw.newLine();
         bw.flush();
-        return Files.readAllLines(Paths.get(path)).size() - 1;
+        return size() - 1;
     }
 
     @Override
@@ -54,15 +56,16 @@ class FileCRUD implements CRUD<Integer, String> {
         return Files.readAllLines(Paths.get(path)).size();
     }
 
-    private void writeToCleanFile(List<String> list) throws IOException {
+    private void writeToCleanFile(List<String> list) throws IOException, ClassNotFoundException {
         cleanFile();
         for (String str : list) {
             create(str);
         }
     }
 
-    public void cleanFile() throws IOException {
+    private void cleanFile() throws IOException, ClassNotFoundException {
         BufferedWriter bw1 = new BufferedWriter(new FileWriter(path));
         bw1.close();
+        delete(0);
     }
 }
