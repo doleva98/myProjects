@@ -8,7 +8,7 @@ public class FileCRUDTest {
 
     @Test
     public void test() {
-        try (FileCRUD fcrud = new FileCRUD("a.txt")) {
+        try (FileCRUD fcrud = new FileCRUD("/mnt/c/Users/dolev/Desktop/git/dolev-arev/fs/java/projects/a.txt")) {
             final int SIZE = 10;
             for (int i = 0; i < SIZE; ++i) {
                 assertEquals(fcrud.create("wow"), i);

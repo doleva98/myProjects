@@ -1,9 +1,6 @@
 package il.co.ilrd.iosystem;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,7 +10,7 @@ import java.util.Objects;
 
 class FileCRUD implements CRUD<Integer, String> {
     private final String path;
-    private BufferedWriter bw = null;
+    private final BufferedWriter bw;
 
     public FileCRUD(String path) throws IOException {
         Objects.requireNonNull(path);
@@ -42,18 +39,18 @@ class FileCRUD implements CRUD<Integer, String> {
     @Override
     public void update(Integer key, String data) throws IOException, ClassNotFoundException {
         List<String> list = Files.readAllLines(Paths.get(path));
-        list.remove((int) key);
-        list.add(key, data);
-        cleanFile();
-        for (String s : list) {
-            create(s);
-        }
+        list.set(key, data);
+        writeToCleanFile(list);
     }
 
     @Override
     public void delete(Integer key) throws IOException, ClassNotFoundException {
         List<String> list = Files.readAllLines(Paths.get(path));
         list.remove((int) key);
+        writeToCleanFile(list);
+    }
+
+    private void writeToCleanFile(List<String> list) throws IOException {
         cleanFile();
         for (String str : list) {
             create(str);
