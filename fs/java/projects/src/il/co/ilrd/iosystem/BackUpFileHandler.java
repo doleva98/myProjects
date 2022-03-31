@@ -11,71 +11,71 @@ import il.co.ilrd.observer.Callback;
 
 public class BackUpFileHandler {
     private Callback<String> callback = new Callback<>(str -> {
-        try {
-            update(str);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        update(str);
     }, () -> {
     });
     private Path originalFilePath;
     private FileCRUD backUpFileCrud = null;
     private List<String> lines;
 
-    public BackUpFileHandler(String originalFile, String backUpFile) throws IOException, ClassNotFoundException {
+    public BackUpFileHandler(String originalFile, String backUpFile) {
         originalFilePath = Paths.get(originalFile);
         try (FileCRUD fd = new FileCRUD(originalFile, false)) {
-        } catch (IOException e) {
-            throw e;
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         backUpFileCrud = new FileCRUD(backUpFile, true);
-        lines = Files.readAllLines(originalFilePath);
+        try {
+            lines = Files.readAllLines(originalFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         for (int i = 0; i < lines.size(); ++i) {
             backUpFileCrud.create(lines.get(i));
         }
     }
 
-    public void update(String pathAndEntryState) throws IOException {
+    public void update(String pathAndEntryState) {
         if (!pathAndEntryState.split(" ")[0].equals(originalFilePath.getFileName().toString())) {
             return;
         }
-        lines = Files.readAllLines(originalFilePath);
+        try {
+            lines = Files.readAllLines(originalFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (StandardWatchEventKinds.ENTRY_MODIFY.name().equals(pathAndEntryState.split(" ")[1])) {
-            try {
-                if (lines.size() > backUpFileCrud.size()) {
 
-                    for (int i = 0; i < backUpFileCrud.size(); ++i) {
-                        if (!backUpFileCrud.read(i).equals(lines.get(i))) {
-                            backUpFileCrud.update(i, lines.get(i));
-                        }
-                    }
-                    for (int i = backUpFileCrud.size(); i < lines.size(); ++i) {
-                        backUpFileCrud.create(lines.get(i));
-                    }
+            if (lines.size() > backUpFileCrud.size()) {
 
-                } else if (lines.size() < backUpFileCrud.size()) {
-                    for (int i = 0; i < lines.size(); ++i) {
-                        if (!backUpFileCrud.read(i).equals(lines.get(i))) {
-                            backUpFileCrud.delete(i);
-                            --i;
-                            break;
-                        }
-                    }
-                    for (int i = lines.size(); i < backUpFileCrud.size(); ++i) {
-                        backUpFileCrud.delete(i);
-                    }
-                } else {
-
-                    for (int i = 0; i < lines.size(); ++i) {
-                        if (!backUpFileCrud.read(i).equals(lines.get(i))) {
-                            backUpFileCrud.update(i, lines.get(i));
-                        }
+                for (int i = 0; i < backUpFileCrud.size(); ++i) {
+                    if (!backUpFileCrud.read(i).equals(lines.get(i))) {
+                        backUpFileCrud.update(i, lines.get(i));
                     }
                 }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                for (int i = backUpFileCrud.size(); i < lines.size(); ++i) {
+                    backUpFileCrud.create(lines.get(i));
+                }
+
+            } else if (lines.size() < backUpFileCrud.size()) {
+                for (int i = 0; i < lines.size(); ++i) {
+                    if (!backUpFileCrud.read(i).equals(lines.get(i))) {
+                        backUpFileCrud.delete(i);
+                        --i;
+                        break;
+                    }
+                }
+                for (int i = lines.size(); i < backUpFileCrud.size(); ++i) {
+                    backUpFileCrud.delete(i);
+                }
+            } else {
+
+                for (int i = 0; i < lines.size(); ++i) {
+                    if (!backUpFileCrud.read(i).equals(lines.get(i))) {
+                        backUpFileCrud.update(i, lines.get(i));
+                    }
+                }
             }
         } else if (StandardWatchEventKinds.ENTRY_DELETE.name().equals(pathAndEntryState.split(" ")[1])) {
         } else if (StandardWatchEventKinds.ENTRY_CREATE.name().equals(pathAndEntryState.split(" ")[1])) {
