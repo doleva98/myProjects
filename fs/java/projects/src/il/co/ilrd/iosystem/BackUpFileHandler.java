@@ -16,15 +16,20 @@ public class BackUpFileHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    },
-            () -> {
-            });
+    }, () -> {
+    });
     private Path originalFilePath;
     private FileCRUD backUpFileCrud = null;
     private List<String> lines;
 
     public BackUpFileHandler(String originalFile, String backUpFile) throws IOException, ClassNotFoundException {
         originalFilePath = Paths.get(originalFile);
+        try (FileCRUD fd = new FileCRUD(originalFile, false)) {
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         backUpFileCrud = new FileCRUD(backUpFile, true);
         lines = Files.readAllLines(originalFilePath);
         for (int i = 0; i < lines.size(); ++i) {
@@ -37,11 +42,8 @@ public class BackUpFileHandler {
             return;
         }
         lines = Files.readAllLines(originalFilePath);
-        System.out.println(lines);
         if (StandardWatchEventKinds.ENTRY_MODIFY.name().equals(pathAndEntryState.split(" ")[1])) {
             try {
-                System.out.println(lines.size());
-                System.out.println(backUpFileCrud.size());
                 if (lines.size() > backUpFileCrud.size()) {
 
                     for (int i = 0; i < backUpFileCrud.size(); ++i) {
@@ -77,6 +79,7 @@ public class BackUpFileHandler {
             }
         } else if (StandardWatchEventKinds.ENTRY_DELETE.name().equals(pathAndEntryState.split(" ")[1])) {
         } else if (StandardWatchEventKinds.ENTRY_CREATE.name().equals(pathAndEntryState.split(" ")[1])) {
+
         }
     }
 
