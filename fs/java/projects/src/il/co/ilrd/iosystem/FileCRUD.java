@@ -6,24 +6,33 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 class FileCRUD implements CRUD<Integer, String> {
-    private final List<String> lines;
+    private List<String> lines = new ArrayList<>();
     private final Path path;
 
-    public FileCRUD(String path, boolean cleanFile) throws IOException, ClassNotFoundException {
+    public FileCRUD(String path, boolean cleanFile) {
         Objects.requireNonNull(path);
         this.path = Paths.get(path);
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(path.toString()))) {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        lines = Files.readAllLines(Paths.get(path));
+        try {
+            lines = Files.readAllLines(Paths.get(path));
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
         if (lines.size() != 0 && cleanFile) {
             lines.clear();
-            Files.write(this.path, lines);
+            try {
+                Files.write(this.path, lines);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -32,30 +41,42 @@ class FileCRUD implements CRUD<Integer, String> {
     }
 
     @Override
-    public Integer create(String data) throws IOException {
+    public Integer create(String data) {
         lines.add(data);
-        Files.write(path, lines);
+        try {
+            Files.write(path, lines);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return size() - 1;
     }
 
     @Override
-    public String read(Integer key) throws IOException {
+    public String read(Integer key) {
         return lines.get(key);
     }
 
     @Override
-    public void update(Integer key, String data) throws IOException, ClassNotFoundException {
+    public void update(Integer key, String data) {
         lines.set(key, data);
-        Files.write(path, lines);
+        try {
+            Files.write(path, lines);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public void delete(Integer key) throws IOException, ClassNotFoundException {
+    public void delete(Integer key) {
         lines.remove((int) key);
-        Files.write(path, lines);
+        try {
+            Files.write(path, lines);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public int size() throws IOException {
+    public int size() {
         return lines.size();
     }
 }

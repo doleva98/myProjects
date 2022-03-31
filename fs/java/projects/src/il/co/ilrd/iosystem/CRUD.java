@@ -1,13 +1,13 @@
 package il.co.ilrd.iosystem;
 
-import java.io.IOException;
+import java.io.Serializable;
 
-public interface CRUD<K, D> extends AutoCloseable {
-    K create(D data) throws IOException;
+public interface CRUD<K extends Serializable, D extends Serializable> extends AutoCloseable {
+    K create(D data);
 
-    D read(K key) throws IOException, ClassNotFoundException;
+    D read(K key);
 
-    void update(K key, D data) throws IOException, ClassNotFoundException;
+    void update(K key, D data);
 
-    void delete(K key) throws IOException, ClassNotFoundException;
+    void delete(K key);
 }
