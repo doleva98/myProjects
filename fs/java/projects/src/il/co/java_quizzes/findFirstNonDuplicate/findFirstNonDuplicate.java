@@ -1,12 +1,41 @@
 package il.co.java_quizzes.findFirstNonDuplicate;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class findFirstNonDuplicate {
 
-    public void input(long N) {
+    Map<Long, Boolean> map = new HashMap<>();
+    private List<Long> noDupList = new ArrayList<>();
 
+    public void input(long N) {
+        if (!map.containsKey(N)) {
+            map.put(N, true);
+            noDupList.add(N);
+        } else {
+            noDupList.remove(N);
+        }
+    }
+
+    public long output() {
+        if (!noDupList.isEmpty()) {
+            return noDupList.get(0);
+        }
+        return 0;
     }
 
     public static void main(String[] args) {
+        long[] input = { 1, 2, 3, 4, 1, 1, 2, 3, 5 };
+        long[] output = new long[11];
 
+        findFirstNonDuplicate sequence = new findFirstNonDuplicate();
+
+        for (int i = 0; i < input.length; ++i) {
+            sequence.input(input[i]);
+            output[i] = sequence.output();
+            System.out.print(output[i] + ", ");
+        }
     }
 }

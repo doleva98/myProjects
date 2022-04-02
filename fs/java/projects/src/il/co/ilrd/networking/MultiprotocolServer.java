@@ -11,12 +11,15 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MultiprotocolServer {
+    private List<Socket> listOfSockets = new ArrayList<>();
     private ServerSocket server = null;
     private DatagramPacket inputDatagramPacket = null;
     private DatagramSocket ds = null;
@@ -24,6 +27,7 @@ public class MultiprotocolServer {
     private DataInputStream in = null;
     private Map<String, Service> mapServices = new HashMap<>();
     private ExecutorService executor;
+    private String key = null;
 
     public MultiprotocolServer(int port) {
         try {
@@ -37,14 +41,19 @@ public class MultiprotocolServer {
                 while (!server.isClosed()) {
                     try {
                         Socket socket = server.accept();
+                        listOfSockets.add(socket);
                         in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                         line = in.readUTF();
-                        String key = line.split(" ")[0];
+                        key = line.split(" ")[0];
                         String valueString = line.split(" ")[1];
-                        System.out.println(line);
                         executor.submit(() -> {
-                            mapServices.get(key).startService(new TCPResponder(socket),
-                                    valueString);
+                            try {
+                                mapServices.get(key).startService(new TCPResponder(new DataOutputStream(
+                                        socket.getOutputStream())),
+                                        valueString);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         });
 
                     } catch (IOException e) {
@@ -128,17 +137,16 @@ public class MultiprotocolServer {
     }
 
     private class TCPResponder implements Responder {
-        private Socket socket = null;
+        private DataOutputStream dos = null;
 
-        public TCPResponder(Socket socket) {
-            this.socket = socket;
+        public TCPResponder(DataOutputStream dos) {
+            this.dos = dos;
         }
 
         @Override
         public void respond(String str) {
             try {
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                out.writeUTF(str);
+                dos.writeUTF(str);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -57,7 +57,6 @@ class Main {
         efficientNCircularShift(a, 3);
         System.out.println(Arrays.toString(a));
 
-        
     }
 
     private static void mirror(char[] array, int start, int end) {
