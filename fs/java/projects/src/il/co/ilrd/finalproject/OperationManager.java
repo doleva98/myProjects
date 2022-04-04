@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
+/* key company_name product_name line*/
 public class OperationManager {
     private final Factory<Command, Pair<String, Responder>, String> commandFactory = new Factory<>();
     private final ExecutorService executor;
@@ -37,8 +37,8 @@ public class OperationManager {
 }
 
 class CompanyRegisterCommand implements Command {
-    String data;
-    Responder responder;
+    private String data;
+    private Responder responder;
 
     /* data[0] = path, data[1] = folder(company) name */
     public CompanyRegisterCommand(Pair<String, Responder> pair) {
@@ -63,8 +63,8 @@ class CompanyRegisterCommand implements Command {
 }
 
 class ProductRegisterCommand implements Command {
-    String data;
-    Responder responder;
+    private String data;
+    private Responder responder;
 
     /* data[0] = path, data[1] = folder(company) name data[2] = filename(product name)*/
 
@@ -90,8 +90,8 @@ class ProductRegisterCommand implements Command {
 }
 
 class IOTRegisterCommand implements Command {
-    String data;
-    Responder responder;
+    private String data;
+    private Responder responder;
 
     /* data[0] = path, data[1] = folder(company) name data[2] = filename(product name)
         data[3...] product line*/
@@ -122,8 +122,8 @@ class IOTRegisterCommand implements Command {
 }
 
 class IOTUpdateCommand implements Command {
-    String data;
-    Responder responder;
+    private String data;
+    private Responder responder;
 
     /* data is company name + " "  + product name + " " + product line */
     public IOTUpdateCommand(Pair<String, Responder> pair) {
