@@ -18,6 +18,10 @@ public class StackImp<T> {
         return elements.get(elements.size() - 1);
     }
 
+    public void merge(StackImp<T> other) {
+        elements.addAll(other.elements);
+    }
+
     public boolean isEmpty() {
         return elements.isEmpty();
     }
@@ -30,45 +34,14 @@ public class StackImp<T> {
         elements.clear();
     }
 
-    public List<T> getElements() {
-        return elements;
+    public void print() {
+        System.out.println(elements);
     }
 
-    public void setElements(List<T> elements) {
-        this.elements = elements;
+    public void print(String message) {
+        System.out.println(message + elements);
     }
 
-    @Override
-
-    public String toString() {
-        return "StackImp [elements=" + elements + "]";
-    }
-
-    @Override
-
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((elements == null) ? 0 : elements.hashCode());
-        return result;
-    }
-
-    @Override
-
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        /*   StackImp<T> other = (StackImp<T>) obj;
-        if (elements == null) {
-            if (other.elements != null)
-                return false;
-        } else if (!elements.equals(other.elements))
-            return false; */
-        return true;
-    }
+    
 
 }

@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-class FileCRUD implements CRUD<Integer, String> {
+public class FileCRUD implements CRUD<Integer, String> {
     private List<String> lines = new ArrayList<>();
     private final Path path;
 
     public FileCRUD(String path, boolean cleanFile) {
         Objects.requireNonNull(path);
         this.path = Paths.get(path);
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path.toString()))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(path.toString(), !cleanFile))) {
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -26,14 +26,14 @@ class FileCRUD implements CRUD<Integer, String> {
         } catch (IOException e1) {
             e1.printStackTrace();
         }
-        if (lines.size() != 0 && cleanFile) {
+        /*  if (lines.size() != 0 && cleanFile) {
             lines.clear();
             try {
                 Files.write(this.path, lines);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        } */
     }
 
     @Override

@@ -4,7 +4,7 @@ package il.co.ilrd.hashmap;
 import java.util.Comparator;
 import java.util.Map;
 
-class Pair<K, V> implements Map.Entry<K, V> {
+public class Pair<K, V> implements Map.Entry<K, V> {
     private K key;
     private V value;
 
