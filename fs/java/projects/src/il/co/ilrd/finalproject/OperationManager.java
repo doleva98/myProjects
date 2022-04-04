@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
 /* key company_name product_name line*/
 public class OperationManager {
     private final Factory<Command, Pair<String, Responder>, String> commandFactory = new Factory<>();
@@ -28,10 +29,8 @@ public class OperationManager {
     public void handleRequest(String request, Responder response) {
         /* request = key + " "  + data*/
 
-        // commandFactory.create(request.split(" ")[0]).run();
-
-        commandFactory.create(request.split(" ")[0], Pair.of(databasePath + request.substring(
-                request.split(" ")[0].length()), response)).run();
+        executor.submit(commandFactory.create(request.split(" ")[0], Pair.of(databasePath + request.substring(
+                request.split(" ")[0].length()), response)));
 
     }
 }
