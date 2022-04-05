@@ -62,6 +62,7 @@ public class FolderMonitor {
     }
 
     public void unregisterObserver(Callback<String> callback) {
+        /* non null */
         dispatcher.unregister(callback);
     }
 

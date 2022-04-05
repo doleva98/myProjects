@@ -17,7 +17,6 @@ import java.net.InetAddress;
 import il.co.ilrd.networking.ByteArrayToString;
 
 public class ConnectionServer {
-    private List<Socket> listOfSockets = new ArrayList<>();
     private ServerSocket server = null;
     private DatagramPacket inputDatagramPacket = null;
     private DatagramSocket ds = null;
@@ -46,7 +45,6 @@ public class ConnectionServer {
                     try {
                         Socket socket = server.accept();
                         System.out.println("TCP connection is established");
-                        listOfSockets.add(socket);
                         in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
                         System.out.println("waiting for input from client");
                         line = in.readUTF();
@@ -115,6 +113,13 @@ public class ConnectionServer {
     }
 
     public void stop() {
+        if (server != null) {
+            try {
+                server.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void main(String[] args) {

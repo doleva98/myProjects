@@ -10,12 +10,12 @@ import java.util.List;
 import il.co.ilrd.observer.Callback;
 
 public class BackUpFileHandler {
-    private Callback<String> callback = new Callback<>(str -> {
+    private final Callback<String> callback = new Callback<>(str -> {
         update(str);
     }, () -> {
     });
-    private Path originalFilePath;
-    private FileCRUD backUpFileCrud = null;
+    private final Path originalFilePath;
+    private final FileCRUD backUpFileCrud;
     private List<String> lines;
 
     public BackUpFileHandler(String originalFile, String backUpFile) {

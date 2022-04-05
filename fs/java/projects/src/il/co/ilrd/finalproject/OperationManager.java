@@ -24,6 +24,7 @@ public class OperationManager {
         commandFactory.add("ProductRegisterCommand", ProductRegisterCommand::new);
         commandFactory.add("IOTRegisterCommand", IOTRegisterCommand::new);
         commandFactory.add("IOTUpdateCommand", IOTUpdateCommand::new);
+        commandFactory.add("ping", PingCommand::new);
     }
 
     public void handleRequest(String request, Responder response) {
@@ -48,7 +49,6 @@ class CompanyRegisterCommand implements Command {
     @Override
     public void run() {
         /* open folders */
-        System.out.println(data);
         File f1 = new File(data.split(" ")[0] + "\\" + data.split(" ")[1]);
         //Creating a folder using mkdir() method  
         if (f1.mkdir()) {
@@ -108,6 +108,7 @@ class IOTRegisterCommand implements Command {
         String dataToWrite = data.substring(data.split(" ")[0].length() + 1 + data.split(" ")[1].length() + 1
                 + data.split(" ")[2].length() + 1);
 
+        /* if not file found respond fail */
         try (FileCRUD fileCRUD = new FileCRUD(path, false)) {
             fileCRUD.create(dataToWrite);
             System.out.println("line is added to file");
@@ -157,5 +158,20 @@ class IOTUpdateCommand implements Command {
             e.printStackTrace();
         }
 
+    }
+}
+
+class PingCommand implements Command {
+    private Responder responder;
+
+    /* data[0] = path, data[1] = folder(company) name data[2] = filename(product name)*/
+
+    public PingCommand(Pair<String, Responder> pair) {
+        this.responder = pair.getValue();
+    }
+
+    @Override
+    public void run() {
+        responder.respond("pong");
     }
 }

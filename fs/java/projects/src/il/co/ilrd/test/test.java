@@ -61,9 +61,7 @@ public class Test {
         Map<Integer, Integer> hm = new HashMap<>();
         ExecutorService ex = Executors.newFixedThreadPool(3);
         System.out.println("hello world");
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
-            System.out.println(i);
-        }
+       
 
     }
 }
