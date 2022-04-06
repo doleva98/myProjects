@@ -61,7 +61,11 @@ public class Test {
         Map<Integer, Integer> hm = new HashMap<>();
         ExecutorService ex = Executors.newFixedThreadPool(3);
         System.out.println("hello world");
-       
+        System.out.println(add(10.5));
+    }
 
+    public static Number add(Number num) {
+        Number n = (Float.valueOf(num.toString()) + 5);
+        return n;
     }
 }

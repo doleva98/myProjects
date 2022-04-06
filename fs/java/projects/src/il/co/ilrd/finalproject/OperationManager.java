@@ -34,6 +34,10 @@ public class OperationManager {
                 request.split(" ")[0].length()), response)));
 
     }
+
+    public void stop() {
+        executor.shutdown();
+    }
 }
 
 class CompanyRegisterCommand implements Command {

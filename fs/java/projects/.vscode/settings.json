@@ -1,10 +1,20 @@
 {
-    "java.project.sourcePaths": [
-        "src"
-    ],
-    "cSpell.words": [
-        "VERSIONNUMITERATOR"
-    ],
-    "java.help.shareDiagnostics": true,
-    "sqltools.connections": []
+  "java.project.sourcePaths": ["src"],
+  "cSpell.words": ["VERSIONNUMITERATOR"],
+  "java.help.shareDiagnostics": true,
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default"
+      },
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "mysql",
+      "username": "root",
+      "database": "mysql",
+      "password": ""
+    }
+  ]
 }

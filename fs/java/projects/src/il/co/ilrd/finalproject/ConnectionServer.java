@@ -9,8 +9,6 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.net.InetAddress;
@@ -113,6 +111,7 @@ public class ConnectionServer {
     }
 
     public void stop() {
+        operationManager.stop();
         if (server != null) {
             try {
                 server.close();
@@ -120,6 +119,7 @@ public class ConnectionServer {
                 e.printStackTrace();
             }
         }
+        executor.shutdownNow();
     }
 
     public static void main(String[] args) {
