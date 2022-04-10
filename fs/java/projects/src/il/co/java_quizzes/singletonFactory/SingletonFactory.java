@@ -6,8 +6,6 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class SingletonFactory<K, D, T> {
-    // private static final SingletonFactory<K, D, T> instance = null;
-
     private Map<K, Function<D, T>> factoryImpl = new HashMap<>();
 
     private SingletonFactory() {
@@ -25,8 +23,11 @@ public class SingletonFactory<K, D, T> {
         return factoryImpl.get(key).apply(data);
     }
 
-    /* public static <K, D, T> SingletonFactory<K, D, T> getInstance() {
+    /*   private static class Holder {
+        private static final SingletonFactory obj = new SingletonFactory<>();
+    }
     
+    public static <K, D, T> SingletonFactory<K, D, T> getInstance() {
+        return Holder.obj;
     } */
-
 }
