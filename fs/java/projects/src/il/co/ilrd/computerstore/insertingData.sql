@@ -8,20 +8,29 @@ USE computerStore;
 --         screenSize,
 --         vers,
 --         price,
---         computerID
+--         isLaptop
 --     )
 -- VALUES (
---         412,
---         32,
---         632,
+--         132123,
 --         600,
---         232,
---         32,
+--         303,
+--         500,
+--         43,
 --         0,
+--         1,
 --         5001,
---         430
+--         '0'
 --     );
--- INSERT INTO manufacturers (manufacturerID, nameOfManfacturer)
--- VALUES (4323324, 'dsasd');
--- INSERT INTO printers (printerID, manufacturerID, isBlackAndWhite)
--- VALUES (432, 43234, 1);
+
+INSERT INTO manufacturers (manufacturerID, nameOfManfacturer)
+VALUES (
+    1,
+    'TUSHIBA'
+  );
+
+INSERT INTO printers (printerID, manufacturerID, isBlackAndWhite)
+VALUES (
+    435432,
+    56,
+    '0'
+  );

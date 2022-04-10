@@ -14,7 +14,10 @@ USE computerStore;
 --     RAM,
 --     screenSize
 -- FROM computer
--- WHERE price > 5000
---     AND isLaptop = 1;
---4
-SELECT 
+/* WHERE price > 5000 
+ -- AND isLaptop = 1;
+ --4 */
+-- SELECT printerID
+-- FROM printers
+-- WHERE isBlackAndWhite = '0';
+--5 

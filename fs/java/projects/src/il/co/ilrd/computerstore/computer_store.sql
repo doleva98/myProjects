@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS computer(
     screenSize INT,
     vers INT,
     price INT,
-    computerID INT,
-    PRIMARY KEY(computerID)
+    isLaptop BOOL,
+    PRIMARY KEY(modelID, vers)
 );
 CREATE TABLE IF NOT EXISTS manufacturers(
     manufacturerID INT,
@@ -18,9 +18,10 @@ CREATE TABLE IF NOT EXISTS manufacturers(
     PRIMARY KEY(manufacturerID)
 );
 CREATE TABLE IF NOT EXISTS computerAndManufacturer(
-    computerID INT,
+    modelID INT,
     manufacturerID INT,
-    FOREIGN KEY (computerID) REFERENCES computer(computerID),
+    vers INT,
+    FOREIGN KEY (modelID, vers) REFERENCES computer(modelID, vers),
     FOREIGN KEY (manufacturerID) REFERENCES manufacturers(manufacturerID)
 );
 CREATE TABLE IF NOT EXISTS printers(
