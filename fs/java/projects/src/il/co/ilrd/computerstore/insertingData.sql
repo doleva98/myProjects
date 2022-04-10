@@ -23,5 +23,5 @@ USE computerStore;
 --     );
 -- INSERT INTO manufacturers (manufacturerID, nameOfManfacturer)
 -- VALUES (4323324, 'dsasd');
-INSERT INTO printers (printerID, manufacturerID, isBlackAndWhite)
-VALUES (432, 43234, 1);
+-- INSERT INTO printers (printerID, manufacturerID, isBlackAndWhite)
+-- VALUES (432, 43234, 1);
