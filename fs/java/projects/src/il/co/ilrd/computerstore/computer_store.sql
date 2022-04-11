@@ -28,5 +28,6 @@ CREATE TABLE IF NOT EXISTS printers(
     printerID INT PRIMARY KEY,
     manufacturerID INT,
     isBlackAndWhite BOOL,
+    price INT,
     FOREIGN KEY (manufacturerID) REFERENCES manufacturers(manufacturerID)
 );
