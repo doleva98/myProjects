@@ -7,13 +7,23 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DataObjectCRUD {
+
+    private String url = "jdbc:mysql://localhost:3306/sys";
+    private String username = "root";
+    private String password = "";
+
+    public DataObjectCRUD(String url, String username, String password) {
+        this.url = url;
+        this.username = username;
+        this.password = password;
+    }
+
     public static void whatIsolationLevelMySql() throws ClassNotFoundException, SQLException {
         String driverClassName = "com.mysql.cj.jdbc.Driver";
-        String url = "jdbc:mysql://localhost:3306/computerStore";
+        String url = "jdbc:mysql://localhost:3306/sys";
         String username = "root";
         String password = "";
-        /* String query = "SELECT is_read_committed_snapshot_on FROM sys.databases WHERE name = DB_NAME()"; */
-        String query = "SELECT modelID, procssorSpeed,HDspace FROM computer WHERE price < 2500;";
+        String query = "SELECT @@transaction_ISOLATION;";
 
         // Load driver class
         Class.forName(driverClassName);
@@ -31,8 +41,7 @@ public class DataObjectCRUD {
 
         // Step 5: Processing the results
         while (rs.next()) {
-            System.out.println(rs.getString("modelID"));
-            System.out.println(rs.getString("HDspace"));
+            System.out.println(rs.getString(1));
         }
 
         // Closing the connection as per the
@@ -41,10 +50,12 @@ public class DataObjectCRUD {
     }
 
     public static void main(String[] args) {
-        try {
+        /*   try {
             whatIsolationLevelMySql();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
-        }
+        } */
+
+        DataObjectCRUD docrud = new DataObjectCRUD("jdbc:mysql://localhost:3306/sys", "root", "");
     }
 }
