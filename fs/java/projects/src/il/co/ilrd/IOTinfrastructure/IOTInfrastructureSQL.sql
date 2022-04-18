@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS Companies(
     company_name VARCHAR(250),
     contactID INT,
     addressID INT,
-    PRIMARY KEY(companyID)
+    PRIMARY KEY(companyID),
+    FOREIGN KEY(addressID) REFERENCES Adresses(addressID)
 );
 CREATE TABLE IF NOT EXISTS Products(
     productID INT,
@@ -14,13 +15,19 @@ CREATE TABLE IF NOT EXISTS Products(
     PRIMARY KEY(productID),
     FOREIGN KEY(companyID) REFERENCES Companies(companyID)
 );
-CREATE TABLE IF NOT EXISTS IOT(IOTID INT, serialNum INT, productID INT);
+CREATE TABLE IF NOT EXISTS IOT(
+    IOTID INT,
+    serialNum INT,
+    productID INT,
+    FOREIGN KEY(productID) REFERENCES Products(productID)
+);
 CREATE TABLE IF NOT EXISTS IOTLog(
     logNumber INT,
     IOTID INT,
     logDate DATE,
     logData VARCHAR(250),
-    PRIMARY KEY(logNumber)
+    PRIMARY KEY(logNumber),
+    FOREIGN KEY(IOTID) REFERENCES IOT(IOTID)
 );
 CREATE TABLE IF NOT EXISTS Adresses(
     addressID INT,
@@ -33,7 +40,8 @@ CREATE TABLE IF NOT EXISTS Payments(
     payID INT,
     companyID INT,
     creditDetails VARCHAR(250),
-    PRIMARY KEY(payID)
+    PRIMARY KEY(payID),
+    FOREIGN KEY(companyID) REFERENCES Companies(companyID)
 );
 CREATE TABLE IF NOT EXISTS ContactPerson(
     contactID INT,
@@ -41,5 +49,6 @@ CREATE TABLE IF NOT EXISTS ContactPerson(
     phoneNumber INT,
     contactPersonName VARCHAR(250),
     email VARCHAR(250),
-    PRIMARY KEY(contactID)
+    PRIMARY KEY(contactID),
+    FOREIGN KEY(contactID, companyID) REFERENCES Companies(contactID, companyID)
 );

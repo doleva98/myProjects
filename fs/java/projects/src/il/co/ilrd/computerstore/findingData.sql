@@ -125,10 +125,149 @@ USE computerStore;
  WHERE isBlackAndWhite = '0'
  );
  19 */
-SELECT manufacturerID,
-    AVG(screenSize)
-FROM computer
-    JOIN computerAndManufacturer USING(modelID, vers)
+/* SELECT manufacturerID,
+ AVG(screenSize)
+ FROM computer
+ JOIN computerAndManufacturer USING(modelID, vers)
+ WHERE isLaptop = '1'
+ GROUP BY manufacturerID; */
+/* 20 */
+/* SELECT manufacturerID
+ FROM manufacturers
+ WHERE manufacturerID IN (
+ SELECT manufacturerID
+ FROM computerAndManufacturer
+ GROUP BY manufacturerID
+ HAVING COUNT(DISTINCT modelID) >= 3
+ );
+ 21 */
+/* SELECT computerAndManufacturer.manufacturerID
+ FROM computer c
+ JOIN computerAndManufacturer cm USING (modelId, vers)
+ JOIN (
+ SELECT manufacturerID,
+ MAX(price) AS price
+ FROM computer
+ JOIN computerAndManufacturer USING (modelId, vers)
+ WHERE isLaptop = FALSE
+ GROUP BY manufacturerID
+ ) t_maxPrices ON cm.manufacturerID = t_maxPrices.manufacturerID
+ WHERE c.price = t_maxPrices.price; 
+ 22*/
+/* SELECT procssorSpeed,
+ AVG(price)
+ FROM computer
+ WHERE procssorSpeed > 0.6
+ AND isLaptop = FALSE
+ GROUP BY procssorSpeed;
+ 23 */
+SELECT *
+FROM manufacturers
 WHERE manufacturerID IN (
-        SELECT
-    )
+        SELECT t.manufacturerId
+        FROM (
+                SELECT cm.manufacturerId,
+                    c.isLaptop
+                FROM compsAndManu cm
+                    JOIN computers c USING (modelId, cVersion)
+                GROUP BY cm.manufacturerId,
+                    c.isLaptop
+                HAVING MAX(c.processorSpeed) >= 0.75
+            ) as t
+        GROUP BY t.manufacturerId
+        HAVING COUNT(isLaptop) = 2
+    );
+/* 24
+ SELECT *
+ FROM manufacturers
+ WHERE manufacturerId IN (
+ SELECT manufacturerId
+ FROM (
+ SELECT manufacturerId
+ FROM manufacturers
+ JOIN printers USING (manufacturerId)
+ ) t_also_make_printers
+ WHERE manufacturerId IN (
+ SELECT manufacturerId
+ FROM compsAndManu cm
+ JOIN computers c USING (modelId, cVersion)
+ WHERE processorSpeed = (
+ SELECT MAX(processorSpeed)
+ FROM (
+ SELECT processorSpeed
+ FROM computers
+ WHERE ram = (
+ SELECT MIN(ram)
+ FROM computers
+ )
+ ) t_min_rams
+ )
+ )
+ );
+ 25
+ SELECT SUM(price) / COUNT(price) as avg
+ FROM (
+ SELECT manufacturerId,
+ price
+ FROM printers p
+ JOIN manufacturers m USING (manufacturerId)
+ WHERE m.manufacturerName = 'LG'
+ UNION
+ SELECT manufacturerId,
+ price
+ FROM compsAndManu
+ JOIN manufacturers m USING (manufacturerId)
+ JOIN computers c USING (modelId, cVersion)
+ WHERE m.manufacturerName = 'LG'
+ AND c.isLaptop = FALSE
+ ) as t
+ GROUP BY manufacturerId;
+ 26
+ SELECT filtered_manufacturers.*,
+ AVG(hardDiscCapacity)
+ FROM (
+ SELECT m.*
+ FROM manufacturers m
+ JOIN printers USING (manufacturerId)
+ GROUP BY manufacturerId
+ ) as filtered_manufacturers
+ JOIN compsAndManu USING (manufacturerId)
+ JOIN computers USING (modelId, cVersion)
+ WHERE isLaptop = FALSE
+ GROUP BY manufacturerId;
+ 27
+ SELECT modelId,
+ cVersion,
+ isLaptop,
+ screenSize,
+ ram,
+ processorSpeed,
+ hardDiscCapacity,
+ cdDriverId,
+ price
+ FROM (
+ SELECT modelId as 'origin modelID',
+ modelId + 1000 as new_modelId,
+ MIN(cVersion) + 20 as new_cVersion,
+ -- isLaptop,     -- screenSize,     -- ram,     -- processorSpeed,     -- hardDiscCapacity,     -- cdDriverId,     -- price   
+ FROM computers
+ WHERE isLaptop = TRUE
+ GROUP BY modelId
+ );
+ 28
+ DELETE FROM computers
+ WHERE hardDiscCapacity = (
+ SELECT *
+ FROM (
+ SELECT MIN(hardDiscCapacity)
+ FROM computers
+ ) t1
+ )
+ OR ram = (
+ SELECT *
+ FROM (
+ SELECT MIN(ram)
+ FROM computers
+ ) t2
+ );
+ */

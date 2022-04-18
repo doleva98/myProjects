@@ -12,9 +12,16 @@
       "port": 3306,
       "driver": "MySQL",
       "name": "mysql",
-      "username": "root",
       "database": "mysql",
+      "username": "root",
       "password": ""
     }
+  ],
+  "editor.cursorSmoothCaretAnimation": true,
+  "workbench.list.smoothScrolling": true,
+  "editor.smoothScrolling": true,
+  "java.project.referencedLibraries": [
+    "lib/**/*.jar",
+    "/usr/share/java/mysql-connector-java-8.0.28.jar"
   ]
 }

@@ -15,6 +15,15 @@ import java.io.PipedInputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,11 +70,11 @@ public class Test {
         Map<Integer, Integer> hm = new HashMap<>();
         ExecutorService ex = Executors.newFixedThreadPool(3);
         System.out.println("hello world");
-        System.out.println(add(10.5));
+
+        ResultSet s;
+        
+        
+
     }
 
-    public static Number add(Number num) {
-        Number n = (Float.valueOf(num.toString()) + 5);
-        return n;
-    }
 }
