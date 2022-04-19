@@ -6,16 +6,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DataObjectCRUD {
+import il.co.ilrd.iosystem.CRUD;
 
-    private String url = "jdbc:mysql://localhost:3306/sys";
-    private String username = "root";
-    private String password = "";
+public class DataObjectCRUD implements CRUD<Integer, String> {
 
-    public DataObjectCRUD(String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
+    private Connection con = null;
+    private String tableName = null;
+
+    public DataObjectCRUD(String url, String username, String password, String tableName)
+            throws ClassNotFoundException, SQLException {
+        String driverClassName = "com.mysql.cj.jdbc.Driver";
+        Class.forName(driverClassName);
+
+        con = DriverManager.getConnection(
+                url, username, password);
+        this.tableName = tableName;
     }
 
     public static void whatIsolationLevelMySql() throws ClassNotFoundException, SQLException {
@@ -56,6 +61,44 @@ public class DataObjectCRUD {
             e.printStackTrace();
         } */
 
-        DataObjectCRUD docrud = new DataObjectCRUD("jdbc:mysql://localhost:3306/sys", "root", "");
+        try (DataObjectCRUD docrud = new DataObjectCRUD("jdbc:mysql://localhost:3306/sys", "root", "", null)) {
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void close() throws Exception {
+    }
+
+    @Override
+    public Integer create(String query) {
+        // Obtain a statement
+        Statement st;
+        try {
+            st = con.createStatement();
+            ResultSet rs = st.executeQuery(query);
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // Step 4: Executing the query and storing the
+        // result
+        return null;
+    }
+
+    @Override
+    public String read(Integer key) {
+        return null;
+    }
+
+    @Override
+    public void update(Integer key, String query) {
+    }
+
+    @Override
+    public void delete(Integer key) {
     }
 }
