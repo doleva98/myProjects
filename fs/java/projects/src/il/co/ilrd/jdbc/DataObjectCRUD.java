@@ -12,6 +12,7 @@ public class DataObjectCRUD implements CRUD<Integer, String> {
 
     private Connection con = null;
     private String tableName = null;
+    private int currSize = 0;
 
     public DataObjectCRUD(String url, String username, String password, String tableName)
             throws ClassNotFoundException, SQLException {
@@ -85,11 +86,11 @@ public class DataObjectCRUD implements CRUD<Integer, String> {
                 query.append(dataArray[i] + ", ");
             }
             query.append(dataArray[dataArray.length - 1] + ")");
-            st.executeQuery(query.toString());
+            st.executeUpdate(query.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return ++currSize;
     }
 
     @Override
@@ -100,7 +101,7 @@ public class DataObjectCRUD implements CRUD<Integer, String> {
 
             ResultSet rs = st.executeQuery(query);
 
-            for (int i = 0; i < key; ++i, rs.next()) {
+            for (int i = 1; i < key; ++i, rs.next()) {
             }
 
             res = new StringBuilder();

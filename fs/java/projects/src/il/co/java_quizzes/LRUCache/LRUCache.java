@@ -13,12 +13,12 @@ public class LRUCache<K, V> {
     }
 
     public void put(K key, V value) {
-        if (size < maxCapacity) {
-            linkedHashMap.put(key, value);
-            ++size;
-        } else {
+        if (size >= maxCapacity) {
             linkedHashMap.remove(linkedHashMap.keySet().stream().findFirst().get());
+        } else {
+            ++size;
         }
+        linkedHashMap.put(key, value);
     }
 
     public V get(K key) {
