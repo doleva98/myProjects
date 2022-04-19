@@ -70,32 +70,55 @@ public class DataObjectCRUD implements CRUD<Integer, String> {
 
     @Override
     public void close() throws Exception {
+        con.close();
     }
 
     @Override
-    public Integer create(String query) {
+    public Integer create(String data) {
         // Obtain a statement
         Statement st;
         try {
             st = con.createStatement();
-            ResultSet rs = st.executeQuery(query);
+            StringBuilder query = new StringBuilder("INSERT INTO " + tableName + " VALUES (");
+            String[] dataArray = data.split(" ");
+            for (int i = 0; i < dataArray.length - 1; ++i) {
+                query.append(dataArray[i] + ", ");
+            }
+            query.append(dataArray[dataArray.length - 1] + ")");
+            st.executeQuery(query.toString());
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        // Step 4: Executing the query and storing the
-        // result
         return null;
     }
 
     @Override
     public String read(Integer key) {
-        return null;
+        StringBuilder res = null;
+        try (Statement st = con.createStatement()) {
+            String query = "SELECT * FROM " + tableName;
+
+            ResultSet rs = st.executeQuery(query);
+
+            for (int i = 0; i < key; ++i, rs.next()) {
+            }
+
+            res = new StringBuilder();
+            int numOfCols = rs.getMetaData().getColumnCount();
+            for (int i = 1; i < numOfCols; ++i) {
+                res.append(rs.getString(i));
+                if (i != numOfCols - 1) {
+                    res.append(" ");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res.toString();
     }
 
     @Override
-    public void update(Integer key, String query) {
+    public void update(Integer key, String data) {
     }
 
     @Override
