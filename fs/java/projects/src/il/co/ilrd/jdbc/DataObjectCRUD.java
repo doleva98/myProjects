@@ -20,8 +20,7 @@ public class DataObjectCRUD implements CRUD<String, String> {
     private int numberOfCols = 0;
     private PreparedStatement pstmtCreate;
     private PreparedStatement pstmtRead;
-    /*private PreparedStatement pstmtCreate;
-    private PreparedStatement pstmtCreate; */
+    private PreparedStatement pstmtDelete;
 
     public DataObjectCRUD(String url, String username, String password, String tableName)
             throws ClassNotFoundException, SQLException {
@@ -78,6 +77,18 @@ public class DataObjectCRUD implements CRUD<String, String> {
 
         pstmtRead = con.prepareStatement(stringRead.toString());
 
+        StringBuilder stringDelete = new StringBuilder("DELETE FROM " + tableName + " WHERE ");
+        for (int i = 1; i < numberOfKeys; ++i) {
+
+            stringDelete.append(primaryKeyListNames.get(0) + " = ?");
+
+            if (i != numberOfKeys - 1) {
+                stringDelete.append(" AND ");
+            }
+        }
+
+        pstmtDelete = con.prepareStatement(stringDelete.toString());
+
         rs.close();
         statement.close();
     }
@@ -124,7 +135,7 @@ public class DataObjectCRUD implements CRUD<String, String> {
                 "manufacturers")) {
             docrud.create("2 Dell");
             System.out.println(docrud.read("2"));
-
+            docrud.delete("2");
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -135,6 +146,7 @@ public class DataObjectCRUD implements CRUD<String, String> {
     public void close() throws Exception {
         pstmtCreate.close();
         pstmtRead.close();
+        pstmtDelete.close();
         con.close();
     }
 
@@ -191,13 +203,20 @@ public class DataObjectCRUD implements CRUD<String, String> {
 
     @Override
     public void update(String key, String data) {
-        // TODO Auto-generated method stub
-
+        delete(key);
+        create(data);
     }
 
     @Override
     public void delete(String key) {
-        // TODO Auto-generated method stub
-
+        String[] keyAsArray = key.split(" ");
+        try {
+            for (int i = 0; i < keyAsArray.length; ++i) {
+                pstmtDelete.setString(i + 1, keyAsArray[i]);
+            }
+            pstmtDelete.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
