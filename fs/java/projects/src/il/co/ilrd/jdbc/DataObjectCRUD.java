@@ -1,18 +1,27 @@
 package il.co.ilrd.jdbc;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import il.co.ilrd.iosystem.CRUD;
 
-public class DataObjectCRUD implements CRUD<Integer, String> {
+public class DataObjectCRUD implements CRUD<String, String> {
 
     private Connection con = null;
-    private String tableName = null;
-    private int currSize = 0;
+    private List<Integer> primaryKeyColIndexesList;
+    private int numberOfCols = 0;
+    private PreparedStatement pstmtCreate;
+    private PreparedStatement pstmtRead;
+    /*private PreparedStatement pstmtCreate;
+    private PreparedStatement pstmtCreate; */
 
     public DataObjectCRUD(String url, String username, String password, String tableName)
             throws ClassNotFoundException, SQLException {
@@ -21,7 +30,56 @@ public class DataObjectCRUD implements CRUD<Integer, String> {
 
         con = DriverManager.getConnection(
                 url, username, password);
-        this.tableName = tableName;
+
+        Statement statement = con.createStatement();
+        DatabaseMetaData dbmetada = con.getMetaData();
+        ResultSet resultSet = dbmetada.getPrimaryKeys(null, null, tableName);
+
+        List<String> primaryKeyListNames = new ArrayList<>();
+        while (resultSet.next()) {
+            primaryKeyListNames.add(resultSet.getString("COLUMN_NAME"));
+        }
+        resultSet.close();
+        ResultSet rs = statement.executeQuery("SELECT * FROM " + tableName);
+        numberOfCols = rs.getMetaData().getColumnCount();
+        ResultSetMetaData rsMetaData = rs.getMetaData();
+
+        primaryKeyColIndexesList = new ArrayList<>();
+
+        int numberOfKeys = rsMetaData.getColumnCount();
+        for (String pkName : primaryKeyListNames) {
+            for (int i = 1; i <= numberOfKeys; ++i) {
+                if (pkName.equals(rsMetaData.getColumnName(i))) {
+                    primaryKeyColIndexesList.add(i);
+                }
+            }
+        }
+
+        StringBuilder stringCreate = new StringBuilder("INSERT IGNORE INTO " + tableName + " VALUES(");
+        for (int i = 0; i < numberOfKeys; ++i) {
+            stringCreate.append("?");
+            if (i != numberOfKeys - 1) {
+                stringCreate.append(", ");
+            }
+        }
+        stringCreate.append(")");
+
+        pstmtCreate = con.prepareStatement(stringCreate.toString());
+
+        StringBuilder stringRead = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
+        for (int i = 1; i < numberOfKeys; ++i) {
+
+            stringRead.append(primaryKeyListNames.get(0) + " = ?");
+
+            if (i != numberOfKeys - 1) {
+                stringRead.append(" AND ");
+            }
+        }
+
+        pstmtRead = con.prepareStatement(stringRead.toString());
+
+        rs.close();
+        statement.close();
     }
 
     public static void whatIsolationLevelMySql() throws ClassNotFoundException, SQLException {
@@ -62,7 +120,11 @@ public class DataObjectCRUD implements CRUD<Integer, String> {
             e.printStackTrace();
         } */
 
-        try (DataObjectCRUD docrud = new DataObjectCRUD("jdbc:mysql://localhost:3306/sys", "root", "", null)) {
+        try (DataObjectCRUD docrud = new DataObjectCRUD("jdbc:mysql://localhost:3306/computerStore", "root", "",
+                "manufacturers")) {
+            docrud.create("2 Dell");
+            System.out.println(docrud.read("2"));
+
         } catch (Exception e) {
 
             e.printStackTrace();
@@ -71,58 +133,71 @@ public class DataObjectCRUD implements CRUD<Integer, String> {
 
     @Override
     public void close() throws Exception {
+        pstmtCreate.close();
+        pstmtRead.close();
         con.close();
     }
 
+    /*pk col2 col3 pk col5 */
+    /* JUST SPACE!!!!!!!! */
     @Override
-    public Integer create(String data) {
-        // Obtain a statement
-        Statement st;
-        try {
-            st = con.createStatement();
-            StringBuilder query = new StringBuilder("INSERT INTO " + tableName + " VALUES (");
-            String[] dataArray = data.split(" ");
-            for (int i = 0; i < dataArray.length - 1; ++i) {
-                query.append(dataArray[i] + ", ");
+    public String create(String data) {
+        StringBuilder keys = new StringBuilder();
+        String[] dataAsArray = data.split(" ");
+        for (int keyIndex : primaryKeyColIndexesList) {
+            for (int i = 0; i < dataAsArray.length; ++i) {
+                if (i + 1 == keyIndex) {
+                    keys.append(dataAsArray[i]);
+                }
             }
-            query.append(dataArray[dataArray.length - 1] + ")");
-            st.executeUpdate(query.toString());
+        }
+        try {
+            for (int i = 0; i < dataAsArray.length; ++i) {
+                pstmtCreate.setString(i + 1, dataAsArray[i]);
+            }
+            pstmtCreate.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return ++currSize;
+        return keys.toString();
     }
 
     @Override
-    public String read(Integer key) {
-        StringBuilder res = null;
-        try (Statement st = con.createStatement()) {
-            String query = "SELECT * FROM " + tableName;
-
-            ResultSet rs = st.executeQuery(query);
-
-            for (int i = 1; i < key; ++i, rs.next()) {
+    public String read(String key) {
+        String[] keyAsArray = key.split(" ");
+        try {
+            for (int i = 0; i < keyAsArray.length; ++i) {
+                pstmtRead.setString(i + 1, keyAsArray[i]);
             }
-
-            res = new StringBuilder();
-            int numOfCols = rs.getMetaData().getColumnCount();
-            for (int i = 1; i < numOfCols; ++i) {
-                res.append(rs.getString(i));
-                if (i != numOfCols - 1) {
-                    res.append(" ");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        StringBuilder result = new StringBuilder();
+        try (ResultSet resultSet = pstmtRead.executeQuery()) {
+            while (resultSet.next()) {
+                for (int i = 1; i <= numberOfCols; ++i) {
+                    result.append(resultSet.getString(i));
+                    if (i != numberOfCols) {
+                        result.append(" ");
+                    }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return res.toString();
+
+        return result.toString();
     }
 
     @Override
-    public void update(Integer key, String data) {
+    public void update(String key, String data) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
-    public void delete(Integer key) {
+    public void delete(String key) {
+        // TODO Auto-generated method stub
+
     }
 }
