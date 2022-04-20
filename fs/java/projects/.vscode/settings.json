@@ -23,5 +23,7 @@
   "java.project.referencedLibraries": [
     "lib/**/*.jar",
     "/usr/share/java/mysql-connector-java-8.0.28.jar"
-  ]
+  ],
+  "files.autoSaveDelay": 0,
+  "files.autoSave": "afterDelay"
 }

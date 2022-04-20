@@ -3,8 +3,8 @@ package il.co.ilrd.IOTinfrastructure;
 import il.co.ilrd.factory.Factory;
 import il.co.ilrd.hashmap.Pair;
 import il.co.ilrd.iosystem.FileCRUD;
+import il.co.ilrd.jdbc.DataObjectCRUD;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -17,14 +17,17 @@ public class OperationManager {
     private final ExecutorService executor;
     private final String databasePath;
 
-    public OperationManager(String databasePath) {
-        this.databasePath = databasePath;
+    public OperationManager(String url, String username, String password) {
+        databasePath = url + " " + username + " " + password;
         executor = Executors.newCachedThreadPool();
         commandFactory.add("CompanyRegisterCommand", CompanyRegisterCommand::new);
         commandFactory.add("ProductRegisterCommand", ProductRegisterCommand::new);
         commandFactory.add("IOTRegisterCommand", IOTRegisterCommand::new);
         commandFactory.add("IOTUpdateCommand", IOTUpdateCommand::new);
         commandFactory.add("ping", PingCommand::new);
+        commandFactory.add("AddressRegisterCommand", AddressRegisterCommand::new);
+        commandFactory.add("ContactPersonRegisterCommand", ContactPersonRegisterCommand::new);
+        commandFactory.add("PaymentRegisterCommand", PaymentRegisterCommand::new);
     }
 
     public void handleRequest(String request, Responder response) {
@@ -41,8 +44,8 @@ public class OperationManager {
 }
 
 class CompanyRegisterCommand implements Command {
-    private String data;
-    private Responder responder;
+    private final String data;
+    private final Responder responder;
 
     /* data[0] = path, data[1] = folder(company) name */
     public CompanyRegisterCommand(Pair<String, Responder> pair) {
@@ -52,25 +55,31 @@ class CompanyRegisterCommand implements Command {
 
     @Override
     public void run() {
-        /* open folders */
-        File f1 = new File(data.split(" ")[0] + "\\" + data.split(" ")[1]);
-        //Creating a folder using mkdir() method  
-        if (f1.mkdir()) {
-            System.out.println("Folder is created successfully");
-            responder.respond("Folder is created successfully");
-        } else {
-            System.out.println("Folder is not found!");
-            responder.respond("Folder is not found!");
+        String[] dataArray = data.split(" ", 4);
+        final String url = dataArray[0];
+        final String username = dataArray[1];
+        final String password = dataArray[2];
+        final String inputForTable = dataArray[3];
+        try (DataObjectCRUD docrud = new DataObjectCRUD(
+                url,
+                username,
+                password,
+                "Companies")) {
+            docrud.create(inputForTable);
+        } catch (Exception e) {
+            System.out.println("Company is not found!");
+            responder.respond("Company is not found!");
         }
+        System.out.println("Company is created successfully");
+        responder.respond("Company is created successfully");
     }
 }
 
 class ProductRegisterCommand implements Command {
-    private String data;
-    private Responder responder;
+    private final String data;
+    private final Responder responder;
 
-    /* data[0] = path, data[1] = folder(company) name data[2] = filename(product name)*/
-
+    /* data[0] = path, data[1] = folder(company) name */
     public ProductRegisterCommand(Pair<String, Responder> pair) {
         this.data = pair.getKey();
         this.responder = pair.getValue();
@@ -78,27 +87,31 @@ class ProductRegisterCommand implements Command {
 
     @Override
     public void run() {
-        String path = data.split(" ")[0] + "\\" + data.split(" ")[1] + "\\" + data
-                .split(" ")[2];
-        /* creates a new file in folder */
-        try (FileCRUD fileCRUD = new FileCRUD(path, true)) {
-            System.out.println("file is created");
-            responder.respond("file is created");
+        String[] dataArray = data.split(" ", 4);
+        final String url = dataArray[0];
+        final String username = dataArray[1];
+        final String password = dataArray[2];
+        final String inputForTable = dataArray[3];
+        try (DataObjectCRUD docrud = new DataObjectCRUD(
+                url,
+                username,
+                password,
+                "Products")) {
+            docrud.create(inputForTable);
         } catch (Exception e) {
-            System.out.println("there was an exception create a new file");
-            responder.respond("there was an exception create a new file");
-            e.printStackTrace();
+            System.out.println("Products is not added!");
+            responder.respond("Products is not added!");
         }
+        System.out.println("Products is created successfully");
+        responder.respond("Products is created successfully");
     }
 }
 
 class IOTRegisterCommand implements Command {
-    private String data;
-    private Responder responder;
+    private final String data;
+    private final Responder responder;
 
-    /* data[0] = path, data[1] = folder(company) name data[2] = filename(product name)
-        data[3...] product line*/
-    /* product line = "id" + " " + "iot name" + " name of user" */
+    /* data[0] = path, data[1] = folder(company) name */
     public IOTRegisterCommand(Pair<String, Responder> pair) {
         this.data = pair.getKey();
         this.responder = pair.getValue();
@@ -106,30 +119,31 @@ class IOTRegisterCommand implements Command {
 
     @Override
     public void run() {
-        /* create a line in product file */
-        String path = data.split(" ")[0] + "\\" + data.split(" ")[1] + "\\" + data
-                .split(" ")[2];
-        String dataToWrite = data.substring(data.split(" ")[0].length() + 1 + data.split(" ")[1].length() + 1
-                + data.split(" ")[2].length() + 1);
-
-        /* if not file found respond fail */
-        try (FileCRUD fileCRUD = new FileCRUD(path, false)) {
-            fileCRUD.create(dataToWrite);
-            System.out.println("line is added to file");
-            responder.respond("line is added to file");
+        String[] dataArray = data.split(" ", 4);
+        final String url = dataArray[0];
+        final String username = dataArray[1];
+        final String password = dataArray[2];
+        final String inputForTable = dataArray[3];
+        try (DataObjectCRUD docrud = new DataObjectCRUD(
+                url,
+                username,
+                password,
+                "IOT")) {
+            docrud.create(inputForTable);
         } catch (Exception e) {
-            System.out.println("there was an exception create a new file");
-            responder.respond("there was an exception create a new file");
-            e.printStackTrace();
+            System.out.println("IOT is not added!");
+            responder.respond("IOT is not added!");
         }
+        System.out.println("IOT is created successfully");
+        responder.respond("IOT is created successfully");
     }
 }
 
 class IOTUpdateCommand implements Command {
-    private String data;
-    private Responder responder;
+    private final String data;
+    private final Responder responder;
 
-    /* data is company name + " "  + product name + " " + product line */
+    /* data[0] = path, data[1] = folder(company) name */
     public IOTUpdateCommand(Pair<String, Responder> pair) {
         this.data = pair.getKey();
         this.responder = pair.getValue();
@@ -137,31 +151,23 @@ class IOTUpdateCommand implements Command {
 
     @Override
     public void run() {
-        /* update a line in product file */
-        String path = data.split(" ")[0] + "\\" + data.split(" ")[1] + "\\" + data
-                .split(" ")[2];
-        String dataToWrite = data.substring(data.split(" ")[0].length() + 1 + data.split(" ")[1].length() + 1
-                + data.split(" ")[2].length() + 1);
-
-        try (FileCRUD fileCRUD = new FileCRUD(path, false)) {
-
-            String id = data.split(" ")[3];
-            List<String> lines = Files.readAllLines(Paths.get(path));
-
-            for (int i = 0; i < lines.size(); ++i) {
-                if (lines.get(i).split(" ")[0].equals(id)) {
-                    fileCRUD.update(i, dataToWrite);
-                }
-            }
-
-            System.out.println("line is updated in the file");
-            responder.respond("line is updated in the file");
+        String[] dataArray = data.split(" ", 4);
+        final String url = dataArray[0];
+        final String username = dataArray[1];
+        final String password = dataArray[2];
+        final String inputForTable = dataArray[3];
+        try (DataObjectCRUD docrud = new DataObjectCRUD(
+                url,
+                username,
+                password,
+                "IOTLog")) {
+            docrud.create(inputForTable);
         } catch (Exception e) {
-            System.out.println("there was an exception create a new file");
-            responder.respond("there was an exception create a new file");
-            e.printStackTrace();
+            System.out.println("IOTLog is not added!");
+            responder.respond("IOTLog is not added!");
         }
-
+        System.out.println("IOTLog is created successfully");
+        responder.respond("IOTLog is created successfully");
     }
 }
 
@@ -177,5 +183,101 @@ class PingCommand implements Command {
     @Override
     public void run() {
         responder.respond("pong");
+    }
+}
+
+class AddressRegisterCommand implements Command {
+    private final String data;
+    private final Responder responder;
+
+    /* data[0] = path, data[1] = folder(company) name */
+    public AddressRegisterCommand(Pair<String, Responder> pair) {
+        this.data = pair.getKey();
+        this.responder = pair.getValue();
+    }
+
+    @Override
+    public void run() {
+        String[] dataArray = data.split(" ", 4);
+        final String url = dataArray[0];
+        final String username = dataArray[1];
+        final String password = dataArray[2];
+        final String inputForTable = dataArray[3];
+        try (DataObjectCRUD docrud = new DataObjectCRUD(
+                url,
+                username,
+                password,
+                "Addresses")) {
+            docrud.create(inputForTable);
+        } catch (Exception e) {
+            System.out.println("address is not added!");
+            responder.respond("address is not added!");
+        }
+        System.out.println("address is created successfully");
+        responder.respond("address is created successfully");
+    }
+}
+
+class ContactPersonRegisterCommand implements Command {
+    private final String data;
+    private final Responder responder;
+
+    /* data[0] = path, data[1] = folder(company) name */
+    public ContactPersonRegisterCommand(Pair<String, Responder> pair) {
+        this.data = pair.getKey();
+        this.responder = pair.getValue();
+    }
+
+    @Override
+    public void run() {
+        String[] dataArray = data.split(" ", 4);
+        final String url = dataArray[0];
+        final String username = dataArray[1];
+        final String password = dataArray[2];
+        final String inputForTable = dataArray[3];
+        try (DataObjectCRUD docrud = new DataObjectCRUD(
+                url,
+                username,
+                password,
+                "ContactPerson")) {
+            docrud.create(inputForTable);
+        } catch (Exception e) {
+            System.out.println("ContactPerson is not added!");
+            responder.respond("ContactPerson is not added!");
+        }
+        System.out.println("ContactPerson is created successfully");
+        responder.respond("ContactPerson is created successfully");
+    }
+}
+
+class PaymentRegisterCommand implements Command {
+    private final String data;
+    private final Responder responder;
+
+    /* data[0] = path, data[1] = folder(company) name */
+    public PaymentRegisterCommand(Pair<String, Responder> pair) {
+        this.data = pair.getKey();
+        this.responder = pair.getValue();
+    }
+
+    @Override
+    public void run() {
+        String[] dataArray = data.split(" ", 4);
+        final String url = dataArray[0];
+        final String username = dataArray[1];
+        final String password = dataArray[2];
+        final String inputForTable = dataArray[3];
+        try (DataObjectCRUD docrud = new DataObjectCRUD(
+                url,
+                username,
+                password,
+                "Payments")) {
+            docrud.create(inputForTable);
+        } catch (Exception e) {
+            System.out.println("Payments is not added!");
+            responder.respond("Payments is not added!");
+        }
+        System.out.println("Payments is created successfully");
+        responder.respond("Payments is created successfully");
     }
 }

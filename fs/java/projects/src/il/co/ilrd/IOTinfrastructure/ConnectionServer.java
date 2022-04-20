@@ -23,9 +23,9 @@ public class ConnectionServer {
     private final int port;
     private OperationManager operationManager = null;
 
-    public ConnectionServer(int port, String databasePath) {
+    public ConnectionServer(int port, String url, String username, String password) {
         this.port = port;
-        operationManager = new OperationManager(databasePath);
+        operationManager = new OperationManager(url, username, password);
     }
 
     public void start() {
@@ -124,7 +124,7 @@ public class ConnectionServer {
 
     public static void main(String[] args) {
         ConnectionServer connectionServer = new ConnectionServer(1234,
-                "C:\\Users\\dolev\\Desktop\\git\\dolev-arev\\fs\\java\\projects\\src\\il\\co\\ilrd\\finalproject");
+                "jdbc:mysql://localhost:3306/IOTInfrastructure", "root", "");
         connectionServer.start();
     }
 }

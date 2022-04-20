@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS IOTInfrastructure;
 USE IOTInfrastructure;
-CREATE TABLE IF NOT EXISTS Adresses(
+CREATE TABLE IF NOT EXISTS Addresses(
     addressID INT,
     zipcode INT NOT NULL,
     city VARCHAR(250) NOT NULL,
@@ -17,25 +17,25 @@ CREATE TABLE IF NOT EXISTS ContactPerson(
 CREATE TABLE IF NOT EXISTS Companies(
     companyID INT,
     company_name VARCHAR(250) NOT NULL,
-    contactID INT NOT NULL,
+    contactID INT NOT NULL UNIQUE,
     addressID INT NOT NULL,
     PRIMARY KEY(companyID),
-    FOREIGN KEY(addressID) REFERENCES Adresses(addressID),
-    FOREIGN KEY(contactID) REFERENCES ContactPerson(contactID)
+    FOREIGN KEY(addressID) REFERENCES Addresses(addressID) ON DELETE CASCADE,
+    FOREIGN KEY(contactID) REFERENCES ContactPerson(contactID) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS Products(
     productID INT,
     productname VARCHAR(250) NOT NULL,
     companyID INT NOT NULL,
     PRIMARY KEY(productID),
-    FOREIGN KEY(companyID) REFERENCES Companies(companyID)
+    FOREIGN KEY(companyID) REFERENCES Companies(companyID) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS IOT(
     IOTID INT,
-    serialNum INT NOT NULL,
+    serialNum INT,
     productID INT NOT NULL,
-    PRIMARY KEY(IOTID),
-    FOREIGN KEY(productID) REFERENCES Products(productID)
+    PRIMARY KEY(IOTID, serialNum),
+    FOREIGN KEY(productID) REFERENCES Products(productID) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS IOTLog(
     logNumber INT,
@@ -43,12 +43,12 @@ CREATE TABLE IF NOT EXISTS IOTLog(
     logDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     logData VARCHAR(250) NOT NULL,
     PRIMARY KEY(logNumber),
-    FOREIGN KEY(IOTID) REFERENCES IOT(IOTID)
+    FOREIGN KEY(IOTID) REFERENCES IOT(IOTID) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS Payments(
     payID INT,
     companyID INT NOT NULL,
     creditDetails VARCHAR(250) NOT NULL,
     PRIMARY KEY(payID),
-    FOREIGN KEY(companyID) REFERENCES Companies(companyID)
+    FOREIGN KEY(companyID) REFERENCES Companies(companyID) ON DELETE CASCADE
 );
