@@ -1,5 +1,19 @@
 CREATE DATABASE IF NOT EXISTS IOTInfrastructure;
 USE IOTInfrastructure;
+CREATE TABLE IF NOT EXISTS Adresses(
+    addressID INT,
+    zipcode INT NOT NULL,
+    city VARCHAR(250) NOT NULL,
+    street VARCHAR(250) NOT NULL,
+    PRIMARY KEY(addressID)
+);
+CREATE TABLE IF NOT EXISTS ContactPerson(
+    contactID INT,
+    phoneNumber INT NOT NULL,
+    contactPersonName VARCHAR(250) NOT NULL,
+    email VARCHAR(250) NOT NULL,
+    PRIMARY KEY(contactID)
+);
 CREATE TABLE IF NOT EXISTS Companies(
     companyID INT,
     company_name VARCHAR(250) NOT NULL,
@@ -26,17 +40,10 @@ CREATE TABLE IF NOT EXISTS IOT(
 CREATE TABLE IF NOT EXISTS IOTLog(
     logNumber INT,
     IOTID INT NOT NULL,
-    logDate DATE DEFAULT GETDATE(),
+    logDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     logData VARCHAR(250) NOT NULL,
     PRIMARY KEY(logNumber),
     FOREIGN KEY(IOTID) REFERENCES IOT(IOTID)
-);
-CREATE TABLE IF NOT EXISTS Adresses(
-    addressID INT,
-    zipcode INT NOT NULL,
-    city VARCHAR(250) NOT NULL,
-    street VARCHAR(250) NOT NULL,
-    PRIMARY KEY(addressID)
 );
 CREATE TABLE IF NOT EXISTS Payments(
     payID INT,
@@ -44,11 +51,4 @@ CREATE TABLE IF NOT EXISTS Payments(
     creditDetails VARCHAR(250) NOT NULL,
     PRIMARY KEY(payID),
     FOREIGN KEY(companyID) REFERENCES Companies(companyID)
-);
-CREATE TABLE IF NOT EXISTS ContactPerson(
-    contactID INT,
-    phoneNumber INT NOT NULL,
-    contactPersonName VARCHAR(250) NOT NULL,
-    email VARCHAR(250) NOT NULL,
-    PRIMARY KEY(contactID),
 );
