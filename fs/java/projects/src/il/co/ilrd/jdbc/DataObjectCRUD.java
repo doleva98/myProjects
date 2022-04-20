@@ -15,12 +15,12 @@ import il.co.ilrd.iosystem.CRUD;
 
 public class DataObjectCRUD implements CRUD<String, String> {
 
-    private Connection con = null;
-    private List<Integer> primaryKeyColIndexesList;
-    private int numberOfCols = 0;
-    private PreparedStatement pstmtCreate;
-    private PreparedStatement pstmtRead;
-    private PreparedStatement pstmtDelete;
+    private final Connection con;
+    private final List<Integer> primaryKeyColIndexesList;
+    private final int numberOfCols;
+    private final PreparedStatement pstmtCreate;
+    private final PreparedStatement pstmtRead;
+    private final PreparedStatement pstmtDelete;
 
     public DataObjectCRUD(String url, String username, String password, String tableName)
             throws ClassNotFoundException, SQLException {
@@ -40,24 +40,23 @@ public class DataObjectCRUD implements CRUD<String, String> {
         }
         resultSet.close();
         ResultSet rs = statement.executeQuery("SELECT * FROM " + tableName);
-        numberOfCols = rs.getMetaData().getColumnCount();
         ResultSetMetaData rsMetaData = rs.getMetaData();
+        numberOfCols = rsMetaData.getColumnCount();
 
         primaryKeyColIndexesList = new ArrayList<>();
 
-        int numberOfKeys = rsMetaData.getColumnCount();
         for (String pkName : primaryKeyListNames) {
-            for (int i = 1; i <= numberOfKeys; ++i) {
+            for (int i = 1; i <= numberOfCols; ++i) {
                 if (pkName.equals(rsMetaData.getColumnName(i))) {
                     primaryKeyColIndexesList.add(i);
                 }
             }
         }
-
+        /* INSERT IGNORE INTO computers VALUES(?, ?,?,?,?,?,?) */
         StringBuilder stringCreate = new StringBuilder("INSERT IGNORE INTO " + tableName + " VALUES(");
-        for (int i = 0; i < numberOfKeys; ++i) {
+        for (int i = 0; i < numberOfCols; ++i) {
             stringCreate.append("?");
-            if (i != numberOfKeys - 1) {
+            if (i != numberOfCols - 1) {
                 stringCreate.append(", ");
             }
         }
@@ -65,12 +64,13 @@ public class DataObjectCRUD implements CRUD<String, String> {
 
         pstmtCreate = con.prepareStatement(stringCreate.toString());
 
+        /* SELECT * FROM manu WHERE manuID = ? AND manuName = ?*/
         StringBuilder stringRead = new StringBuilder("SELECT * FROM " + tableName + " WHERE ");
-        for (int i = 1; i < numberOfKeys; ++i) {
+        for (int i = 0; i < primaryKeyListNames.size(); ++i) {
 
-            stringRead.append(primaryKeyListNames.get(0) + " = ?");
+            stringRead.append(primaryKeyListNames.get(i) + " = ?");
 
-            if (i != numberOfKeys - 1) {
+            if (i != primaryKeyListNames.size() - 1) {
                 stringRead.append(" AND ");
             }
         }
@@ -78,11 +78,11 @@ public class DataObjectCRUD implements CRUD<String, String> {
         pstmtRead = con.prepareStatement(stringRead.toString());
 
         StringBuilder stringDelete = new StringBuilder("DELETE FROM " + tableName + " WHERE ");
-        for (int i = 1; i < numberOfKeys; ++i) {
+        for (int i = 0; i < primaryKeyListNames.size(); ++i) {
 
-            stringDelete.append(primaryKeyListNames.get(0) + " = ?");
+            stringDelete.append(primaryKeyListNames.get(i) + " = ?");
 
-            if (i != numberOfKeys - 1) {
+            if (i != primaryKeyListNames.size() - 1) {
                 stringDelete.append(" AND ");
             }
         }
@@ -140,6 +140,16 @@ public class DataObjectCRUD implements CRUD<String, String> {
 
             e.printStackTrace();
         }
+        try (DataObjectCRUD docrud1 = new DataObjectCRUD("jdbc:mysql://localhost:3306/computerStore", "root", "",
+                "computer")) {
+            // docrud1.create("2 500 600 700 800 0 0 800 0");
+            // System.out.println(docrud1.read("2 0"));
+            // docrud1.update("2 0", "2 709990 10000 700 800 0 0 800 0");
+            docrud1.delete("2 0");
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -157,11 +167,7 @@ public class DataObjectCRUD implements CRUD<String, String> {
         StringBuilder keys = new StringBuilder();
         String[] dataAsArray = data.split(" ");
         for (int keyIndex : primaryKeyColIndexesList) {
-            for (int i = 0; i < dataAsArray.length; ++i) {
-                if (i + 1 == keyIndex) {
-                    keys.append(dataAsArray[i]);
-                }
-            }
+            keys.append(dataAsArray[keyIndex - 1]);
         }
         try {
             for (int i = 0; i < dataAsArray.length; ++i) {
