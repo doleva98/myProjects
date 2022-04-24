@@ -3,10 +3,10 @@ package il.co.ilrd.IOTinfrastructure;
 import il.co.ilrd.factory.Factory;
 
 class GatewayServer {
-    private ConnectionServer connectionServer = null;
-    private OperationManager operationManager = null;
+    private final ConnectionServer connectionServer;
+    private final OperationManager operationManager;
     private final Factory<Command, FactoryData, String> commandFactory = new Factory<>();
-    private IOTDBMS dbms;
+    private final IOTDBMS dbms;
 
     public GatewayServer(int port, String url, String username, String password) {
         commandFactory.add("CompanyRegisterCommand", CompanyRegisterCommand::new);
@@ -28,4 +28,8 @@ class GatewayServer {
         connectionServer.stop();
     }
 
+    public static void main(String[] args) {
+        new GatewayServer(1234, "jdbc:mysql://localhost:3306/IOTInfrastructure", "root", "").start();
+
+    }
 }
