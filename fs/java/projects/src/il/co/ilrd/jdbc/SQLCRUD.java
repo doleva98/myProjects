@@ -13,7 +13,7 @@ import java.util.List;
 
 import il.co.ilrd.iosystem.CRUD;
 
-public class DataObjectCRUD implements CRUD<String, String> {
+public class SQLCRUD implements CRUD<String, String> {
 
     private final Connection con;
     private final List<Integer> primaryKeyColIndexesList;
@@ -22,7 +22,7 @@ public class DataObjectCRUD implements CRUD<String, String> {
     private final PreparedStatement pstmtRead;
     private final PreparedStatement pstmtDelete;
 
-    public DataObjectCRUD(String url, String username, String password, String tableName)
+    public SQLCRUD(String url, String username, String password, String tableName)
             throws ClassNotFoundException, SQLException {
         String driverClassName = "com.mysql.cj.jdbc.Driver";
         Class.forName(driverClassName);
@@ -131,7 +131,7 @@ public class DataObjectCRUD implements CRUD<String, String> {
             e.printStackTrace();
         } */
 
-        try (DataObjectCRUD docrud = new DataObjectCRUD("jdbc:mysql://localhost:3306/computerStore", "root", "",
+        try (SQLCRUD docrud = new SQLCRUD("jdbc:mysql://localhost:3306/computerStore", "root", "",
                 "manufacturers")) {
             docrud.create("2 Dell");
             System.out.println(docrud.read("2"));
@@ -140,7 +140,7 @@ public class DataObjectCRUD implements CRUD<String, String> {
 
             e.printStackTrace();
         }
-        try (DataObjectCRUD docrud1 = new DataObjectCRUD("jdbc:mysql://localhost:3306/computerStore", "root", "",
+        try (SQLCRUD docrud1 = new SQLCRUD("jdbc:mysql://localhost:3306/computerStore", "root", "",
                 "computer")) {
             // docrud1.create("2 500 600 700 800 0 0 800 0");
             // System.out.println(docrud1.read("2 0"));

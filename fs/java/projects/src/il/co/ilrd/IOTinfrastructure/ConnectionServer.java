@@ -21,15 +21,14 @@ public class ConnectionServer {
     private DataInputStream in = null;
     private ExecutorService executor;
     private final int port;
-    private OperationManager operationManager = null;
+    // private OperationManager operationManager = null;
 
-    public ConnectionServer(int port, String url, String username, String password) {
+    public ConnectionServer(int port) {
         this.port = port;
-        operationManager = new OperationManager(url, username, password);
     }
 
-    public void start() {
-
+    public void start(OperationManager operationManager) {
+        // this.operationManager = operationManager;
         /* TCP connection */
         try {
             server = new ServerSocket(port);
@@ -111,7 +110,7 @@ public class ConnectionServer {
     }
 
     public void stop() {
-        operationManager.stop();
+        // operationManager.stop();
         if (server != null) {
             try {
                 server.close();
@@ -120,11 +119,5 @@ public class ConnectionServer {
             }
         }
         executor.shutdownNow();
-    }
-
-    public static void main(String[] args) {
-        ConnectionServer connectionServer = new ConnectionServer(1234,
-                "jdbc:mysql://localhost:3306/IOTInfrastructure", "root", "");
-        connectionServer.start();
     }
 }
