@@ -37,26 +37,26 @@ public class MySQLDBMS implements IOTDBMS {
         payID INT,
         companyID INT NOT NULL,
         creditDetails VARCHAR(250) NOT NULL,*/
-
         String[] data = pair.getKey().split(" ");
         Responder respond = pair.getValue();
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Addresses")) {
-            crud.create(String.join(" ", Arrays.copyOfRange(data, 0, 4)));
+            System.out.println(Arrays.toString(Arrays.copyOfRange(data, 1, 5)));
+            crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 5)));
         } catch (Exception e) {
             respond.respond("address cant be created");
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "ContactPerson")) {
-            crud.create(String.join(" ", Arrays.copyOfRange(data, 4, 8)));
+            crud.create(String.join(" ", Arrays.copyOfRange(data, 5, 9)));
         } catch (Exception e) {
             respond.respond("contact person cant be created");
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Companies")) {
-            crud.create(String.join(" ", Arrays.copyOfRange(data, 8, 12)));
+            crud.create(String.join(" ", Arrays.copyOfRange(data, 9, 13)));
         } catch (Exception e) {
             respond.respond("Companies cant be created");
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Payments")) {
-            crud.create(String.join(" ", Arrays.copyOfRange(data, 12, 15)));
+            crud.create(String.join(" ", Arrays.copyOfRange(data, 13, 16)));
         } catch (Exception e) {
             respond.respond("Companies cant be created");
         }
