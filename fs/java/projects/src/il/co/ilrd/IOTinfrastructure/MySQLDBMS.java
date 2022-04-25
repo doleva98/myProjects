@@ -40,51 +40,87 @@ public class MySQLDBMS implements IOTDBMS {
         String[] data = pair.getKey().split(" ");
         Responder respond = pair.getValue();
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Addresses")) {
-            System.out.println(Arrays.toString(Arrays.copyOfRange(data, 1, 5)));
-            crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 5)));
+            String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 5)));
+            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 5)))) {
+                respond.respond("address cant be created");
+            }
         } catch (Exception e) {
             respond.respond("address cant be created");
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "ContactPerson")) {
-            crud.create(String.join(" ", Arrays.copyOfRange(data, 5, 9)));
+            String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 5, 9)));
+            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 5, 9)))) {
+                respond.respond("ContactPerson cant be created");
+            }
         } catch (Exception e) {
             respond.respond("contact person cant be created");
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Companies")) {
-            crud.create(String.join(" ", Arrays.copyOfRange(data, 9, 13)));
+            String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 9, 13)));
+            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 9, 13)))) {
+                respond.respond("Companies cant be created");
+            }
+
         } catch (Exception e) {
             respond.respond("Companies cant be created");
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Payments")) {
-            crud.create(String.join(" ", Arrays.copyOfRange(data, 13, 16)));
+            String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 13, 16)));
+            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 13, 16)))) {
+                respond.respond("Payments cant be created");
+            }
         } catch (Exception e) {
-            respond.respond("Companies cant be created");
+            respond.respond("Payments cant be created");
         }
         respond.respond("Company is added successfully");
     }
 
     @Override
     public void productAdd(Pair<String, Responder> pair) {
-        try (SQLCRUD crud = new SQLCRUD(url, username, password, "Companies")) {
+        /* productID INT,
+        productname VARCHAR(250) NOT NULL,
+        companyID INT NOT NULL, */
+        String[] data = pair.getKey().split(" ");
+        Responder respond = pair.getValue();
+        try (SQLCRUD crud = new SQLCRUD(url, username, password, "Products")) {
+            String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 4)));
+            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 4)))) {
+                respond.respond("Products cant be created");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            respond.respond("product cant be created");
         }
+        respond.respond("product is added successfully");
     }
 
     @Override
     public void IOTAdd(Pair<String, Responder> pair) {
-        try (SQLCRUD crud = new SQLCRUD(url, username, password, "Companies")) {
+        String[] data = pair.getKey().split(" ");
+        Responder respond = pair.getValue();
+        try (SQLCRUD crud = new SQLCRUD(url, username, password, "IOT")) {
+            String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 4)));
+            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 4)))) {
+                respond.respond("IOT cant be created");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            respond.respond("IOT cant be created");
         }
+        respond.respond("IOT is added successfully");
     }
 
     @Override
     public void IOTUpdate(Pair<String, Responder> pair) {
-        try (SQLCRUD crud = new SQLCRUD(url, username, password, "Companies")) {
+        String[] data = pair.getKey().split(" ");
+        Responder respond = pair.getValue();
+        try (SQLCRUD crud = new SQLCRUD(url, username, password, "IOTLog")) {
+            String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 5)));
+            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 5)))) {
+                respond.respond("IOTLog cant be created");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            respond.respond("IOTLog cant be created");
         }
+        respond.respond("IOTLog is added successfully");
     }
 
 }

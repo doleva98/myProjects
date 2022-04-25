@@ -59,7 +59,7 @@ class ProductRegisterCommand implements Command {
 
     @Override
     public void run() {
-        dbms.companyAdd(pair);
+        dbms.productAdd(pair);
     }
 }
 
@@ -75,7 +75,7 @@ class IOTRegisterCommand implements Command {
 
     @Override
     public void run() {
-        dbms.companyAdd(pair);
+        dbms.IOTAdd(pair);
     }
 }
 
@@ -91,7 +91,7 @@ class IOTUpdateCommand implements Command {
 
     @Override
     public void run() {
-        dbms.companyAdd(pair);
+        dbms.IOTUpdate(pair);
     }
 }
 

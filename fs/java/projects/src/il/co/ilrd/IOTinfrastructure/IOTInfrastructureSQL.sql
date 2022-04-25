@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS Products(
     productID INT,
     productname VARCHAR(250) NOT NULL,
     companyID INT NOT NULL,
-    PRIMARY KEY(productID),
+    PRIMARY KEY(productID, companyID),
     FOREIGN KEY(companyID) REFERENCES Companies(companyID) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS IOT(
