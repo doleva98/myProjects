@@ -21,14 +21,12 @@ public class ConnectionServer {
     private DataInputStream in = null;
     private ExecutorService executor;
     private final int port;
-    // private OperationManager operationManager = null;
 
     public ConnectionServer(int port) {
         this.port = port;
     }
 
     public void start(OperationManager operationManager) {
-        // this.operationManager = operationManager;
         /* TCP connection */
         try {
             server = new ServerSocket(port);
@@ -110,7 +108,6 @@ public class ConnectionServer {
     }
 
     public void stop() {
-        // operationManager.stop();
         if (server != null) {
             try {
                 server.close();

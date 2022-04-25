@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 class Main {
     public static void main(String[] args) {
-        String[] s = "helo i am dolev and helvxcvddl".split(" ");
-
+System.out.println(52%4);
     }
 }

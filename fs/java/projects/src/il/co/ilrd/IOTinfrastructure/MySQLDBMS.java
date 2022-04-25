@@ -1,12 +1,16 @@
 package il.co.ilrd.IOTinfrastructure;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 
 import il.co.ilrd.hashmap.Pair;
 import il.co.ilrd.jdbc.SQLCRUD;
 
 public class MySQLDBMS implements IOTDBMS {
-    private final String url;
+    private String url;
     private final String username;
     private final String password;
 
@@ -14,6 +18,40 @@ public class MySQLDBMS implements IOTDBMS {
         this.url = url;
         this.username = username;
         this.password = password;
+        createDataBase();
+    }
+
+    private void createDataBase() {
+        String driverClassName = "com.mysql.cj.jdbc.Driver";
+        try {
+            Class.forName(driverClassName);
+            try (Connection con = DriverManager.getConnection(
+                    url, username, password)) {
+                Statement statement = con.createStatement();
+                statement.addBatch("CREATE DATABASE IF NOT EXISTS IOTInfrastructure");
+                statement.addBatch("USE IOTInfrastructure");
+                statement.addBatch(
+                        "CREATE TABLE IF NOT EXISTS Addresses( addressID INT, zipcode INT NOT NULL, city VARCHAR(250) NOT NULL, street VARCHAR(250) NOT NULL, PRIMARY KEY(addressID))");
+                statement.addBatch(
+                        "CREATE TABLE IF NOT EXISTS ContactPerson( contactID INT, phoneNumber INT NOT NULL, contactPersonName VARCHAR(250) NOT NULL, email VARCHAR(250) NOT NULL, PRIMARY KEY(contactID))");
+                statement.addBatch(
+                        "CREATE TABLE IF NOT EXISTS Companies( companyID INT, company_name VARCHAR(250) NOT NULL, contactID INT NOT NULL UNIQUE, addressID INT NOT NULL, PRIMARY KEY(companyID), FOREIGN KEY(addressID) REFERENCES Addresses(addressID) ON DELETE CASCADE, FOREIGN KEY(contactID) REFERENCES ContactPerson(contactID) ON DELETE CASCADE)");
+                statement.addBatch(
+                        "CREATE TABLE IF NOT EXISTS Products( productID INT, productname VARCHAR(250) NOT NULL, companyID INT NOT NULL, PRIMARY KEY(productID, companyID), FOREIGN KEY(companyID) REFERENCES Companies(companyID) ON DELETE CASCADE)");
+                statement.addBatch(
+                        "CREATE TABLE IF NOT EXISTS IOT( IOTID INT, serialNum INT, productID INT NOT NULL, PRIMARY KEY(IOTID, serialNum), FOREIGN KEY(productID) REFERENCES Products(productID) ON DELETE CASCADE)");
+                statement.addBatch(
+                        "CREATE TABLE IF NOT EXISTS IOTLog( logNumber INT, IOTID INT NOT NULL, logDate DATETIME DEFAULT CURRENT_TIMESTAMP, logData VARCHAR(250) NOT NULL, PRIMARY KEY(logNumber), FOREIGN KEY(IOTID) REFERENCES IOT(IOTID) ON DELETE CASCADE)");
+                statement.addBatch(
+                        "CREATE TABLE IF NOT EXISTS Payments( payID INT, companyID INT NOT NULL, creditDetails VARCHAR(250) NOT NULL, PRIMARY KEY(payID), FOREIGN KEY(companyID) REFERENCES Companies(companyID) ON DELETE CASCADE)");
+                statement.executeBatch();
+                url += "IOTInfrastructure";
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+        }
 
     }
 

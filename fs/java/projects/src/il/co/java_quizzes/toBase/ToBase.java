@@ -23,7 +23,7 @@ public class ToBase {
     }
 
     public static void main(String[] args) {
-        System.out.println(toBase(53, 4));
+        System.out.println(toBase(52, 4));
         System.out.println(toBase(8, 2));
         System.out.println(toBase(54465261, 16));
     }
