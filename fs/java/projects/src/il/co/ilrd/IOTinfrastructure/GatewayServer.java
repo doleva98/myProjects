@@ -30,5 +30,6 @@ class GatewayServer {
 
     public static void main(String[] args) {
         new GatewayServer(1234, "jdbc:mysql://localhost:3306/", "root", "").start();
+
     }
 }
