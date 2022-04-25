@@ -41,7 +41,7 @@ public class MySQLDBMS implements IOTDBMS {
         Responder respond = pair.getValue();
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Addresses")) {
             String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 5)));
-            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 5)))) {
+            if (!crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 5)))) {
                 respond.respond("address cant be created");
             }
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class MySQLDBMS implements IOTDBMS {
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "ContactPerson")) {
             String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 5, 9)));
-            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 5, 9)))) {
+            if (!crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 5, 9)))) {
                 respond.respond("ContactPerson cant be created");
             }
         } catch (Exception e) {
@@ -57,7 +57,7 @@ public class MySQLDBMS implements IOTDBMS {
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Companies")) {
             String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 9, 13)));
-            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 9, 13)))) {
+            if (!crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 9, 13)))) {
                 respond.respond("Companies cant be created");
             }
 
@@ -66,13 +66,14 @@ public class MySQLDBMS implements IOTDBMS {
         }
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Payments")) {
             String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 13, 16)));
-            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 13, 16)))) {
+            if (!crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 13, 16)))) {
                 respond.respond("Payments cant be created");
+            } else {
+                respond.respond("Company is added successfully");
             }
         } catch (Exception e) {
             respond.respond("Payments cant be created");
         }
-        respond.respond("Company is added successfully");
     }
 
     @Override
@@ -84,13 +85,14 @@ public class MySQLDBMS implements IOTDBMS {
         Responder respond = pair.getValue();
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Products")) {
             String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 4)));
-            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 4)))) {
+            if (!crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 4)))) {
                 respond.respond("Products cant be created");
+            } else {
+                respond.respond("product is added successfully");
             }
         } catch (Exception e) {
             respond.respond("product cant be created");
         }
-        respond.respond("product is added successfully");
     }
 
     @Override
@@ -99,13 +101,14 @@ public class MySQLDBMS implements IOTDBMS {
         Responder respond = pair.getValue();
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "IOT")) {
             String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 4)));
-            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 4)))) {
+            if (!crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 4)))) {
                 respond.respond("IOT cant be created");
+            } else {
+                respond.respond("IOT is added successfully");
             }
         } catch (Exception e) {
             respond.respond("IOT cant be created");
         }
-        respond.respond("IOT is added successfully");
     }
 
     @Override
@@ -114,13 +117,14 @@ public class MySQLDBMS implements IOTDBMS {
         Responder respond = pair.getValue();
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "IOTLog")) {
             String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 1, 5)));
-            if (crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 5)))) {
+            if (!crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 1, 5)))) {
                 respond.respond("IOTLog cant be created");
+            } else {
+                respond.respond("IOTLog is added successfully");
             }
         } catch (Exception e) {
             respond.respond("IOTLog cant be created");
         }
-        respond.respond("IOTLog is added successfully");
     }
 
 }
