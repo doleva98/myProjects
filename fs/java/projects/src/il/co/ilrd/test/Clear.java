@@ -27,7 +27,6 @@ class B extends A implements s {
 }
 
 class Main {
-
     public static void main(String[] args) {
         B b = new B();
         /*  b.f();
