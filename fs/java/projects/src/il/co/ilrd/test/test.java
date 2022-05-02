@@ -60,7 +60,7 @@ import javax.sound.midi.Sequencer;
 
 import org.hamcrest.core.Is;
 
-public class Test {
+class Test {
     public transient int x;
 
     public static void main(String[] args) {
@@ -72,8 +72,6 @@ public class Test {
         System.out.println("hello world");
 
         ResultSet s;
-        
-        
 
     }
 
