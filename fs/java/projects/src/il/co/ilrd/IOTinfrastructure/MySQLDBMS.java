@@ -57,24 +57,26 @@ public class MySQLDBMS implements IOTDBMS {
 
     @Override
     public void companyAdd(Pair<String, Responder> pair) {
-        /* addressID INT,
-        zipcode INT NOT NULL,
-        city VARCHAR(250) NOT NULL,
-        street VARCHAR(250) NOT NULL,
-        
-        contactID INT,
-        phoneNumber INT NOT NULL,
-        contactPersonName VARCHAR(250) NOT NULL,
-        email VARCHAR(250) NOT NULL,
-        
-        companyID INT,
-        company_name VARCHAR(250) NOT NULL,
-        contactID INT NOT NULL UNIQUE,
-        addressID INT NOT NULL,
-        
-        payID INT,
-        companyID INT NOT NULL,
-        creditDetails VARCHAR(250) NOT NULL,*/
+        /*
+         * addressID INT,
+         * zipcode INT NOT NULL,
+         * city VARCHAR(250) NOT NULL,
+         * street VARCHAR(250) NOT NULL,
+         * 
+         * contactID INT,
+         * phoneNumber INT NOT NULL,
+         * contactPersonName VARCHAR(250) NOT NULL,
+         * email VARCHAR(250) NOT NULL,
+         * 
+         * companyID INT,
+         * company_name VARCHAR(250) NOT NULL,
+         * contactID INT NOT NULL UNIQUE,
+         * addressID INT NOT NULL,
+         * 
+         * payID INT,
+         * companyID INT NOT NULL,
+         * creditDetails VARCHAR(250) NOT NULL,
+         */
         String[] data = pair.getKey().split(" ");
         Responder respond = pair.getValue();
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Addresses")) {
@@ -88,7 +90,7 @@ public class MySQLDBMS implements IOTDBMS {
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "ContactPerson")) {
             String key = crud.create(String.join(" ", Arrays.copyOfRange(data, 5, 9)));
             if (!crud.read(key).equals(String.join(" ", Arrays.copyOfRange(data, 5, 9)))) {
-                respond.respond("ContactPerson cant be created");
+                // respond.respond("ContactPerson cant be created");
             }
         } catch (Exception e) {
             respond.respond("contact person cant be created");
@@ -116,9 +118,11 @@ public class MySQLDBMS implements IOTDBMS {
 
     @Override
     public void productAdd(Pair<String, Responder> pair) {
-        /* productID INT,
-        productname VARCHAR(250) NOT NULL,
-        companyID INT NOT NULL, */
+        /*
+         * productID INT,
+         * productname VARCHAR(250) NOT NULL,
+         * companyID INT NOT NULL,
+         */
         String[] data = pair.getKey().split(" ");
         Responder respond = pair.getValue();
         try (SQLCRUD crud = new SQLCRUD(url, username, password, "Products")) {
