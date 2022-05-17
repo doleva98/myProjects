@@ -2,11 +2,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "il.co.ilrd.test.Main",
+            "projectName": "myProjects_8fda9ed1"
+        },
+        {
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/a.out",
-            "args": ["---arg1---", "---arg2---", "---arg3---"],
+            "args": [
+                "---arg1---",
+                "---arg2---",
+                "---arg3---"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
