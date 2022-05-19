@@ -58,8 +58,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
-import org.hamcrest.core.Is;
-
 class Test {
     public transient int x;
 
